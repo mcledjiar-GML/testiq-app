@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    ports:
+      - "5000:5000"
+    command: sh -c "npm install && npm start"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/iq_test_db
+      - JWT_SECRET=testiq_secret_2024_super_secure
+      - OPENAI_API_KEY=your_openai_key_here
+    depends_on:
+      - mongo
+
+  frontend:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm start"
+    environment:
+      - REACT_APP_API_URL=http://13.223.174.47:5000
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:5
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
