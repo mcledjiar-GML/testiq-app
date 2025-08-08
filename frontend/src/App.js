@@ -6,6 +6,7 @@ import Register from './components/Register';
 import Test from './components/Test';
 import Results from './components/Results';
 import Dashboard from './components/Dashboard';
+import Review from './components/Review';
 import './App.css';
 
 // Configuration de l'URL de base pour axios
@@ -71,6 +72,7 @@ function App() {
             <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
             <Route path="/test" element={user ? <Test user={user} /> : <Navigate to="/login" />} />
             <Route path="/results" element={user ? <Results user={user} /> : <Navigate to="/login" />} />
+            <Route path="/review/:testIndex" element={user ? <Review user={user} /> : <Navigate to="/login" />} />
           </Routes>
         </main>
       </div>

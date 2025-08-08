@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 function Test({ user }) {
   const [questions, setQuestions] = useState([]);
@@ -9,12 +9,15 @@ function Test({ user }) {
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const testLevel = searchParams.get('level') || 'standard';
 
   useEffect(() => {
     const startTest = async () => {
       try {
         const response = await axios.post('/api/tests/start', { 
-          testType: 'raven' 
+          testType: 'raven',
+          level: testLevel
         });
         setQuestions(response.data.questions);
         if (response.data.questions.length > 0) {
@@ -23,12 +26,19 @@ function Test({ user }) {
         setLoading(false);
       } catch (error) {
         console.error('Erreur lors du démarrage du test:', error);
+        if (error.response?.status === 401) {
+          navigate('/login');
+        } else if (error.response?.data?.error) {
+          alert(`Erreur: ${error.response.data.error}`);
+        } else {
+          alert('Erreur de connexion. Veuillez réessayer.');
+        }
         setLoading(false);
       }
     };
 
     startTest();
-  }, []);
+  }, [navigate]);
 
   // Timer pour chaque question
   useEffect(() => {
@@ -39,9 +49,13 @@ function Test({ user }) {
       // Temps écoulé, passer à la question suivante
       handleAnswer(-1); // -1 indique une réponse non donnée
     }
-  }, [timeLeft, loading, questions.length]);
+  }, [timeLeft, loading, questions.length, currentQuestion]);
 
   const handleAnswer = (selectedOption) => {
+    if (questions.length === 0 || currentQuestion >= questions.length) {
+      return;
+    }
+    
     const newAnswers = [...answers, {
       questionId: questions[currentQuestion]._id,
       selectedOption,
@@ -52,8 +66,9 @@ function Test({ user }) {
 
     if (currentQuestion < questions.length - 1) {
       // Question suivante
-      setCurrentQuestion(currentQuestion + 1);
-      setTimeLeft(questions[currentQuestion + 1].timeLimit || 60);
+      const nextIndex = currentQuestion + 1;
+      setCurrentQuestion(nextIndex);
+      setTimeLeft(questions[nextIndex]?.timeLimit || 60);
     } else {
       // Fin du test
       submitTest(newAnswers);
@@ -65,20 +80,34 @@ function Test({ user }) {
       const response = await axios.post('/api/tests/submit', {
         userId: user.id,
         answers: finalAnswers,
-        testType: 'raven'
+        testType: 'raven',
+        testLevel: testLevel
       });
       
-      // Rediriger vers les résultats avec le score
+      // Rediriger vers les résultats avec tous les nouveaux données
       navigate('/results', { 
         state: { 
           latestScore: response.data.score,
           correctAnswers: response.data.correctAnswers,
-          totalQuestions: finalAnswers.length
+          totalQuestions: finalAnswers.length,
+          iq: response.data.iq,
+          classification: response.data.classification,
+          percentile: response.data.percentile,
+          advice: response.data.advice,
+          populationComparison: response.data.populationComparison,
+          testLevel: response.data.testLevel,
+          difficulty: response.data.difficulty
         }
       });
     } catch (error) {
       console.error('Erreur lors de la soumission du test:', error);
-      alert('Erreur lors de la sauvegarde du test. Veuillez réessayer.');
+      if (error.response?.status === 401) {
+        navigate('/login');
+      } else if (error.response?.data?.error) {
+        alert(`Erreur: ${error.response.data.error}`);
+      } else {
+        alert('Erreur lors de la sauvegarde du test. Veuillez réessayer.');
+      }
     }
   };
 
@@ -88,10 +117,16 @@ function Test({ user }) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const testLevelNames = {
+    'short': '⚡ Test rapide',
+    'standard': '🧠 Test standard', 
+    'full': '🎯 Test complet Raven'
+  };
+
   if (loading) {
     return (
       <div className="test-container">
-        <h2>🧠 Préparation du test...</h2>
+        <h2>{testLevelNames[testLevel]} - Préparation...</h2>
         <p>Chargement des questions de test de QI...</p>
       </div>
     );
@@ -110,6 +145,7 @@ function Test({ user }) {
   }
 
   const progress = ((currentQuestion + 1) / questions.length) * 100;
+
 
   return (
     <div className="test-container">
@@ -145,4 +181,47 @@ function Test({ user }) {
         </div>
       </div>
 
-      <div styl
+      <div style={{
+        background: '#f8f9fa',
+        padding: '20px',
+        borderRadius: '10px',
+        marginBottom: '20px'
+      }}>
+        <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px', lineHeight: '1.4' }}>
+          {questions[currentQuestion]?.content || 
+           questions[currentQuestion]?.question || 
+           `Question ${currentQuestion + 1} - Contenu non disponible`}
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px', marginTop: '20px' }}>
+          {questions[currentQuestion].options.map((option, index) => (
+            <button
+              key={index}
+              onClick={() => handleAnswer(index)}
+              style={{
+                padding: '15px',
+                border: '2px solid #e0e0e0',
+                borderRadius: '8px',
+                background: 'white',
+                cursor: 'pointer',
+                fontSize: '16px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.borderColor = '#667eea';
+                e.target.style.background = '#f0f2ff';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.borderColor = '#e0e0e0';
+                e.target.style.background = 'white';
+              }}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Test;

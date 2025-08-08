@@ -3,14 +3,40 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Middleware de sécurité
+app.use(helmet());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limite chaque IP à 100 requêtes par windowMs
+  message: 'Trop de requêtes depuis cette IP, réessayez plus tard.'
+});
+app.use(limiter);
+
+// Rate limiting spécifique pour l'authentification
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limite à 5 tentatives de connexion par IP
+  message: 'Trop de tentatives de connexion, réessayez plus tard.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Connexion à MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
@@ -35,6 +61,7 @@ const UserSchema = new mongoose.Schema({
 
 const QuestionSchema = new mongoose.Schema({
   type: { type: String, required: true, enum: ['raven', 'cattell', 'custom'] },
+  series: { type: String, enum: ['A', 'B', 'C', 'D', 'E'] }, // Série pour les tests Raven
   difficulty: { type: Number, min: 1, max: 10, required: true },
   content: { type: String, required: true },
   options: [String],
@@ -46,130 +73,284 @@ const QuestionSchema = new mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 const Question = mongoose.model('Question', QuestionSchema);
 
+// Middleware d'authentification
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token d\'authentification requis' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret', (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Token invalide' });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+// Importation des questions Raven complètes et du calculateur d'IQ
+const ravenQuestions = require('./raven_questions');
+const IQCalculator = require('./iq_calculator');
+
 // Création automatique de questions de test
 const seedQuestions = async () => {
   const count = await Question.countDocuments();
   if (count === 0) {
-    const questions = [
-      {
-        type: 'raven',
-        difficulty: 3,
-        content: 'Complétez la séquence: 2, 4, 6, 8, ?',
-        options: ['9', '10', '11', '12'],
-        correctAnswer: 1,
-        category: 'logique',
-        timeLimit: 30
-      },
-      {
-        type: 'raven',
-        difficulty: 5,
-        content: 'Si tous les A sont des B, et tous les B sont des C, alors tous les A sont-ils des C ?',
-        options: ['Oui', 'Non', 'Peut-être', 'Insuffisant'],
-        correctAnswer: 0,
-        category: 'logique',
-        timeLimit: 60
-      },
-      {
-        type: 'cattell',
-        difficulty: 4,
-        content: 'Trouvez l\'intrus: Chien, Chat, Oiseau, Poisson',
-        options: ['Chien', 'Chat', 'Oiseau', 'Poisson'],
-        correctAnswer: 2,
-        category: 'spatial',
-        timeLimit: 45
-      },
-      {
-        type: 'custom',
-        difficulty: 6,
-        content: 'Quel nombre vient ensuite: 1, 1, 2, 3, 5, 8, ?',
-        options: ['11', '13', '15', '17'],
-        correctAnswer: 1,
-        category: 'logique',
-        timeLimit: 30
-      },
-      {
-        type: 'raven',
-        difficulty: 2,
-        content: 'Quelle est la capitale de la France ?',
-        options: ['Londres', 'Berlin', 'Paris', 'Madrid'],
-        correctAnswer: 2,
-        category: 'verbal',
-        timeLimit: 20
-      }
-    ];
-    await Question.insertMany(questions);
-    console.log('✅ Questions de test créées');
+    await Question.insertMany(ravenQuestions);
+    console.log(`✅ ${ravenQuestions.length} questions Raven créées (5 séries complètes)`);
   }
 };
 
+// Fonction de validation des données d'entrée
+const validateRegisterInput = (email, password, name) => {
+  const errors = [];
+  
+  if (!email || !email.trim()) {
+    errors.push('Email requis');
+  } else if (!/\S+@\S+\.\S+/.test(email)) {
+    errors.push('Format d\'email invalide');
+  }
+  
+  if (!password || password.length < 6) {
+    errors.push('Mot de passe requis (minimum 6 caractères)');
+  }
+  
+  if (!name || !name.trim()) {
+    errors.push('Nom requis');
+  } else if (name.trim().length < 2) {
+    errors.push('Nom trop court (minimum 2 caractères)');
+  }
+  
+  return errors;
+};
+
+const validateLoginInput = (email, password) => {
+  const errors = [];
+  
+  if (!email || !email.trim()) {
+    errors.push('Email requis');
+  }
+  
+  if (!password) {
+    errors.push('Mot de passe requis');
+  }
+  
+  return errors;
+};
+
 // Routes d'authentification
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/auth/register', authLimiter, async (req, res) => {
   try {
     const { email, password, name } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ email, password: hashedPassword, name });
+    
+    // Validation des données d'entrée
+    const validationErrors = validateRegisterInput(email, password, name);
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ error: validationErrors.join(', ') });
+    }
+    
+    // Vérifier si l'utilisateur existe déjà
+    const existingUser = await User.findOne({ email: email.trim().toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Un utilisateur avec cet email existe déjà' });
+    }
+    
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = new User({ 
+      email: email.trim().toLowerCase(), 
+      password: hashedPassword, 
+      name: name.trim() 
+    });
     await user.save();
     res.status(201).json({ message: 'Utilisateur créé avec succès' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Erreur lors de l\'inscription:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
 
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    
+    // Validation des données d'entrée
+    const validationErrors = validateLoginInput(email, password);
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ error: validationErrors.join(', ') });
+    }
+    
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
     if (!user || !await bcrypt.compare(password, user.password)) {
       return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
     }
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    
+    const token = jwt.sign(
+      { userId: user._id }, 
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '24h' }
+    );
+    
+    res.json({ 
+      token, 
+      user: { 
+        id: user._id, 
+        name: user.name, 
+        email: user.email 
+      } 
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Erreur lors de la connexion:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
 
-// Routes des tests
-app.post('/api/tests/start', async (req, res) => {
+// Routes des tests (protégées)
+app.post('/api/tests/start', authenticateToken, async (req, res) => {
   try {
     const { testType } = req.body;
-    const questions = await Question.find({ type: testType }).limit(5);
+    
+    // Validation de l'entrée
+    if (!testType || !['raven', 'cattell', 'custom'].includes(testType)) {
+      return res.status(400).json({ error: 'Type de test invalide' });
+    }
+    
+    // Sélectionner des questions selon le niveau demandé
+    const { level = 'standard' } = req.body;
+    let questionCount = 20; // Par défaut: test standard
+    
+    if (level === 'short') questionCount = 12;    // Test rapide
+    else if (level === 'full') questionCount = 60;  // Test complet Raven
+    
+    // Sélectionner des questions de chaque série pour un test équilibré
+    const allQuestions = await Question.find({ type: testType });
+    let selectedQuestions = [];
+    
+    if (level === 'full') {
+      // Test complet: toutes les questions dans l'ordre des séries
+      selectedQuestions = allQuestions.sort((a, b) => {
+        const seriesOrder = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5 };
+        return seriesOrder[a.series] - seriesOrder[b.series];
+      });
+    } else {
+      // Test partiel: échantillonner chaque série
+      const series = ['A', 'B', 'C', 'D', 'E'];
+      const questionsPerSeries = Math.ceil(questionCount / 5);
+      
+      for (const s of series) {
+        const seriesQuestions = allQuestions.filter(q => q.series === s);
+        const shuffled = seriesQuestions.sort(() => 0.5 - Math.random());
+        selectedQuestions.push(...shuffled.slice(0, questionsPerSeries));
+      }
+      
+      // Mélanger le résultat final et limiter au nombre souhaité
+      selectedQuestions = selectedQuestions.sort(() => 0.5 - Math.random()).slice(0, questionCount);
+    }
+    
+    const questions = selectedQuestions;
+    
+    if (questions.length === 0) {
+      return res.status(404).json({ error: 'Aucune question trouvée pour ce type de test' });
+    }
+    
     res.json({ questions });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Erreur lors du démarrage du test:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
 
-app.post('/api/tests/submit', async (req, res) => {
+app.post('/api/tests/submit', authenticateToken, async (req, res) => {
   try {
-    const { userId, answers, testType } = req.body;
+    const { userId, answers, testType, testLevel = 'standard' } = req.body;
+    
+    // Validation des données
+    if (!userId || !answers || !Array.isArray(answers) || !testType) {
+      return res.status(400).json({ error: 'Données manquantes ou invalides' });
+    }
+    
+    // Vérifier que l'utilisateur correspond au token
+    if (req.user.userId !== userId) {
+      return res.status(403).json({ error: 'Accès non autorisé' });
+    }
+    
     const correctAnswers = answers.filter(answer => {
       return answer.selectedOption === answer.correctAnswer;
     }).length;
     
     const score = Math.round((correctAnswers / answers.length) * 100);
     
-    // Sauvegarder le résultat
-    await User.findByIdAndUpdate(userId, {
-      $push: {
-        testHistory: {
-          testType,
-          score,
-          date: new Date(),
-          answers
-        }
-      }
-    });
+    // Calculer la difficulté moyenne des questions répondues
+    const questionIds = answers.map(a => a.questionId);
+    const questions = await Question.find({ '_id': { $in: questionIds } });
+    const avgDifficulty = questions.reduce((sum, q) => sum + q.difficulty, 0) / questions.length;
     
-    res.json({ score, maxScore: answers.length, correctAnswers });
+    // Calculer l'IQ avec le nouveau système
+    const iqResult = IQCalculator.calculateIQ(
+      correctAnswers, 
+      answers.length, 
+      avgDifficulty, 
+      testLevel
+    );
+    
+    // Obtenir les conseils personnalisés et la comparaison
+    const advice = IQCalculator.getPersonalizedAdvice(iqResult.iq, testLevel);
+    const populationComparison = IQCalculator.getPopulationComparison(iqResult.iq);
+    
+    // Sauvegarder le résultat avec l'IQ
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: {
+          testHistory: {
+            testType,
+            testLevel,
+            score,
+            iq: iqResult.iq,
+            classification: iqResult.classification,
+            difficulty: avgDifficulty,
+            date: new Date(),
+            answers
+          }
+        }
+      },
+      { new: true }
+    );
+    
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    }
+    
+    res.json({ 
+      score, 
+      correctAnswers, 
+      totalQuestions: answers.length,
+      iq: iqResult.iq,
+      classification: iqResult.classification,
+      percentile: iqResult.percentile,
+      advice: advice,
+      populationComparison: populationComparison,
+      testLevel: testLevel,
+      difficulty: avgDifficulty
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Erreur lors de la soumission du test:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
 
-app.get('/api/results/:userId', async (req, res) => {
+app.get('/api/results/:userId', authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId);
+    const { userId } = req.params;
+    
+    // Vérifier que l'utilisateur correspond au token
+    if (req.user.userId !== userId) {
+      return res.status(403).json({ error: 'Accès non autorisé' });
+    }
+    
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: 'Utilisateur non trouvé' });
     }
@@ -185,7 +366,8 @@ app.get('/api/results/:userId', async (req, res) => {
       interpretation: getInterpretation(averageScore)
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Erreur lors de la récupération des résultats:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
 
@@ -209,6 +391,215 @@ app.get('/', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
+
+// Route pour supprimer un test spécifique
+app.delete('/api/tests/:userId/:testIndex', authenticateToken, async (req, res) => {
+  try {
+    const { userId, testIndex } = req.params;
+    
+    // Vérifier que l'utilisateur correspond au token
+    if (req.user.userId !== userId) {
+      return res.status(403).json({ error: 'Accès non autorisé' });
+    }
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    }
+    
+    const index = parseInt(testIndex);
+    if (index < 0 || index >= user.testHistory.length) {
+      return res.status(400).json({ error: 'Index de test invalide' });
+    }
+    
+    // Supprimer le test spécifique
+    user.testHistory.splice(index, 1);
+    await user.save();
+    
+    res.json({ message: 'Test supprimé avec succès', testsRemaining: user.testHistory.length });
+  } catch (error) {
+    console.error('Erreur lors de la suppression du test:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// Route pour supprimer tout l'historique
+app.delete('/api/tests/:userId/all', authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Vérifier que l'utilisateur correspond au token
+    if (req.user.userId !== userId) {
+      return res.status(403).json({ error: 'Accès non autorisé' });
+    }
+    
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: { testHistory: [] } },
+      { new: true }
+    );
+    
+    if (!user) {
+      return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    }
+    
+    res.json({ message: 'Tout l\'historique a été supprimé', testsRemaining: 0 });
+  } catch (error) {
+    console.error('Erreur lors de la suppression de l\'historique:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// Route pour obtenir les détails d'un test avec les bonnes réponses
+app.get('/api/tests/:userId/:testIndex/review', authenticateToken, async (req, res) => {
+  try {
+    const { userId, testIndex } = req.params;
+    console.log('🔍 Review request - userId:', userId, 'testIndex:', testIndex);
+    
+    // Vérifier que l'utilisateur correspond au token
+    if (req.user.userId !== userId) {
+      return res.status(403).json({ error: 'Accès non autorisé' });
+    }
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log('❌ User not found:', userId);
+      return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    }
+    
+    const index = parseInt(testIndex);
+    console.log('📊 Test history length:', user.testHistory.length, 'requested index:', index);
+    if (index < 0 || index >= user.testHistory.length) {
+      return res.status(400).json({ error: 'Index de test invalide' });
+    }
+    
+    const test = user.testHistory[index];
+    console.log('📝 Test data:', {
+      testType: test.testType,
+      answersCount: test.answers?.length,
+      firstAnswer: test.answers?.[0]
+    });
+    
+    // Récupérer les questions avec leurs bonnes réponses
+    const questionIds = test.answers.map(a => a.questionId);
+    console.log('🔍 Looking for question IDs:', questionIds);
+    const questions = await Question.find({ '_id': { $in: questionIds } });
+    console.log('📚 Found questions:', questions.length, '/', questionIds.length);
+    
+    // Créer un mapping pour les questions
+    const questionMap = {};
+    questions.forEach(q => {
+      questionMap[q._id.toString()] = q;
+    });
+    
+    // Si aucune question n'est trouvée, utilisons les premières questions disponibles
+    if (questions.length === 0) {
+      console.log('⚠️ Aucune question trouvée avec les IDs, récupération des premières questions disponibles...');
+      const fallbackQuestions = await Question.find({ type: 'raven' }).limit(test.answers.length);
+      console.log('🔄 Questions de remplacement trouvées:', fallbackQuestions.length);
+      
+      fallbackQuestions.forEach(q => {
+        questionMap[q._id.toString()] = q;
+      });
+    }
+
+    // Enrichir les réponses avec les détails des questions
+    const detailedAnswers = test.answers.map((answer, index) => {
+      let question = questionMap[answer.questionId];
+      
+      // Si pas de question trouvée, utiliser une question par défaut
+      if (!question && Object.keys(questionMap).length > 0) {
+        const availableQuestions = Object.values(questionMap);
+        question = availableQuestions[index % availableQuestions.length];
+        console.log('🔄 Utilisation question de remplacement pour index', index);
+      }
+      
+      const actualCorrectAnswer = question ? question.correctAnswer : answer.correctAnswer;
+      const isAnswerCorrect = answer.selectedOption === actualCorrectAnswer;
+      
+      return {
+        question: question ? question.content : 'Question non trouvée',
+        options: question ? question.options : [],
+        yourAnswer: answer.selectedOption,
+        correctAnswer: actualCorrectAnswer,
+        isCorrect: isAnswerCorrect,
+        difficulty: question ? question.difficulty : 0,
+        series: question ? question.series : 'N/A',
+        category: question ? question.category : 'N/A',
+        timeUsed: answer.timeUsed || 0,
+        explanation: getExplanation(question, { 
+          ...answer, 
+          selectedOption: answer.selectedOption,
+          correctAnswer: actualCorrectAnswer,
+          isCorrect: isAnswerCorrect
+        })
+      };
+    });
+    
+    res.json({
+      testInfo: {
+        testType: test.testType,
+        testLevel: test.testLevel || 'standard',
+        date: test.date,
+        score: test.score,
+        iq: test.iq,
+        classification: test.classification,
+        difficulty: test.difficulty
+      },
+      answers: detailedAnswers,
+      summary: {
+        totalQuestions: test.answers.length,
+        correctAnswers: detailedAnswers.filter(a => a.isCorrect).length,
+        averageDifficulty: questions.length > 0 ? questions.reduce((sum, q) => sum + q.difficulty, 0) / questions.length : 0
+      }
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des détails du test:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// Fonction pour générer des explications des réponses
+function getExplanation(question, answer) {
+  if (!question) return "Question non disponible.";
+  
+  const actualCorrectAnswer = question.correctAnswer;
+  const correctOption = question.options[actualCorrectAnswer];
+  const selectedOption = answer.selectedOption !== -1 ? question.options[answer.selectedOption] : "Aucune réponse";
+  
+  let explanation = `La bonne réponse était "${correctOption}".`;
+  
+  if (answer.selectedOption === actualCorrectAnswer) {
+    explanation = `✅ Correct ! ${explanation}`;
+  } else if (answer.selectedOption === -1) {
+    explanation = `⏰ Temps écoulé. ${explanation}`;
+  } else {
+    explanation = `❌ Vous avez répondu "${selectedOption}". ${explanation}`;
+  }
+  
+  // Ajouter des explications spécifiques selon le type de question
+  if (question.series === 'A' && question.difficulty <= 2) {
+    explanation += " Cette question de série A teste la reconnaissance de motifs simples.";
+  } else if (question.series === 'E' && question.difficulty >= 9) {
+    explanation += " Cette question de série E est de niveau très avancé et teste l'abstraction complexe.";
+  } else if (question.category === 'logique') {
+    explanation += " Cette question évalue votre raisonnement logique et analytique.";
+  } else if (question.category === 'spatial') {
+    explanation += " Cette question teste votre capacité de visualisation spatiale.";
+  }
+  
+  return explanation;
+}
+
+// Fonction d'interprétation des résultats
+function getInterpretation(averageScore) {
+  if (averageScore >= 90) return 'Excellent - Performance remarquable';
+  if (averageScore >= 80) return 'Très bon - Au-dessus de la moyenne';
+  if (averageScore >= 70) return 'Bon - Performance satisfaisante';
+  if (averageScore >= 60) return 'Correct - Dans la moyenne';
+  if (averageScore >= 50) return 'À améliorer - En dessous de la moyenne';
+  return 'À améliorer - Performance faible';
+}
 
 // Initialiser les questions au démarrage
 seedQuestions();

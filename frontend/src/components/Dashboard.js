@@ -13,10 +13,24 @@ function Dashboard({ user }) {
       </p>
       
       <div className="dashboard-buttons">
-        <button onClick={() => navigate('/test')}>
-          🧠 Commencer un test de QI
+        <button onClick={() => navigate('/test?level=short')}>
+          ⚡ Test rapide (12 questions)
           <div style={{ fontSize: '14px', marginTop: '5px', opacity: 0.8 }}>
-            Test basé sur les matrices de Raven
+            15 minutes - Échantillon de chaque série
+          </div>
+        </button>
+        
+        <button onClick={() => navigate('/test?level=standard')}>
+          🧠 Test standard (20 questions)
+          <div style={{ fontSize: '14px', marginTop: '5px', opacity: 0.8 }}>
+            25 minutes - Test équilibré recommandé
+          </div>
+        </button>
+        
+        <button onClick={() => navigate('/test?level=full')}>
+          🎯 Test complet Raven (60 questions)
+          <div style={{ fontSize: '14px', marginTop: '5px', opacity: 0.8 }}>
+            90 minutes - Test professionnel complet
           </div>
         </button>
         
