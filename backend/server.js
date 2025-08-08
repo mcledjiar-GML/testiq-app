@@ -55,7 +55,11 @@ const UserSchema = new mongoose.Schema({
     testType: String,
     score: Number,
     date: { type: Date, default: Date.now },
-    answers: Array
+    answers: Array,
+    iq: Number,
+    classification: Object,
+    testLevel: String,
+    difficulty: Number
   }]
 });
 
@@ -355,13 +359,47 @@ app.get('/api/results/:userId', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Utilisateur non trouvé' });
     }
     
-    const tests = user.testHistory;
-    const averageScore = tests.length > 0 
-      ? tests.reduce((sum, test) => sum + test.score, 0) / tests.length 
+    // Calculer le QI pour les tests qui n'en ont pas
+    const testsWithIQ = await Promise.all(user.testHistory.map(async (test) => {
+      if (test.iq) {
+        // Le test a déjà un QI, le retourner tel quel
+        return test;
+      } else {
+        // Calculer le QI pour les anciens tests
+        try {
+          const questionIds = test.answers.map(a => a.questionId);
+          const questions = await Question.find({ '_id': { $in: questionIds } });
+          
+          if (questions.length > 0) {
+            const correctAnswers = test.answers.filter((answer, index) => {
+              const question = questions.find(q => q._id.toString() === answer.questionId);
+              return question && answer.selectedOption === question.correctAnswer;
+            }).length;
+            
+            const avgDifficulty = questions.reduce((sum, q) => sum + q.difficulty, 0) / questions.length;
+            const iqResult = IQCalculator.calculateIQ(correctAnswers, test.answers.length, avgDifficulty, test.testLevel || 'standard');
+            
+            return {
+              ...test.toObject(),
+              iq: iqResult.iq,
+              classification: iqResult.classification,
+              difficulty: avgDifficulty
+            };
+          }
+        } catch (error) {
+          console.log('Erreur calcul QI pour test ancien:', error);
+        }
+        
+        return test;
+      }
+    }));
+
+    const averageScore = testsWithIQ.length > 0 
+      ? testsWithIQ.reduce((sum, test) => sum + test.score, 0) / testsWithIQ.length 
       : 0;
     
     res.json({
-      tests,
+      tests: testsWithIQ,
       averageScore,
       interpretation: getInterpretation(averageScore)
     });
@@ -536,15 +574,27 @@ app.get('/api/tests/:userId/:testIndex/review', authenticateToken, async (req, r
       };
     });
     
+    // Calculer le QI si pas disponible (pour les anciens tests)
+    let iqToShow = test.iq;
+    let classificationToShow = test.classification;
+    
+    if (!iqToShow && questions.length > 0) {
+      const correctCount = detailedAnswers.filter(a => a.isCorrect).length;
+      const avgDifficulty = questions.reduce((sum, q) => sum + q.difficulty, 0) / questions.length;
+      const iqResult = IQCalculator.calculateIQ(correctCount, test.answers.length, avgDifficulty, test.testLevel || 'standard');
+      iqToShow = iqResult.iq;
+      classificationToShow = iqResult.classification;
+    }
+
     res.json({
       testInfo: {
         testType: test.testType,
         testLevel: test.testLevel || 'standard',
         date: test.date,
         score: test.score,
-        iq: test.iq,
-        classification: test.classification,
-        difficulty: test.difficulty
+        iq: iqToShow,
+        classification: classificationToShow,
+        difficulty: test.difficulty || (questions.length > 0 ? questions.reduce((sum, q) => sum + q.difficulty, 0) / questions.length : 0)
       },
       answers: detailedAnswers,
       summary: {

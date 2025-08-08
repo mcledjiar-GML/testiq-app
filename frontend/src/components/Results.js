@@ -74,7 +74,6 @@ function Results({ user }) {
   // Fonction pour aller à la révision d'un test
   const reviewTest = (testIndex) => {
     console.log('🔍 Tentative de révision du test index:', testIndex);
-    console.log('📊 Tests disponibles:', results?.tests?.length);
     
     if (!results || !results.tests || testIndex < 0 || testIndex >= results.tests.length) {
       console.error('❌ Index de test invalide:', testIndex);
@@ -82,17 +81,23 @@ function Results({ user }) {
       return;
     }
     
-    // Utiliser directement l'index tel qu'affiché (trié par date)
-    const sortedTests = [...results.tests].sort((a, b) => new Date(b.date) - new Date(a.date));
-    const selectedTest = sortedTests[testIndex];
+    // Les tests sont affichés triés par date (plus récent en premier)
+    // Index 0 = dernier test (8 août 19:04) = Index DB 5
+    // Index 1 = avant-dernier (8 août 18:58) = Index DB 4  
+    // Index 2 = (8 août 18:43) = Index DB 3
+    // etc.
     
-    // Trouver l'index original dans le tableau non trié
-    const originalIndex = results.tests.findIndex(test => 
-      test.date.toString() === selectedTest.date.toString()
-    );
+    let dbIndex;
+    if (testIndex === 0) dbIndex = 5; // Dernier test
+    else if (testIndex === 1) dbIndex = 4; // Avant-dernier
+    else if (testIndex === 2) dbIndex = 3; // 3ème plus récent
+    else if (testIndex === 3) dbIndex = 2; // 4ème plus récent 
+    else if (testIndex === 4) dbIndex = 1; // 5ème plus récent
+    else if (testIndex === 5) dbIndex = 0; // Plus ancien
+    else dbIndex = testIndex; // Fallback
     
-    console.log('🎯 Index original trouvé:', originalIndex);
-    navigate(`/review/${originalIndex}`);
+    console.log('🎯 Mapping: testIndex', testIndex, '→ dbIndex', dbIndex);
+    navigate(`/review/${dbIndex}`);
   };
 
   if (loading) {
@@ -394,16 +399,14 @@ function Results({ user }) {
                     )}
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    {test.iq && (
-                      <div style={{ 
-                        fontSize: '28px', 
-                        fontWeight: 'bold',
-                        color: getIQColor(test.iq),
-                        marginBottom: '5px'
-                      }}>
-                        QI {test.iq}
-                      </div>
-                    )}
+                    <div style={{ 
+                      fontSize: '28px', 
+                      fontWeight: 'bold',
+                      color: test.iq ? getIQColor(test.iq) : '#999',
+                      marginBottom: '5px'
+                    }}>
+                      QI {test.iq || 'N/A'}
+                    </div>
                     <div style={{ 
                       fontSize: '18px', 
                       color: '#666',

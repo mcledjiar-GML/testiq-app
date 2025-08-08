@@ -6,8 +6,14 @@ function Review({ user }) {
   const [reviewData, setReviewData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [showDetailedExplanation, setShowDetailedExplanation] = useState(false);
   const navigate = useNavigate();
   const { testIndex } = useParams();
+
+  // Réinitialiser l'état des explications détaillées quand on change de question
+  useEffect(() => {
+    setShowDetailedExplanation(false);
+  }, [currentQuestion]);
 
   useEffect(() => {
     const fetchReviewData = async () => {
@@ -122,6 +128,110 @@ function Review({ user }) {
   const getAnswerIcon = (isCorrect, yourAnswer) => {
     if (yourAnswer === -1) return '⏰';
     return isCorrect ? '✅' : '❌';
+  };
+
+  // Fonction pour obtenir des explications approfondies selon le type de question
+  const getDetailedExplanation = (answer) => {
+    const series = answer?.series || 'A';
+    const difficulty = answer?.difficulty || 1;
+    const category = answer?.category || 'logique';
+    
+    let content = {};
+    
+    if (series === 'A' && difficulty <= 3) {
+      content = {
+        title: "🔍 Série A - Reconnaissance de motifs simples",
+        concept: "Les questions de série A testent votre capacité à identifier des motifs visuels et des séquences logiques simples.",
+        techniques: [
+          "Observez les changements de forme, taille ou position",
+          "Identifiez les séquences répétitives ou progressives", 
+          "Cherchez les symétries et rotations",
+          "Analysez l'ajout ou la suppression d'éléments"
+        ],
+        examples: "Dans cette question, regardez comment les formes évoluent de gauche à droite et de haut en bas. Y a-t-il une progression logique ?",
+        tips: "💡 Astuce : Commencez par identifier quel élément change (forme, position, nombre) puis trouvez la règle."
+      };
+    } else if (series === 'B' && difficulty <= 5) {
+      content = {
+        title: "🔄 Série B - Transformations et relations",
+        concept: "Les questions de série B impliquent des transformations plus complexes entre les éléments.",
+        techniques: [
+          "Identifiez les relations entre lignes et colonnes",
+          "Cherchez les transformations (rotation, miroir, inversion)",
+          "Analysez les opérations logiques (union, intersection)",
+          "Observez les changements de propriétés (couleur, texture)"
+        ],
+        examples: "Cette question teste votre capacité à voir comment deux éléments se combinent pour créer un troisième.",
+        tips: "💡 Astuce : Regardez d'abord horizontalement, puis verticalement pour identifier la règle de transformation."
+      };
+    } else if (series === 'C' && difficulty <= 7) {
+      content = {
+        title: "📐 Série C - Logique spatiale avancée",
+        concept: "Les questions de série C requièrent une analyse spatiale complexe et des raisonnements abstraits.",
+        techniques: [
+          "Décomposez les figures complexes en éléments simples",
+          "Identifiez les superpositions et intersections",
+          "Analysez les mouvements dans l'espace 3D",
+          "Cherchez les invariants (ce qui ne change pas)"
+        ],
+        examples: "Ces questions testent votre visualisation spatiale et votre capacité à manipuler mentalement des objets complexes.",
+        tips: "💡 Astuce : Utilisez votre imagination pour 'faire tourner' les formes mentalement."
+      };
+    } else if (series === 'D' && difficulty <= 8) {
+      content = {
+        title: "🧩 Série D - Raisonnement analogique",
+        concept: "Les questions de série D testent votre capacité à voir des analogies et des relations proportionnelles.",
+        techniques: [
+          "Établissez des relations 'A est à B ce que C est à ?'",
+          "Identifiez les transformations proportionnelles",
+          "Analysez les changements d'échelle et de proportion",
+          "Cherchez les correspondances entre éléments"
+        ],
+        examples: "Si la première forme se transforme d'une certaine manière, la seconde doit subir la même transformation.",
+        tips: "💡 Astuce : Formulez verbalement la relation : 'la première devient la seconde parce que...'."
+      };
+    } else if (series === 'E' && difficulty >= 9) {
+      content = {
+        title: "🚀 Série E - Abstraction maximale",
+        concept: "Les questions de série E représentent le niveau le plus élevé d'abstraction et de raisonnement complexe.",
+        techniques: [
+          "Combinez plusieurs types de raisonnement simultanément",
+          "Identifiez des règles multiples qui s'appliquent en même temps",
+          "Analysez les interactions entre différents systèmes",
+          "Utilisez l'élimination systématique des options"
+        ],
+        examples: "Ces questions peuvent combiner rotations, transformations logiques et relations spatiales complexes.",
+        tips: "💡 Astuce : Ne vous découragez pas - même les experts prennent du temps sur ces questions."
+      };
+    } else if (category === 'spatial') {
+      content = {
+        title: "🌐 Raisonnement spatial",
+        concept: "Ces questions testent votre capacité à manipuler et visualiser des objets dans l'espace.",
+        techniques: [
+          "Visualisez les rotations en 3D",
+          "Imaginez les pliages et dépliages",
+          "Analysez les vues sous différents angles",
+          "Utilisez des points de référence fixes"
+        ],
+        examples: "Imaginez que vous tenez l'objet dans vos mains et que vous le faites tourner.",
+        tips: "💡 Astuce : Utilisez vos mains pour mimer les mouvements si nécessaire."
+      };
+    } else {
+      content = {
+        title: "🎯 Raisonnement logique général",
+        concept: "Cette question teste vos capacités de raisonnement logique et d'analyse de motifs.",
+        techniques: [
+          "Décomposez le problème en étapes simples",
+          "Cherchez les régularités et exceptions",
+          "Utilisez l'élimination des réponses impossibles",
+          "Vérifiez votre réponse en appliquant la règle trouvée"
+        ],
+        examples: "Cherchez la logique sous-jacente qui gouverne l'évolution des éléments.",
+        tips: "💡 Astuce : Prenez le temps d'observer avant de chercher à résoudre rapidement."
+      };
+    }
+
+    return content;
   };
 
   return (
@@ -255,7 +365,7 @@ function Review({ user }) {
 
         {/* Texte de la question */}
         <h4 style={{ 
-          fontSize: '18px', 
+          fontSize: '34px', 
           fontWeight: 'bold', 
           marginBottom: '20px',
           color: '#333'
@@ -274,7 +384,7 @@ function Review({ user }) {
             let buttonStyle = {
               padding: '15px',
               borderRadius: '10px',
-              fontSize: '16px',
+              fontSize: '26px',
               fontWeight: '500',
               cursor: 'default',
               textAlign: 'left',
@@ -376,12 +486,115 @@ function Review({ user }) {
           </h5>
           <p style={{ 
             color: currentAnswer?.isCorrect ? '#155724' : '#721c24',
-            margin: 0,
+            margin: '0 0 15px 0',
             lineHeight: '1.5'
           }}>
             {currentAnswer?.explanation || 'Aucune explication disponible'}
           </p>
+          
+          {/* Bouton Savoir plus */}
+          <button
+            onClick={() => setShowDetailedExplanation(!showDetailedExplanation)}
+            style={{
+              background: '#17a2b8',
+              color: 'white',
+              border: 'none',
+              padding: '8px 15px',
+              borderRadius: '15px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              fontWeight: '500'
+            }}
+          >
+            📚 {showDetailedExplanation ? 'Masquer le cours' : 'Savoir plus'}
+          </button>
         </div>
+
+        {/* Explication détaillée */}
+        {showDetailedExplanation && (
+          <div style={{
+            background: '#e8f4fd',
+            border: '2px solid #17a2b8',
+            borderRadius: '15px',
+            padding: '25px',
+            marginBottom: '20px'
+          }}>
+            {(() => {
+              const detailedContent = getDetailedExplanation(currentAnswer);
+              return (
+                <>
+                  <h3 style={{ 
+                    color: '#0c5460', 
+                    marginBottom: '20px',
+                    fontSize: '24px',
+                    fontWeight: 'bold'
+                  }}>
+                    {detailedContent.title}
+                  </h3>
+                  
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>📖 Concept</h4>
+                    <p style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
+                      {detailedContent.concept}
+                    </p>
+                  </div>
+                  
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>🛠️ Techniques de résolution</h4>
+                    <ul style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
+                      {detailedContent.techniques?.map((technique, index) => (
+                        <li key={index} style={{ marginBottom: '5px' }}>{technique}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>💡 Application</h4>
+                    <p style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
+                      {detailedContent.examples}
+                    </p>
+                  </div>
+                  
+                  <div style={{
+                    background: '#b3d9ff',
+                    padding: '15px',
+                    borderRadius: '10px',
+                    border: '1px solid #17a2b8'
+                  }}>
+                    <p style={{ 
+                      color: '#0c5460', 
+                      margin: 0, 
+                      fontWeight: '500',
+                      fontSize: '16px'
+                    }}>
+                      {detailedContent.tips}
+                    </p>
+                  </div>
+                  
+                  <button
+                    onClick={() => setShowDetailedExplanation(false)}
+                    style={{
+                      background: '#6c757d',
+                      color: 'white',
+                      border: 'none',
+                      padding: '8px 15px',
+                      borderRadius: '15px',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      marginTop: '20px',
+                      fontWeight: '500'
+                    }}
+                  >
+                    ✖️ Fermer le cours
+                  </button>
+                </>
+              );
+            })()}
+          </div>
+        )}
       </div>
 
       {/* Navigation rapide */}

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint:*)",
+      "Bash(node:*)",
+      "Bash(npm run lint)",
+      "Bash(npm install)",
+      "Bash(dir)",
+      "Bash(npm install:*)",
+      "Bash(mongod:*)",
+      "Bash(docker:*)",
+      "Bash(copy:*)",
+      "Bash(cp:*)",
+      "Bash(curl:*)",
+      "Bash(npm start)",
+      "Bash(timeout 10 npm start)",
+      "Bash(taskkill:*)",
+      "Bash(timeout:*)",
+      "Bash(git add:*)",
+      "Bash(rm:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": []
+  }
+}

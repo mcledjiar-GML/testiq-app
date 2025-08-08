@@ -187,7 +187,7 @@ function Test({ user }) {
         borderRadius: '10px',
         marginBottom: '20px'
       }}>
-        <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px', lineHeight: '1.4' }}>
+        <h3 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '15px', lineHeight: '1.4' }}>
           {questions[currentQuestion]?.content || 
            questions[currentQuestion]?.question || 
            `Question ${currentQuestion + 1} - Contenu non disponible`}
@@ -203,7 +203,7 @@ function Test({ user }) {
                 borderRadius: '8px',
                 background: 'white',
                 cursor: 'pointer',
-                fontSize: '16px',
+                fontSize: '26px',
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
