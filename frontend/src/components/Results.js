@@ -28,30 +28,48 @@ function Results({ user }) {
   const deleteTest = async (testIndex) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) return;
     
-    console.log('🗑️ Suppression du test index:', testIndex);
+    // Calculer l'index réel dans la base de données
+    // Les tests sont triés par date (plus récent en premier) pour l'affichage
+    // mais la base de données les stocke dans l'ordre d'insertion
+    const totalTests = results.tests.length;
+    const dbIndex = totalTests - 1 - testIndex; // Inverser l'ordre
+    
+    console.log('🗑️ Suppression du test - testIndex:', testIndex, '→ dbIndex:', dbIndex, '(total:', totalTests, ')');
     console.log('👤 User ID:', user.id);
     
     setDeleteLoading(true);
     try {
       console.log('🔄 Envoi de la requête de suppression...');
-      const deleteResponse = await axios.delete(`/api/tests/${user.id}/${testIndex}`);
+      const deleteResponse = await axios.delete(`/api/tests/${user.id}/${dbIndex}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       console.log('✅ Réponse suppression:', deleteResponse.data);
       
-      // Recharger les résultats
+      // Attendre un peu avant de recharger pour s'assurer que la DB est mise à jour
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Recharger les résultats avec cache-busting
       console.log('🔄 Rechargement des résultats...');
-      const response = await axios.get(`/api/results/${user.id}`);
+      const response = await axios.get(`/api/results/${user.id}?t=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       console.log('📊 Nouveaux résultats:', response.data);
       setResults(response.data);
       
-      // Forcer le rechargement de la page pour éviter les problèmes de cache
       alert('Test supprimé avec succès !');
-      window.location.reload();
     } catch (error) {
       console.error('❌ Erreur lors de la suppression:', error);
       console.error('❌ Error response:', error.response);
       alert(`Erreur lors de la suppression du test: ${error.response?.data?.error || error.message}`);
+    } finally {
+      setDeleteLoading(false);
     }
-    setDeleteLoading(false);
   };
 
   // Fonction pour supprimer tout l'historique
@@ -81,22 +99,11 @@ function Results({ user }) {
       return;
     }
     
-    // Les tests sont affichés triés par date (plus récent en premier)
-    // Index 0 = dernier test (8 août 19:04) = Index DB 5
-    // Index 1 = avant-dernier (8 août 18:58) = Index DB 4  
-    // Index 2 = (8 août 18:43) = Index DB 3
-    // etc.
+    // Calculer l'index réel dans la base de données (même logique que deleteTest)
+    const totalTests = results.tests.length;
+    const dbIndex = totalTests - 1 - testIndex; // Inverser l'ordre
     
-    let dbIndex;
-    if (testIndex === 0) dbIndex = 5; // Dernier test
-    else if (testIndex === 1) dbIndex = 4; // Avant-dernier
-    else if (testIndex === 2) dbIndex = 3; // 3ème plus récent
-    else if (testIndex === 3) dbIndex = 2; // 4ème plus récent 
-    else if (testIndex === 4) dbIndex = 1; // 5ème plus récent
-    else if (testIndex === 5) dbIndex = 0; // Plus ancien
-    else dbIndex = testIndex; // Fallback
-    
-    console.log('🎯 Mapping: testIndex', testIndex, '→ dbIndex', dbIndex);
+    console.log('🎯 Révision - testIndex:', testIndex, '→ dbIndex:', dbIndex, '(total:', totalTests, ')');
     navigate(`/review/${dbIndex}`);
   };
 

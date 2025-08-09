@@ -440,21 +440,39 @@ app.delete('/api/tests/:userId/:testIndex', authenticateToken, async (req, res) 
       return res.status(403).json({ error: 'Accès non autorisé' });
     }
     
-    const user = await User.findById(userId);
-    if (!user) {
+    const index = parseInt(testIndex);
+    console.log(`🗑️ Tentative de suppression du test index ${index} pour user ${userId}`);
+    
+    // Utiliser findByIdAndUpdate avec $unset pour éviter les problèmes de concurrence
+    const result = await User.findByIdAndUpdate(
+      userId,
+      { $unset: { [`testHistory.${index}`]: 1 } },
+      { new: false }
+    );
+    
+    if (!result) {
       return res.status(404).json({ error: 'Utilisateur non trouvé' });
     }
     
-    const index = parseInt(testIndex);
-    if (index < 0 || index >= user.testHistory.length) {
+    if (index < 0 || index >= result.testHistory.length) {
       return res.status(400).json({ error: 'Index de test invalide' });
     }
     
-    // Supprimer le test spécifique
-    user.testHistory.splice(index, 1);
-    await user.save();
+    // Nettoyer les éléments null du tableau
+    await User.findByIdAndUpdate(
+      userId,
+      { $pull: { testHistory: null } }
+    );
     
-    res.json({ message: 'Test supprimé avec succès', testsRemaining: user.testHistory.length });
+    console.log(`✅ Test supprimé avec succès pour user ${userId}`);
+    
+    // Récupérer l'utilisateur mis à jour
+    const updatedUser = await User.findById(userId);
+    
+    res.json({ 
+      message: 'Test supprimé avec succès', 
+      testsRemaining: updatedUser.testHistory.length 
+    });
   } catch (error) {
     console.error('Erreur lors de la suppression du test:', error);
     res.status(500).json({ error: 'Erreur interne du serveur' });

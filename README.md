@@ -79,7 +79,49 @@ git clone https://github.com/votre-username/testiq-app.git
 cd testiq-app
 
 # Démarrer l'application
-docker-compose up -d
+./start_testiq.sh
+```
+
+### 🔄 Démarrage après Redémarrage PC
+
+Voici les étapes pour lancer l'application TestIQ après un redémarrage de votre PC :
+
+#### 1. Ouvrir un terminal
+- Ouvrez **PowerShell** ou **Git Bash** en tant qu'administrateur
+- Naviguez vers le dossier du projet :
+```bash
+cd C:\Users\mc_le\Documents\testiq-app
+```
+
+#### 2. Vérifier Docker
+```bash
+docker --version
+docker-compose --version
+```
+Si Docker n'est pas démarré, lancez **Docker Desktop**.
+
+#### 3. Lancer l'application
+```bash
+# Avec les valeurs par défaut (localhost)
+./start_testiq.sh
+
+# OU avec votre IP publique
+SERVER_IP=13.223.174.47 ./start_testiq.sh
+```
+
+#### 4. Accéder à l'application
+Après le démarrage, vous verrez les URLs :
+- **Local** : http://localhost:3000 (ou votre IP)
+- **Public** : http://testIQ.fitluxe.online:3000
+
+#### 5. En cas de problème
+```bash
+# Voir les logs
+docker-compose logs
+
+# Redémarrer les services
+docker-compose down
+./start_testiq.sh
 ```
 
 ### Accès à l'Application
@@ -87,9 +129,19 @@ docker-compose up -d
 - **API Backend** : http://localhost:5000  
 - **Base de données** : localhost:27017
 
+### Variables d'Environnement Configurables
+Le script `start_testiq.sh` supporte les variables suivantes :
+- `SERVER_IP` (défaut: localhost)
+- `FRONTEND_PORT` (défaut: 3000)
+- `API_PORT` (défaut: 5000)
+- `PUBLIC_DOMAIN` (défaut: testIQ.fitluxe.online)
+
 ### Commandes Utiles
 ```bash
-# Démarrer l'application
+# Démarrer l'application avec le script optimisé
+./start_testiq.sh
+
+# Démarrer manuellement
 docker-compose up -d
 
 # Arrêter l'application  

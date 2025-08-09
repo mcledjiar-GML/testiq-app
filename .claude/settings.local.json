@@ -18,7 +18,8 @@
       "Bash(timeout:*)",
       "Bash(git add:*)",
       "Bash(rm:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(./start_testiq.sh:*)"
     ],
     "deny": []
   }

@@ -5,8 +5,8 @@ const ravenQuestions = [
     type: 'raven',
     series: 'A',
     difficulty: 1,
-    content: 'Complétez le motif: Une forme simple avec une partie manquante',
-    options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+    content: 'Complétez le motif: Quel forme manque dans cette séquence?',
+    options: ['◐', '◑', '◒', '◓'],
     correctAnswer: 0,
     category: 'spatial',
     timeLimit: 45
