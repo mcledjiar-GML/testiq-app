@@ -19,7 +19,8 @@
       "Bash(git add:*)",
       "Bash(rm:*)",
       "Bash(git push:*)",
-      "Bash(./start_testiq.sh:*)"
+      "Bash(./start_testiq.sh:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
