@@ -21,12 +21,61 @@ Application web complète pour l'évaluation du quotient intellectuel (QI) basé
 - Historique complet de tous vos tests avec QI affiché
 - Analyse de progression dans le temps
 
-### 📚 Système d'Apprentissage Avancé
+### 🎓 Système d'Explications Pédagogiques Avancé ⭐ **NOUVEAU**
+
+#### **Structure d'Apprentissage Scientifique**
+- **Solution pas-à-pas** : Méthode "Repérer → Formaliser → Calculer" pour chaque question
+- **Diagnostic d'erreur personnalisé** : Analyse précise de pourquoi votre réponse semblait plausible
+- **Règles extraites** : Chaque question révèle une règle mathématique/logique spécifique
+- **Généralisation** : Extension des concepts pour un transfert d'apprentissage optimal
+
+#### **Taxonomie d'Erreurs Unifiée (12 Types)**
+- `diff_arithm` : Erreurs d'écart constant (suites arithmétiques)
+- `ratio_geom` : Erreurs de rapport constant (suites géométriques)  
+- `rotation_sens` : Confusion horaire/anti-horaire, angles incorrects
+- `superposition_confusion` : Combinaison de transformations multiples
+- `logique_formelle` : Implications, quantificateurs, syllogismes
+- `ensembles_cardinal` : Union/intersection, comptage
+- `analogie_arithm` : Relations (×, +) mal déduites
+- `fibonacci` : Suite de Fibonacci
+- `nombres_premiers` : Test de primalité
+- `concept_inconnu` : Nouveau concept non maîtrisé
+- `relation_ordre` : Transitivité, comparateurs
+- `rythme_incoherent` : Rythme non constant, sauts erronés
+
+#### **Nouveaux Concepts avec Micro-Fiches** 📚
+- **Factorielle** (5! = 120) : Formule, récurrence, applications
+- **Nombres de Catalan** : Parenthésages, formule combinatoire
+- **Logique temporelle** : Modalités □ (nécessaire) et ◇ (possible)
+- **Rotation 3D mentale** : Visualisation spatiale des cubes
+- **Opérateurs logiques XOR** : Équivalence, négation
+- **Carrés parfaits** : Suites exponentielles n²
+- **Nombres premiers** : Test de primalité, distribution
+- **Suites de Fibonacci** : Récurrence, propriétés
+
+#### **Plans Visuels Annotés** 🎨
+- **Overlays colorés** : Chaque règle surlignée avec sa couleur
+- **Animations** : "Surbrillance séquentielle des écarts +2"
+- **Légendes interactives** : Association couleur ↔ concept
+- **Types normalisés** : sequence, matrix, logic, superposition, rotation
+
+#### **Métacognition et Performance** ⏱️
+- **Temps cible vs utilisé** : Feedback sur votre vitesse de résolution
+- **Heuristiques express** : "Toujours calculer les écarts avant de répondre"
+- **Micro-drills immédiats** : 2 exercices similaires post-erreur
+- **Rappel J+1** : Révision espacée pour ancrage durable
+
+#### **Analyse des Distracteurs** 🎯
+- **4 options analysées** avec raisons psychologiques précises
+- **Émojis clarifiants** : ✅ Correcte / ❌ Piège cognitif
+- Exemple : "❌ Biais +1 (nombres consécutifs au lieu de pairs)"
+
+### 📚 Système d'Apprentissage Classique
 - **Révision Détaillée** : Analyse complète de chaque question
 - **Bouton "Savoir Plus"** : Cours approfondis pour chaque type de question
 - **Explications par Série** :
   - Série A : Reconnaissance de motifs simples
-  - Série B : Transformations et relations
+  - Série B : Transformations et relations  
   - Série C : Logique spatiale avancée
   - Série D : Raisonnement analogique
   - Série E : Abstraction maximale
@@ -173,6 +222,7 @@ testiq-app/
 │   ├── server.js          # Serveur principal
 │   ├── iq_calculator.js   # Système de calcul de QI
 │   └── raven_questions.js # Base de questions Raven
+├── explanations_audit_corrected.json  # 🆕 Explications pédagogiques (60 questions)
 ├── docker-compose.yml     # Configuration Docker
 └── README.md
 ```
@@ -181,6 +231,55 @@ testiq-app/
 - **Users** : Profils utilisateur et historique des tests
 - **Questions** : Questions Raven avec métadonnées (série, difficulté, etc.)
 - **TestHistory** : Résultats détaillés avec réponses et calculs de QI
+- **Explanations** 🆕 : Base d'explications pédagogiques avec diagnostic d'erreurs
+
+### 📊 Système d'Explications (Architecture JSON) 🆕
+
+#### Structure par Question
+```json
+{
+  "questionId": "Q2",
+  "serie": "A", 
+  "competence": "numerique",
+  "difficulte": 1,
+  "correctAnswer": "10",
+  "solutionPasAPas": [
+    "Repérer : 2→4→6→8, écart constant de +2",
+    "Formaliser : Suite arithmétique u(n) = 2n", 
+    "Calculer : 8 + 2 = 10"
+  ],
+  "regleExtraite": "Différence constante +2 ⇒ suite arithmétique",
+  "generalisation": "Écart constant +k ⇔ suite arithmétique de raison k",
+  "diagnosticErreur": {
+    "type": "diff_arithm",
+    "pourquoiPlausible": "Si '9': confusion +1 au lieu de +2"
+  },
+  "analyseDistracteurs": [
+    {"option": "9", "raisonChoixFrequent": "❌ Biais +1"},
+    {"option": "10", "raisonChoixFrequent": "✅ Reconnaissance +2"}
+  ],
+  "nouveauConcept": {
+    "isNew": false,
+    "fiche": null
+  },
+  "planVisuel": {
+    "type": "sequence", 
+    "overlays": [...],
+    "animation": "Surbrillance séquentielle +2"
+  },
+  "metacognition": {
+    "tempsCibleSec": 30,
+    "heuristiqueExpress": "Calculer les écarts d'abord",
+    "microDrillsImmediats": [...],
+    "rappelJPlus1": {...}
+  }
+}
+```
+
+#### Répartition des Compétences (60 Questions)
+- **15 questions numériques** : Suites, calculs, séquences
+- **30 questions spatiales** : Matrices, rotations, transformations  
+- **15 questions logiques** : Implications, ensembles, relations
 
 ## 🧠 Système de Calcul de QI
 
@@ -203,17 +302,33 @@ testiq-app/
 
 ### Pour les Étudiants
 - Découverte des tests psychométriques
-- Compréhension du raisonnement logique
+- Compréhension du raisonnement logique  
 - Développement des capacités d'analyse
+- **🆕 Apprentissage par l'erreur** : Diagnostic précis et remédiation
 
 ### Pour les Professionnels
 - Évaluation préliminaire des capacités cognitives
 - Formation aux tests de QI standardisés
 - Recherche en psychologie cognitive
+- **🆕 Analyse fine des patterns d'erreurs** cognitives
+
+### Pour les Chercheurs 🆕
+- **Taxonomie d'erreurs standardisée** : 12 types répertoriés
+- **Données de métacognition** : Temps, heuristiques, difficultés
+- **Transfert d'apprentissage** : Mesure de l'efficacité pédagogique
 
 ## 🔄 Mises à Jour Récentes
 
-### Version Actuelle
+### ⭐ Version 2.0 - Système d'Explications Avancé (Janvier 2025)
+- 🚀 **Explications pédagogiques complètes** pour les 60 questions
+- 🎯 **Diagnostic d'erreur personnalisé** avec analyse psychologique
+- 📚 **8 micro-fiches de nouveaux concepts** (Factorielle, Catalan, etc.)
+- 🎨 **Plans visuels annotés** avec animations et overlays colorés
+- ⏱️ **Métacognition avancée** : temps cible, heuristiques, micro-drills
+- 🔍 **Taxonomie d'erreurs unifiée** : 12 types scientifiquement classifiés
+- ✅ **Structure "Repérer→Formaliser→Calculer"** pour transfert optimal
+
+### Version 1.5
 - ✅ Calcul automatique du QI pour tous les tests
 - ✅ Affichage du QI actuel dans le tableau de bord
 - ✅ Système d'apprentissage avec cours intégrés
@@ -246,7 +361,8 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 - Matrices progressives de Raven pour la méthodologie
 - Communauté open source pour les outils utilisés
 - Recherches en psychométrie pour les standards de QI
+- **🆕 Recherches en sciences cognitives** pour la taxonomie d'erreurs
 
 ---
 
-**Développé avec ❤️ pour l'évaluation intelligente du QI**
+**Développé avec ❤️ pour l'évaluation intelligente du QI et l'apprentissage par l'erreur**
