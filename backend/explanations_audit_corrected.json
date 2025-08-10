@@ -3979,99 +3979,117 @@
       "difficulte": 7,
       "correctAnswer": "⧊",
       "solutionPasAPas": [
-        "Étape 1 — Analyser : Transformation 4D - identifier les patterns complexes",
-        "Étape 2 — Appliquer : utiliser les règles avancées de Transformation 4D",
-        "Étape 3 — Synthétiser : ⧊ résulte de l'application experte"
+        "Étape 1 — Repérer : Hypercube (tesseract) subissant une rotation 4D selon l'axe (w,x)",
+        "Étape 2 — Formaliser : Matrice de rotation 4D × vecteur position 4D → nouvelles coordonnées (x',y',z',w')",
+        "Étape 3 — Projeter : Projeter le tesseract transformé de l'espace 4D vers l'espace 3D puis 2D pour visualisation"
       ],
-      "regleExtraite": "Concept avancé : Transformation 4D",
-      "generalisation": "Les questions de niveau 7 intègrent Transformation 4D",
+      "regleExtraite": "Rotation 4D : R₄ₓ(θ) × Hypercube → Nouvelle orientation spatiale dans l'hyperespace",
+      "generalisation": "Toute transformation 4D suit : Objet⁴ᴰ → Matrice₄ₓ₄ → Objet'⁴ᴰ → Projection₃ᴰ → Visualisation₂ᴰ",
       "diagnosticErreur": {
-        "type": "concept_inconnu",
-        "pourquoiPlausible": "Méconnaissance de Transformation 4D ou complexité cognitive élevée"
+        "type": "superposition_confusion",
+        "pourquoiPlausible": "Rotation 4D = rotation 3D classique + dimension temporelle/spatiale supplémentaire difficile à visualiser mentalement"
       },
       "analyseDistracteurs": [
         {
-          "option": "Option A",
-          "raisonChoixFrequent": "Approche simplifiée du concept"
+          "option": "🔄",
+          "raisonChoixFrequent": "❌ Rotation 3D simple (ignor la 4ème dimension w)"
         },
         {
-          "option": "Option B",
-          "raisonChoixFrequent": "Application partielle des règles"
+          "option": "⬛",
+          "raisonChoixFrequent": "❌ Vision 2D du cube (perte de profondeur et d'hyperprofondeur)"
         },
         {
           "option": "⧊",
-          "raisonChoixFrequent": "Maîtrise complète de Transformation 4D"
+          "raisonChoixFrequent": "✅ Tesseract correctement projeté après rotation 4D complète"
         },
         {
-          "option": "Option D",
-          "raisonChoixFrequent": "Confusion conceptuelle"
+          "option": "◊",
+          "raisonChoixFrequent": "❌ Projection déformée (matrice de transformation incorrecte)"
         }
       ],
       "nouveauConcept": {
         "isNew": true,
         "fiche": {
-          "titre": "Transformation 4D",
-          "explication90s": "Transformation 4D est un concept avancé nécessitant une compréhension approfondie...",
-          "exempleTravaille": "Exemple concret d'application de Transformation 4D",
+          "titre": "🌌 Transformations Géométriques 4D",
+          "explication90s": "Un tesseract (hypercube 4D) possède 16 sommets, 32 arêtes, 24 faces carrées et 8 cubes 3D. En rotation 4D, nous appliquons une matrice 4×4 : R₄ = [[cos θ, -sin θ, 0, 0], [sin θ, cos θ, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]. Le résultat est projeté en 3D puis 2D selon : P₂ᴰ(x,y,z,w) = (x/(1-w/d), y/(1-w/d)) où d=distance observateur.",
+          "exempleTravaille": "🎯 Exemple : Tesseract aux coordonnées (±1,±1,±1,±1) → Rotation 45° axe (x,w) → Nouveaux sommets → Projection perspective → Visualisation 2D avec lignes cachées",
           "quizAncrage": {
-            "question": "Comment applique-t-on Transformation 4D ?",
+            "question": "🧠 Combien un tesseract a-t-il de cubes 3D ?",
             "options": [
-              "Approche A",
-              "Approche B",
-              "Approche C",
-              "Approche D"
+              "6 cubes (comme les faces d'un cube)",
+              "8 cubes (structure hyperspatiale)",
+              "12 cubes (arêtes × dimension)",
+              "16 cubes (nombre de sommets)"
             ],
-            "bonneReponse": "Approche B",
-            "feedbackBonne": "Correct! Transformation 4D s'applique de cette façon",
-            "feedbackMauvaise": "Transformation 4D nécessite une approche systématique"
+            "bonneReponse": "8 cubes (structure hyperspatiale)",
+            "feedbackBonne": "✅ Exact ! Un tesseract contient 8 cubes 3D, comme un cube contient 6 faces 2D",
+            "feedbackMauvaise": "❌ Un tesseract = hypercube 4D composé de 8 cubes 3D interconnectés dans l'hyperespace"
           }
         }
       },
       "planVisuel": {
-        "type": "advanced_spatial",
+        "type": "4d_transformation",
         "overlays": [
           {
-            "cible": "concept",
+            "cible": "hypercube_initial",
             "action": "highlight",
-            "element": "Transformation 4D",
-            "couleur": "#9b59b6"
+            "element": "tesseract_wireframe",
+            "couleur": "#3498db"
           },
           {
-            "cible": "application",
-            "action": "emphasize",
-            "element": "solution",
+            "cible": "rotation_matrix",
+            "action": "emphasize", 
+            "element": "matrice_4x4_rotation",
+            "couleur": "#e74c3c"
+          },
+          {
+            "cible": "projection_3d",
+            "action": "animate",
+            "element": "perspective_projection",
+            "couleur": "#f39c12"
+          },
+          {
+            "cible": "projection_2d",
+            "action": "show",
+            "element": "visualisation_finale",
             "couleur": "#27ae60"
           }
         ],
+        "animation": "Rotation progressive du tesseract avec projections simultanées 3D→2D",
         "legendeCouleurs": {
-          "concept": "#9b59b6",
-          "solution": "#27ae60"
+          "tesseract": "#3498db",
+          "rotation": "#e74c3c", 
+          "projection_3d": "#f39c12",
+          "resultat_2d": "#27ae60"
         }
       },
       "metacognition": {
-        "tempsCibleSec": 150,
-        "heuristiqueExpress": "Décomposer Transformation 4D en sous-problèmes",
+        "tempsCibleSec": 180,
+        "heuristiqueExpress": "🌐 Visualiser : Hypercube → Rotation 4D → Projection 3D → Vue 2D",
         "microDrillsImmediats": [
           {
-            "type": "transformation_4d",
+            "type": "rotations_hypercube",
             "param": {
-              "niveau": "avance",
-              "variantes": 2
+              "axes_rotation": ["wx", "xy", "yz", "zw"],
+              "angles": [45, 90, 180],
+              "variantes": 3
             }
           },
           {
-            "type": "concepts_experts",
+            "type": "projections_dimensionnelles",
             "param": {
-              "domaine": "spatial",
-              "variantes": 1
+              "from_dimension": 4,
+              "to_dimension": 2,
+              "types_projection": ["perspective", "orthogonale"],
+              "variantes": 2
             }
           }
         ],
         "rappelJPlus1": {
-          "type": "revision_concepts",
+          "type": "geometrie_4d_avancee",
           "param": {
-            "concept": "Transformation 4D",
-            "variantes": 1
+            "concepts": ["tesseract", "rotation_4d", "projection_perspective"],
+            "variantes": 2
           }
         }
       },

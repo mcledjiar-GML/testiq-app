@@ -20,7 +20,8 @@
       "Bash(rm:*)",
       "Bash(git push:*)",
       "Bash(./start_testiq.sh:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(winpty docker exec -it testiq-app-backend-1 ls -la /app/)"
     ],
     "deny": []
   }

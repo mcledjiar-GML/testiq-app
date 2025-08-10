@@ -268,8 +268,144 @@ class VisualGenerator:
     
     def generate_spatial_transformation_visual(self, question_data: Dict) -> str:
         """Génère des visuels pour transformations spatiales et géométriques"""
+        content = question_data.get('content', '').lower()
+        
+        # Détecter si c'est une transformation 4D
+        if '4d' in content or '4 dimension' in content:
+            return self._generate_4d_transformation_visual()
+        else:
+            return self._generate_3d_transformation_visual()
+    
+    def _generate_4d_transformation_visual(self) -> str:
+        """Génère un visuel spécialisé pour les transformations 4D"""
+        fig = plt.figure(figsize=(18, 10), dpi=self.config.dpi)
+        fig.suptitle('🌌 Transformation 4D : Hypercube → Projection 3D → Projection 2D', 
+                     fontsize=self.config.title_size, fontweight='bold', y=0.95)
+        
+        # Créer une grille de 3 sous-graphiques
+        ax1 = plt.subplot(131)
+        ax2 = plt.subplot(132)  
+        ax3 = plt.subplot(133)
+        
+        # === HYPERCUBE 4D (représentation conceptuelle) ===
+        ax1.set_title('📐 Hypercube 4D (Tesseract)\nConceptuel', fontsize=14, pad=20)
+        
+        # Simuler un hypercube avec deux cubes connectés
+        # Cube 1 (dimension w=0)
+        cube1_vertices = np.array([
+            [0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0],  # face z=0
+            [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]   # face z=1
+        ]) * 0.8
+        
+        # Cube 2 (dimension w=1) - décalé
+        cube2_vertices = cube1_vertices + np.array([0.5, 0.5, 0.3])
+        
+        # Projection 3D simple
+        def project_4d_to_3d(vertices, w_offset=0):
+            # Simuler projection 4D->3D avec perspective
+            w_factor = 0.7 + w_offset * 0.3
+            return vertices * w_factor
+        
+        proj1 = project_4d_to_3d(cube1_vertices, 0)
+        proj2 = project_4d_to_3d(cube2_vertices, 1)
+        
+        # Dessiner les cubes avec transparence
+        self._draw_cube_wireframe(ax1, proj1, self.config.accent_color, alpha=0.7, linewidth=2)
+        self._draw_cube_wireframe(ax1, proj2, self.config.success_color, alpha=0.7, linewidth=2)
+        
+        # Connexions entre cubes (arêtes 4D)
+        for i in range(8):
+            ax1.plot([proj1[i, 0], proj2[i, 0]], 
+                    [proj1[i, 1], proj2[i, 1]], 
+                    color=self.config.warning_color, alpha=0.5, linewidth=1, linestyle='--')
+        
+        ax1.text(0.5, -0.3, '2 cubes 3D\nconnectés = Hypercube 4D', 
+                ha='center', va='center', fontsize=12, fontweight='bold',
+                bbox=dict(boxstyle="round,pad=0.3", facecolor=self.config.accent_color, alpha=0.2))
+        
+        ax1.set_xlim(-0.5, 2)
+        ax1.set_ylim(-0.5, 2)
+        ax1.axis('off')
+        
+        # === ROTATION 4D ===
+        ax2.set_title('🔄 Rotation 4D\n(axes xy, zw)', fontsize=14, pad=20)
+        
+        # Montrer la rotation avec matrices
+        angles = np.linspace(0, np.pi/2, 4)
+        colors = [self.config.accent_color, self.config.success_color, 
+                 self.config.warning_color, self.config.error_color]
+        
+        for i, (angle, color) in enumerate(zip(angles, colors)):
+            # Rotation 4D simulée
+            cos_a, sin_a = np.cos(angle), np.sin(angle)
+            
+            # Matrice de rotation 4D (plan xy-zw)
+            rotation_factor = np.array([
+                [cos_a, -sin_a, 0],
+                [sin_a, cos_a, 0], 
+                [0, 0, 1]
+            ])
+            
+            rotated_vertices = (proj1 @ rotation_factor.T) + [i*0.3, 0, 0]
+            
+            # Dessiner étapes de rotation
+            self._draw_cube_wireframe(ax2, rotated_vertices, color, alpha=0.8, linewidth=2)
+            
+            # Label de l'étape
+            ax2.text(i*0.3 + 0.4, -0.4, f'{int(np.degrees(angle))}°', 
+                    ha='center', va='center', fontsize=10, fontweight='bold', color=color)
+        
+        # Flèches de progression
+        for i in range(3):
+            ax2.annotate('', xy=((i+1)*0.3 - 0.1, 0.5), xytext=(i*0.3 + 0.5, 0.5),
+                        arrowprops=dict(arrowstyle='->', lw=2, color='gray'))
+        
+        ax2.text(0.6, -0.8, 'Rotation progressive dans l\'hyperespace', 
+                ha='center', va='center', fontsize=12, fontweight='bold',
+                bbox=dict(boxstyle="round,pad=0.3", facecolor=self.config.success_color, alpha=0.2))
+        
+        ax2.set_xlim(-0.2, 1.4)
+        ax2.set_ylim(-1, 1.5)
+        ax2.axis('off')
+        
+        # === PROJECTION FINALE 2D ===
+        ax3.set_title('📱 Projection 2D finale\n(ce qu\'on voit)', fontsize=14, pad=20)
+        
+        # Projection finale avec perspective
+        final_vertices = rotated_vertices[:, :2]  # Prendre seulement x,y
+        
+        # Dessiner la projection 2D avec détails
+        self._draw_2d_projection(ax3, final_vertices, self.config.error_color)
+        
+        # Ajouter annotations sur les sommets
+        for i, vertex in enumerate(final_vertices[:4]):  # Face avant
+            ax3.scatter(vertex[0], vertex[1], s=60, c=self.config.error_color, alpha=0.8, zorder=5)
+            ax3.text(vertex[0]+0.05, vertex[1]+0.05, f'V{i+1}', 
+                    fontsize=10, fontweight='bold', color=self.config.error_color)
+        
+        # Explication
+        ax3.text(0.4, -0.6, 'Résultat final :\nProjection 2D de la rotation 4D', 
+                ha='center', va='center', fontsize=12, fontweight='bold',
+                bbox=dict(boxstyle="round,pad=0.3", facecolor=self.config.error_color, alpha=0.2))
+        
+        ax3.set_xlim(-0.3, 1.1)
+        ax3.set_ylim(-0.8, 1.1)
+        ax3.set_aspect('equal')
+        ax3.axis('off')
+        
+        # Note explicative en bas
+        fig.text(0.5, 0.02, 
+                '💡 En 4D, on peut faire tourner un objet selon 6 axes différents (xy, xz, xw, yz, yw, zw)', 
+                ha='center', va='bottom', fontsize=12, fontweight='bold',
+                bbox=dict(boxstyle="round,pad=0.5", facecolor='#f0f8ff', alpha=0.8))
+        
+        plt.tight_layout()
+        return self._save_to_base64(fig)
+    
+    def _generate_3d_transformation_visual(self) -> str:
+        """Génère un visuel pour les transformations 3D classiques"""
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8), dpi=self.config.dpi)
-        fig.suptitle('🌐 Transformation Spatiale 3D/4D', 
+        fig.suptitle('🌐 Transformation Spatiale 3D', 
                      fontsize=self.config.title_size, fontweight='bold')
         
         # === OBJET ORIGINAL ===
@@ -590,6 +726,36 @@ class VisualGenerator:
         ax.set_ylabel('Valeur')
         
         return self._save_to_base64(plt.gcf())
+    
+    def _draw_cube_wireframe(self, ax, vertices, color, alpha=0.7, linewidth=2):
+        """Dessine un cube en fil de fer"""
+        # Arêtes d'un cube
+        edges = [
+            (0, 1), (1, 2), (2, 3), (3, 0),  # face inférieure
+            (4, 5), (5, 6), (6, 7), (7, 4),  # face supérieure  
+            (0, 4), (1, 5), (2, 6), (3, 7)   # arêtes verticales
+        ]
+        
+        for edge in edges:
+            start, end = edge
+            ax.plot([vertices[start, 0], vertices[end, 0]],
+                   [vertices[start, 1], vertices[end, 1]],
+                   color=color, alpha=alpha, linewidth=linewidth)
+    
+    def _draw_2d_projection(self, ax, vertices, color):
+        """Dessine une projection 2D avec polygone"""
+        # Ordre pour dessiner le polygone (face avant d'un cube projeté)
+        face_order = [0, 1, 2, 3, 0]  # Fermer le polygone
+        
+        # Coordonnées du polygone
+        polygon_x = [vertices[i, 0] for i in face_order]
+        polygon_y = [vertices[i, 1] for i in face_order]
+        
+        # Dessiner le contour
+        ax.plot(polygon_x, polygon_y, color=color, linewidth=3, alpha=0.8)
+        
+        # Remplir légèrement
+        ax.fill(polygon_x, polygon_y, color=color, alpha=0.1)
     
     def _save_to_base64(self, fig) -> str:
         """Convertit la figure matplotlib en base64 pour intégration web"""
