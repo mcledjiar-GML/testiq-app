@@ -137,7 +137,7 @@ const ravenQuestions = [
     type: 'raven',
     series: 'B',
     difficulty: 3,
-    content: 'Matrice 2x2 avec rotation: trouvez l\'élément manquant',
+    content: 'Matrice 2x2 avec rotation: trouvez l\'élément manquant\n\n🔲 MATRICE 2×2:\n[  ↗  ][  ↓  ]\n[  ↑  ][  ?  ]\n\n↗ → ↓ = Rotation 90° horaire ↻\nDonc: ↑ → ?',
     options: ['⬆', '⬇', '⬅', '➡'],
     correctAnswer: 3,
     category: 'spatial',

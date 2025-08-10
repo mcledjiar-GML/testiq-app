@@ -2,13 +2,14 @@ version: '3.8'
 
 services:
   backend:
-    image: node:18
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     working_dir: /app
     volumes:
       - ./backend:/app
     ports:
       - "5000:5000"
-    command: sh -c "npm install && npm start"
     env_file:
       - ./backend/.env
     environment:

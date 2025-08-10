@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const visualService = require('./visual_service');
 require('dotenv').config();
 
 const app = express();
@@ -106,6 +107,10 @@ const path = require('path');
 const explanationsFilePath = path.join(__dirname, 'explanations_audit_corrected.json');
 let advancedExplanations = {};
 
+// Charger les nouvelles explications pédagogiques v2.1 (version complète)
+const pedagogicalCompletePath = '/app/raven_explanations_complete_v2.1.json';
+let pedagogicalExplanations = {};
+
 try {
   const explanationsData = JSON.parse(fs.readFileSync(explanationsFilePath, 'utf8'));
   
@@ -120,6 +125,19 @@ try {
   }
 } catch (error) {
   console.warn('⚠️ Impossible de charger les explications avancées:', error.message);
+}
+
+// Charger le système complet d'explications pédagogiques v2.1
+try {
+  const pedagogicalData = JSON.parse(fs.readFileSync(pedagogicalCompletePath, 'utf8'));
+  
+  if (pedagogicalData.items) {
+    pedagogicalExplanations = pedagogicalData.items;
+    console.log(`🎓 ${Object.keys(pedagogicalExplanations).length} explications pédagogiques v2.1 chargées`);
+    console.log(`📚 Structure: rule → steps → pitfalls → verify → hints (${pedagogicalData.hintsPolicy})`);
+  }
+} catch (error) {
+  console.warn('⚠️ Impossible de charger le système pédagogique complet v2.1:', error.message);
 }
 
 // Création automatique de questions de test
@@ -682,7 +700,7 @@ app.get('/api/tests/:userId/:testIndex/review', authenticateToken, async (req, r
 let questionExplanationMapping = {};
 let mappingStats = {};
 try {
-  const mappingData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'complete_question_explanation_mapping.json'), 'utf8'));
+  const mappingData = JSON.parse(fs.readFileSync('/app/complete_question_explanation_mapping.json', 'utf8'));
   
   questionExplanationMapping = mappingData.mappings.reduce((acc, mapping) => {
     acc[mapping.questionContent] = {
@@ -709,7 +727,7 @@ try {
   console.warn('⚠️ Impossible de charger le mapping complet question→explication:', error.message);
   // Fallback vers l'ancien mapping partiel si disponible
   try {
-    const fallbackData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'question_explanation_mapping.json'), 'utf8'));
+    const fallbackData = JSON.parse(fs.readFileSync('/app/question_explanation_mapping.json', 'utf8'));
     questionExplanationMapping = fallbackData.mappings.reduce((acc, mapping) => {
       acc[mapping.questionContent] = mapping;
       return acc;
@@ -756,22 +774,95 @@ app.post('/api/explanation', authenticateToken, (req, res) => {
     const correctExplanationId = getCorrectExplanationId(questionContent, questionId?.replace('Q', ''));
     console.log(`🎯 ID d'explication corrigé: ${questionId} → ${correctExplanationId}`);
     
-    const explanation = advancedExplanations[correctExplanationId];
+    // Priorité au nouveau système pédagogique v2.1
+    const pedagogicalExp = pedagogicalExplanations[correctExplanationId];
+    const advancedExp = advancedExplanations[correctExplanationId];
     
-    if (!explanation) {
+    if (pedagogicalExp) {
+      // Utiliser le nouveau système pédagogique (rule → steps → pitfalls → verify → hints)
+      console.log(`🎓 Explication pédagogique v2.1 ${correctExplanationId} trouvée`);
+      
+      // Créer une explication hybride avec les deux systèmes
+      const hybridExplanation = {
+        ...advancedExp, // Garder les données existantes
+        pedagogy: {
+          rule: pedagogicalExp.rule,
+          steps: pedagogicalExp.steps,
+          pitfalls: pedagogicalExp.pitfalls,
+          verify: pedagogicalExp.verify,
+          hints: pedagogicalExp.hints
+        }
+      };
+      
+      res.json({
+        success: true,
+        explanation: hybridExplanation
+      });
+    } else if (advancedExp) {
+      // Fallback vers l'ancien système
+      console.log(`✅ Explication classique ${correctExplanationId} trouvée`);
+      res.json({
+        success: true,
+        explanation: advancedExp
+      });
+    } else {
       console.log(`❌ Aucune explication trouvée pour ${correctExplanationId}. Explications disponibles:`, Object.keys(advancedExplanations).slice(0, 5));
       return res.status(404).json({ error: 'Explication non trouvée pour cette question' });
     }
     
-    console.log(`✅ Explication ${correctExplanationId} trouvée et envoyée`);
-    res.json({
-      success: true,
-      explanation: explanation
-    });
-    
   } catch (error) {
     console.error('❌ Erreur lors de la récupération de l\'explication:', error);
     res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// Route pour générer des visuels professionnels
+app.post('/api/visual', authenticateToken, async (req, res) => {
+  try {
+    const { questionId, questionContent, category } = req.body;
+    console.log(`🎨 Demande de visuel pour questionId: ${questionId}, contenu: "${questionContent?.substring(0, 50)}..."`);
+    
+    const questionData = {
+      content: questionContent,
+      category: category || 'general'
+    };
+    
+    // Vérifier si un visuel est nécessaire pour cette question
+    if (!visualService.requiresVisual(questionData)) {
+      return res.json({
+        success: true,
+        hasVisual: false,
+        message: 'Aucun visuel requis pour cette question'
+      });
+    }
+    
+    // Générer le visuel via Python
+    const visualBase64 = await visualService.generateVisual(questionId, questionData);
+    
+    if (visualBase64) {
+      console.log(`✅ Visuel généré pour ${questionId}`);
+      res.json({
+        success: true,
+        hasVisual: true,
+        visual: visualBase64,
+        format: 'base64'
+      });
+    } else {
+      console.log(`⚠️ Impossible de générer le visuel pour ${questionId}`);
+      res.json({
+        success: true,
+        hasVisual: false,
+        message: 'Visuel non disponible'
+      });
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de la génération du visuel:', error);
+    res.status(500).json({ 
+      success: false,
+      hasVisual: false,
+      error: 'Erreur interne du serveur' 
+    });
   }
 });
 

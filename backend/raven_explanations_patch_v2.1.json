@@ -1,0 +1,104 @@
+{
+  "schema": "raven-expl-pedagogy-v1",
+  "version": "2.1",
+  "generatedDate": "2025-08-10T16:30:00Z",
+  "hintsPolicy": "4-step (progressive reveal)",
+  "items": {
+    "Q1": {
+      "rule": "Alternance du côté rempli (gauche/droite) sur un disque semi-rempli.",
+      "steps": "Lister les éléments dans l'ordre, repérer le motif gauche/droite, puis projeter l'orientation suivante.",
+      "pitfalls": "Confondre rotation (90°) et miroir gauche↔droite ; ignorer la parité d'alternance.",
+      "verify": "La parité gauche/droite est respectée avec ◐.",
+      "hints": [
+        "Observe l'orientation du demi-disque.",
+        "Repère si ça alterne gauche/droite.",
+        "Compte la parité pour la position manquante.",
+        "Choisis la demi-lune orientée comme attendu (◐)."
+      ]
+    },
+    "Q2": {
+      "rule": "Suite arithmétique de raison +2.",
+      "steps": "Calcule l'écart entre deux termes consécutifs et prolonge.",
+      "pitfalls": "Confondre avec des multiples de 4 et répondre 12.",
+      "verify": "8 + 2 = 10.",
+      "hints": [
+        "Regarde la différence entre 2 et 4.",
+        "Vérifie qu'elle se répète (4→6→8).",
+        "Applique la même différence au dernier terme.",
+        "Ajoute +2 à 8 : 10."
+      ]
+    },
+    "Q3": {
+      "rule": "Alternance binaire de couleurs ● / ○.",
+      "steps": "Identifier le motif de longueur 2 et reprendre le même symbole.",
+      "pitfalls": "Répondre un groupe de deux symboles au lieu d'un seul.",
+      "verify": "La périodicité 2 est conservée en choisissant ●.",
+      "hints": [
+        "Repère la séquence ●○.",
+        "Vérifie qu'elle se répète sans décalage.",
+        "Le prochain symbole doit recommencer le cycle.",
+        "C'est ●."
+      ]
+    },
+    "Q4": {
+      "rule": "Suite des impairs (+2).",
+      "steps": "Noter la parité, confirmer l'écart constant puis prolonger.",
+      "pitfalls": "Sauter un terme et répondre 11.",
+      "verify": "7 + 2 = 9.",
+      "hints": [
+        "Observe 1→3→5.",
+        "Confirme que l'écart est +2.",
+        "Applique +2 à 7.",
+        "Donne 9."
+      ]
+    },
+    "Q5": {
+      "rule": "Simplification de la forme par suppression des angles (carré → disque).",
+      "steps": "Comparer les 3 cases visibles et déduire que la case manquante est la version sans sommets.",
+      "pitfalls": "Confondre contour (angles) et remplissage.",
+      "verify": "○ est la seule option sans sommets.",
+      "hints": [
+        "Compare les silhouettes, pas le remplissage.",
+        "Cherche une tendance « moins d'angles ».",
+        "Identifie la forme la plus lisse (sans sommets).",
+        "Choisis ○."
+      ]
+    },
+    "Q6": {
+      "rule": "Alphabet par sauts de 2 lettres (A,C,E,G, …).",
+      "steps": "Indexer mentalement (A=1…), constater +2 puis prolonger.",
+      "pitfalls": "Proposer H (saut de 1).",
+      "verify": "Indices 1,3,5,7,9 → I.",
+      "hints": [
+        "Écris A, C, E, G.",
+        "Note le saut de 2.",
+        "Applique le même saut.",
+        "I suit G."
+      ]
+    },
+    "Q31": {
+      "rule": "Puissances de x avec x=2 (×2 à chaque étape).",
+      "steps": "Constater 2, 4, 8, 16 puis multiplier encore par 2.",
+      "pitfalls": "Additionner au lieu de multiplier.",
+      "verify": "16×2 = 32.",
+      "hints": [
+        "Note 2^1,2^2,2^3,2^4.",
+        "C'est toujours ×2.",
+        "Applique ×2 encore.",
+        "Donne 32."
+      ]
+    },
+    "Q14": {
+      "rule": "Matrice 2×2 avec rotation 90° horaire : chaque flèche pivote d'un quart de tour vers la droite (comme une aiguille d'horloge).",
+      "steps": "1) Visualiser la matrice [↗ ↓] [↑ ?], 2) Observer ↗→↓ = rotation 90° horaire, 3) Appliquer à ↑ : Nord +90°↻ = Est = ➡.",
+      "pitfalls": "Confondre rotation horaire ↻ et anti-horaire ↺, ou appliquer 180° au lieu de 90°.",
+      "verify": "↑ (Nord) +90° horaire = ➡ (Est). Vérification : sens horaire ↻ = vers la droite.",
+      "hints": [
+        "Identifie la matrice 2×2 avec ses 4 cases.",
+        "Compare ↗ et ↓ : quelle transformation ?",
+        "C'est une rotation 90° horaire (sens aiguille d'horloge).",
+        "Applique la même rotation à ↑ : Nord→Est = ➡."
+      ]
+    }
+  }
+}

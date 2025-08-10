@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import QuestionVisual from './QuestionVisual';
 
 function Review({ user }) {
   const [reviewData, setReviewData] = useState(null);
@@ -397,6 +398,13 @@ function Review({ user }) {
         }}>
           {currentAnswer?.question || 'Question non disponible'}
         </h4>
+
+        {/* 🎨 VISUEL PROFESSIONNEL GÉNÉRATION AUTOMATIQUE */}
+        <QuestionVisual 
+          questionId={`Q${currentAnswer?.questionIndex || (currentQuestion + 1)}`}
+          questionContent={currentAnswer?.question}
+          category={currentAnswer?.category}
+        />
 
         {/* Options de réponse */}
         <div style={{ 

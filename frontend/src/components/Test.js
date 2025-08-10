@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import QuestionVisual from './QuestionVisual';
 
 function Test({ user }) {
   const [questions, setQuestions] = useState([]);
@@ -192,6 +193,14 @@ function Test({ user }) {
            questions[currentQuestion]?.question || 
            `Question ${currentQuestion + 1} - Contenu non disponible`}
         </h3>
+        
+        {/* 🎨 VISUEL PROFESSIONNEL GÉNÉRATION AUTOMATIQUE */}
+        <QuestionVisual 
+          questionId={`Q${questions[currentQuestion]?.questionIndex || (currentQuestion + 1)}`}
+          questionContent={questions[currentQuestion]?.content}
+          category={questions[currentQuestion]?.category}
+        />
+        
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px', marginTop: '20px' }}>
           {questions[currentQuestion].options.map((option, index) => (
             <button

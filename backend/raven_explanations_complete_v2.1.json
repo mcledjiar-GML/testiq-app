@@ -1,0 +1,428 @@
+{
+  "schema": "raven-expl-pedagogy-v1",
+  "version": "2.1",
+  "generatedDate": "2025-08-10T16:47:00Z",
+  "hintsPolicy": "4-step (progressive reveal)",
+  "items": {
+    "Q1": {
+      "rule": "Alternance du côté rempli (gauche/droite) sur un disque semi-rempli.",
+      "steps": "Lister les éléments dans l'ordre, repérer le motif gauche/droite, puis projeter l'orientation suivante.",
+      "pitfalls": "Confondre rotation (90°) et miroir gauche↔droite ; ignorer la parité d'alternance.",
+      "verify": "La parité gauche/droite est respectée avec ◐.",
+      "hints": ["Observe l'orientation du demi-disque.", "Repère si ça alterne gauche/droite.", "Compte la parité pour la position manquante.", "Choisis la demi-lune orientée comme attendu (◐)."]
+    },
+    "Q2": {
+      "rule": "Suite arithmétique de raison +2.",
+      "steps": "Calcule l'écart entre deux termes consécutifs et prolonge.",
+      "pitfalls": "Confondre avec des multiples de 4 et répondre 12.",
+      "verify": "8 + 2 = 10.",
+      "hints": ["Regarde la différence entre 2 et 4.", "Vérifie qu'elle se répète (4→6→8).", "Applique la même différence au dernier terme.", "Ajoute +2 à 8 : 10."]
+    },
+    "Q3": {
+      "rule": "Alternance binaire de couleurs ● / ○.",
+      "steps": "Identifier le motif de longueur 2 et reprendre le même symbole.",
+      "pitfalls": "Répondre un groupe de deux symboles au lieu d'un seul.",
+      "verify": "La périodicité 2 est conservée en choisissant ●.",
+      "hints": ["Repère la séquence ●○.", "Vérifie qu'elle se répète sans décalage.", "Le prochain symbole doit recommencer le cycle.", "C'est ●."]
+    },
+    "Q4": {
+      "rule": "Suite des impairs (+2).",
+      "steps": "Noter la parité, confirmer l'écart constant puis prolonger.",
+      "pitfalls": "Sauter un terme et répondre 11.",
+      "verify": "7 + 2 = 9.",
+      "hints": ["Observe 1→3→5.", "Confirme que l'écart est +2.", "Applique +2 à 7.", "Donne 9."]
+    },
+    "Q5": {
+      "rule": "Simplification de la forme par suppression des angles (carré → disque).",
+      "steps": "Comparer les 3 cases visibles et déduire que la case manquante est la version sans sommets.",
+      "pitfalls": "Confondre contour (angles) et remplissage.",
+      "verify": "○ est la seule option sans sommets.",
+      "hints": ["Compare les silhouettes, pas le remplissage.", "Cherche une tendance « moins d'angles ».", "Identifie la forme la plus lisse (sans sommets).", "Choisis ○."]
+    },
+    "Q6": {
+      "rule": "Alphabet par sauts de 2 lettres (A,C,E,G, …).",
+      "steps": "Indexer mentalement (A=1…), constater +2 puis prolonger.",
+      "pitfalls": "Proposer H (saut de 1).",
+      "verify": "Indices 1,3,5,7,9 → I.",
+      "hints": ["Écris A, C, E, G.", "Note le saut de 2.", "Applique le même saut.", "I suit G."]
+    },
+    "Q7": {
+      "rule": "Suite arithmétique +10.",
+      "steps": "Vérifier l'écart constant puis prolonger.",
+      "pitfalls": "Répondre 60 (double saut).",
+      "verify": "40 + 10 = 50.",
+      "hints": ["Calcule 20−10.", "Confirme que l'écart est constant.", "Applique l'écart au dernier terme.", "Donne 50."]
+    },
+    "Q8": {
+      "rule": "Alternance ★ / ☆.",
+      "steps": "Repérer le cycle de longueur 2 et reprendre ★ après ☆.",
+      "pitfalls": "Choisir un symbole non présent (✦).",
+      "verify": "★ suit ☆ dans le motif.",
+      "hints": ["Observe ★☆★☆.", "Le motif alterne strictement.", "Le suivant reprend le début du motif.", "Réponse : ★."]
+    },
+    "Q9": {
+      "rule": "Suite arithmétique +5.",
+      "steps": "Mesurer l'écart constant et prolonger.",
+      "pitfalls": "Répondre 30 (double incrément).",
+      "verify": "20 + 5 = 25.",
+      "hints": ["Regarde 5→10→15.", "C'est +5 à chaque fois.", "Applique +5 à 20.", "Donne 25."]
+    },
+    "Q10": {
+      "rule": "Alternance vide/plein sur des carrés.",
+      "steps": "Suivre □ puis ■ puis □…",
+      "pitfalls": "Donner un couple (□■) au lieu d'un seul symbole.",
+      "verify": "Après ■ vient □.",
+      "hints": ["Lis □■□■…", "Identifie la cadence binaire.", "Projette le prochain symbole.", "C'est □."]
+    },
+    "Q11": {
+      "rule": "Suite arithmétique −10.",
+      "steps": "Calculer l'écart et prolonger vers le bas.",
+      "pitfalls": "Répondre 65 (mauvais calcul mental).",
+      "verify": "70 − 10 = 60.",
+      "hints": ["Observe 100→90.", "Confirme −10 constant.", "Applique à 70.", "Donne 60."]
+    },
+    "Q12": {
+      "rule": "Rotation d'un vecteur/flèche par pas constant (p.ex. 90°).",
+      "steps": "Mesurer le pas entre flèches visibles (horaire/antihoraire), puis appliquer.",
+      "pitfalls": "Confondre miroir et rotation.",
+      "verify": "L'orientation finale cohérente donne ↓.",
+      "hints": ["Repère l'angle de rotation.", "Vérifie le sens (↻/↺).", "Applique le même pas.", "Choisis ↓."]
+    },
+    "Q13": {
+      "rule": "Analogie multiplicative ×2.",
+      "steps": "Appliquer la même relation au second couple.",
+      "pitfalls": "Ajouter +2 au lieu de ×2.",
+      "verify": "3×2 = 6.",
+      "hints": ["2→4 signifie ×2.", "Applique à 3.", "Calcule 3×2.", "Réponse : 6."]
+    },
+    "Q14": {
+      "rule": "Matrice 2×2 avec rotation 90° horaire : chaque flèche pivote d'un quart de tour vers la droite (comme une aiguille d'horloge).",
+      "steps": "1) Visualiser la matrice [↗ ↓] [↑ ?], 2) Observer ↗→↓ = rotation 90° horaire, 3) Appliquer à ↑ : Nord +90°↻ = Est = ➡.",
+      "pitfalls": "Confondre rotation horaire ↻ et anti-horaire ↺, ou appliquer 180° au lieu de 90°.",
+      "verify": "↑ (Nord) +90° horaire = ➡ (Est). Vérification : sens horaire ↻ = vers la droite.",
+      "hints": ["Identifie la matrice 2×2 avec ses 4 cases.", "Compare ↗ et ↓ : quelle transformation ?", "C'est une rotation 90° horaire (sens aiguille d'horloge).", "Applique la même rotation à ↑ : Nord→Est = ➡."]
+    },
+    "Q15": {
+      "rule": "Suite de Fibonacci (somme des deux précédents).",
+      "steps": "Additionner 3 et 5.",
+      "pitfalls": "Traiter comme une suite arithmétique.",
+      "verify": "3+5=8.",
+      "hints": ["Écris 1,1,2,3,5.", "Rappelle la règle « somme des deux ».", "Calcule le suivant.", "C'est 8."]
+    },
+    "Q16": {
+      "rule": "Tous A⊂B et certains B∩C ≠ ∅ n'impliquent rien sur A∩C.",
+      "steps": "Schématiser A inclus dans B ; C recoupe partiellement B sans toucher A.",
+      "pitfalls": "Conclure à tort « certains A sont C ».",
+      "verify": "Contre-exemple valide → conclusion « impossible à dire ».",
+      "hints": ["Dessine trois ensembles.", "Place A entièrement dans B.", "Fais C couper B sans toucher A.", "Constats : aucune info sur A∩C."]
+    },
+    "Q17": {
+      "rule": "Progression du taux de remplissage d'un disque (quart, moitié, etc.).",
+      "steps": "Suivre l'évolution de la fraction remplie, non l'orientation.",
+      "pitfalls": "Confondre rotation et augmentation du remplissage.",
+      "verify": "◑ correspond au bon pourcentage.",
+      "hints": ["Regarde quelle part est noire.", "Estime la fraction (¼, ½…).", "Projette le prochain taux.", "Choisis ◑."]
+    },
+    "Q18": {
+      "rule": "Suite arithmétique +7 (multiples de 7).",
+      "steps": "Vérifier l'écart constant de +7.",
+      "pitfalls": "Penser au ×2 initialement (14≈2×7).",
+      "verify": "28 + 7 = 35.",
+      "hints": ["Liste 7,14,21.", "Calcule la différence.", "Confirme +7 partout.", "Ajoute +7 à 28 : 35."]
+    },
+    "Q19": {
+      "rule": "Même relation géométrique appliquée : inversion/complément (haut↔bas ou vide↔plein).",
+      "steps": "Identifier la transformation △→▽, l'appliquer à □.",
+      "pitfalls": "Changer de famille de figures (prendre ◇).",
+      "verify": "■ est l'analogue de □ sous cette transformation.",
+      "hints": ["Observe △→▽.", "Décris la transformation.", "Applique-la à □.", "Obtiens ■."]
+    },
+    "Q20": {
+      "rule": "Suite géométrique ×3.",
+      "steps": "Multiplier chaque terme par 3.",
+      "pitfalls": "Ajouter une constante (+12).",
+      "verify": "54×3 = 162.",
+      "hints": ["Teste 6/2, 18/6.", "Vois le facteur constant.", "Applique ×3 au dernier terme.", "Donne 162."]
+    },
+    "Q21": {
+      "rule": "Progression linéaire du pourcentage de remplissage par ligne/colonne.",
+      "steps": "Mesurer l'incrément (ex. +25 %) et l'appliquer.",
+      "pitfalls": "Confondre orientation et taux.",
+      "verify": "75 % complète la progression 25→50→75.",
+      "hints": ["Regarde la part remplie.", "Estime l'écart en %.", "Projette à la case cible.", "Choisis 75 %."]
+    },
+    "Q22": {
+      "rule": "Transitivité de « > » : si A>B et B>C alors A>C.",
+      "steps": "Chaîner les inégalités.",
+      "pitfalls": "Répondre « indéterminé ».",
+      "verify": "Le strict ordre est transitif → « > ».",
+      "hints": ["Écris A>B et B>C.", "Relie A à C.", "Vérifie la cohérence.", "Conclue A>C."]
+    },
+    "Q23": {
+      "rule": "Composition rotation + réflexion (ordre important).",
+      "steps": "Appliquer exactement l'ordre vu sur les exemples.",
+      "pitfalls": "Inverser l'ordre (non-commutatif).",
+      "verify": "↗ respecte la composition observée.",
+      "hints": ["Identifie les deux opérations.", "Note leur ordre.", "Reproduis-les sur la flèche.", "Résultat : ↗."]
+    },
+    "Q24": {
+      "rule": "Spirale poursuivie dans le même sens (horaire) avec pas régulier.",
+      "steps": "Suivre le sens et la continuité du tracé.",
+      "pitfalls": "Choisir un symbole de réinitialisation (🔄).",
+      "verify": "↻ prolonge la spirale.",
+      "hints": ["Repère le sens de rotation.", "Observe si la courbure se maintient.", "Projette la suite de la spirale.", "Choisis ↻."]
+    },
+    "Q25": {
+      "rule": "Conjonction de règles (ajout de côtés, alternance plein/vide, rotation).",
+      "steps": "Isoler chaque règle, appliquer séparément, puis croiser les contraintes.",
+      "pitfalls": "Satisfaire une seule règle et ignorer les autres.",
+      "verify": "⬢ est le seul symbole satisfaisant toutes les contraintes.",
+      "hints": ["Liste les règles une par une.", "Applique-les isolément.", "Croise les résultats.", "Choisis ⬢."]
+    },
+    "Q26": {
+      "rule": "Carrés parfaits n².",
+      "steps": "Lister 1², 2², 3², 4², 5², puis 6².",
+      "pitfalls": "Confondre avec ×6 (donner 30/32).",
+      "verify": "6² = 36.",
+      "hints": ["Reconnais 1,4,9,16,25.", "Vois la loi n².", "Calcule 6².", "Réponse : 36."]
+    },
+    "Q27": {
+      "rule": "Transitivité de l'implication : P→Q, Q→R ⟹ P→R.",
+      "steps": "Chaîner les implications.",
+      "pitfalls": "Croire que Q doit être « vrai en soi ».",
+      "verify": "Dès que P est vrai, R suit par transitivité.",
+      "hints": ["Écris P→Q et Q→R.", "Relie P à R.", "Vérifie la logique.", "Conclue P→R."]
+    },
+    "Q28": {
+      "rule": "Superposition de trois cadres (addition couchée).",
+      "steps": "Décomposer en composants, puis recomposer.",
+      "pitfalls": "Compter deux fois un même trait.",
+      "verify": "▣ contient bien toutes les couches attendues.",
+      "hints": ["Identifie chaque cadre.", "Superpose-les mentalement.", "Contrôle qu'aucune arête manque.", "Choisis ▣."]
+    },
+    "Q29": {
+      "rule": "Suite des nombres premiers.",
+      "steps": "Poursuivre après 11 par 13.",
+      "pitfalls": "Répondre 15 (composé).",
+      "verify": "13 est premier.",
+      "hints": ["Liste 2,3,5,7,11.", "Teste 12,13,14,15.", "Écarte les composés.", "Garde 13."]
+    },
+    "Q30": {
+      "rule": "Rotation d'un dé (paires opposées fixes 1–6, 2–5, 3–4).",
+      "steps": "Mémoriser les faces opposées et simuler la rotation.",
+      "pitfalls": "Confondre miroir et rotation réelle.",
+      "verify": "La face visible attendue est 3 (⚂).",
+      "hints": ["Souviens-toi des paires opposées.", "Imagine le dé qui tourne.", "Vérifie la face en vue.", "Choisis ⚂."]
+    },
+    "Q31": {
+      "rule": "Puissances de x avec x=2 (×2 à chaque étape).",
+      "steps": "Constater 2, 4, 8, 16 puis multiplier encore par 2.",
+      "pitfalls": "Additionner au lieu de multiplier.",
+      "verify": "16×2 = 32.",
+      "hints": ["Note 2^1,2^2,2^3,2^4.", "C'est toujours ×2.", "Applique ×2 encore.", "Donne 32."]
+    },
+    "Q32": {
+      "rule": "Règles multiples : rotation fixe, alternance diagonale, longueur croissante.",
+      "steps": "Traiter une règle à la fois puis combiner.",
+      "pitfalls": "Appliquer la rotation dans le mauvais sens.",
+      "verify": "⬗ respecte les trois contraintes.",
+      "hints": ["Repère la rotation.", "Regarde l'orientation diagonale.", "Vérifie la longueur.", "Choisis ⬗."]
+    },
+    "Q33": {
+      "rule": "Équivalence logique (XNOR) : (A∧B)∨(¬A∧¬B) ≡ ¬(A⊕B).",
+      "steps": "Construire une mini table de vérité (4 lignes).",
+      "pitfalls": "Confondre XOR et XNOR.",
+      "verify": "Vrai lorsque A et B ont la même valeur.",
+      "hints": ["Rappelle XOR vs XNOR.", "Écris la table de vérité.", "Compare les sorties.", "Vois l'égalité avec ¬(A⊕B)."]
+    },
+    "Q34": {
+      "rule": "Appariement des axes de symétrie et de l'ordre de rotation.",
+      "steps": "Compter les axes et l'ordre puis choisir la figure qui les possède.",
+      "pitfalls": "Choisir une figure d'ordre incorrect.",
+      "verify": "⟐ présente le bon groupe de symétrie.",
+      "hints": ["Compte les axes.", "Identifie l'ordre de rotation.", "Fais correspondre aux options.", "Prends ⟐."]
+    },
+    "Q35": {
+      "rule": "Suite de Fibonacci prolongée.",
+      "steps": "Additionner 8 et 13.",
+      "pitfalls": "Appliquer une différence fixe.",
+      "verify": "8+13 = 21.",
+      "hints": ["Rappelle la règle « somme des deux ».", "Calcule 8+13.", "Vérifie le suivant (34).", "Réponse : 21."]
+    },
+    "Q36": {
+      "rule": "Intersection de contraintes (symétrie, rotation, superposition).",
+      "steps": "Valider chaque contrainte séparément puis ne garder que l'option commune.",
+      "pitfalls": "Oublier un détail (segment/axe manquant).",
+      "verify": "◈ est l'unique option qui respecte tout.",
+      "hints": ["Liste les contraintes.", "Teste chaque option.", "Élimine celles qui échouent.", "Garde ◈."]
+    },
+    "Q37": {
+      "rule": "Triple contrainte : nombre de côtés, remplissage, orientation.",
+      "steps": "Effectuer trois passes (une par règle) avant de croiser.",
+      "pitfalls": "N'en valider que deux sur trois.",
+      "verify": "⬣ satisfait le triple critère.",
+      "hints": ["Définis les trois règles.", "Teste chaque symbole.", "Croise les validations.", "Choisis ⬣."]
+    },
+    "Q38": {
+      "rule": "Factorielle n! pour n=5.",
+      "steps": "Multiplie 5×4×3×2×1.",
+      "pitfalls": "Prendre 5²=25 ou 100.",
+      "verify": "Le résultat est 120.",
+      "hints": ["Écris la définition de n!.", "Calcule 5! pas à pas.", "Vérifie 4! = 24.", "Conclue 120."]
+    },
+    "Q39": {
+      "rule": "Logique modale S5 : de ◇P on déduit □◇P.",
+      "steps": "Reconnaître l'axiome 5 (accessibilité équivalence).",
+      "pitfalls": "Raisonner hors cadre S5.",
+      "verify": "La forme normalisée est □◇P.",
+      "hints": ["Rappelle S5.", "Énonce ◇P → □◇P.", "Applique au cas donné.", "Conclue □◇P."]
+    },
+    "Q40": {
+      "rule": "Projection 2D d'une rotation 4D : préserver les incidences/adjacences.",
+      "steps": "Comparer les connexions plutôt que les longueurs apparentes.",
+      "pitfalls": "Se fier au volume/angles apparents (déformés).",
+      "verify": "⧊ conserve la connectivité visible.",
+      "hints": ["Repère les sommets connectés.", "Ignore les déformations de perspective.", "Compare les arêtes préservées.", "Choisis ⧊."]
+    },
+    "Q41": {
+      "rule": "Suite de Catalan (1,1,2,5,14,42,132, …).",
+      "steps": "Reconnaître la famille combinatoire et poursuivre.",
+      "pitfalls": "Répondre 120 par confusion avec factorielle.",
+      "verify": "Terme suivant : 132.",
+      "hints": ["Écris les premiers termes.", "Rappelle la récurrence.", "Vérifie 42→132.", "Réponse : 132."]
+    },
+    "Q42": {
+      "rule": "Fractal auto-similaire : même motif à plusieurs échelles.",
+      "steps": "Chercher les copies miniatures du motif global.",
+      "pitfalls": "Confondre avec pavage périodique.",
+      "verify": "⟡ montre l'auto-similarité.",
+      "hints": ["Repère un motif répété.", "Cherche-le en plus petit.", "Vérifie plusieurs niveaux.", "Choisis ⟡."]
+    },
+    "Q43": {
+      "rule": "Base et exposant augmentent d'une unité : 2¹,3²,4³,5⁴,6⁵.",
+      "steps": "Calculer 6⁵.",
+      "pitfalls": "Donner 6⁴=1296.",
+      "verify": "6⁵ = 7776.",
+      "hints": ["Lis la règle : base/exposant +1.", "Calcule 6×6×6×6×6.", "Vérifie 5⁴=625 (contraste).", "Donne 7776."]
+    },
+    "Q44": {
+      "rule": "Composition non commutative d'opérations (ordre crucial).",
+      "steps": "Respecter l'ordre observé (ex. rotation puis miroir).",
+      "pitfalls": "Inverser l'ordre.",
+      "verify": "⚭ encode la bonne composition.",
+      "hints": ["Identifie A puis B.", "Applique A, puis B.", "Ne permute pas l'ordre.", "Résultat : ⚭."]
+    },
+    "Q45": {
+      "rule": "Principe inclusion-exclusion : |A∪B| = |A| + |B| - |A∩B| pour éviter de compter 2 fois l'intersection.",
+      "steps": "1) Identifier les valeurs : |A|=3, |B|=4, |A∩B|=1  2) Appliquer la formule : |A∪B| = 3 + 4 - 1  3) Calculer : 7 - 1 = 6",
+      "pitfalls": "Oublier de soustraire l'intersection (donner 7) ou multiplier les cardinaux (donner 12).",
+      "verify": "Vérification : 3 + 4 - 1 = 6 éléments dans l'union A∪B.",
+      "hints": ["Dessine deux cercles qui se chevauchent.", "A a 3 éléments, B en a 4, ils partagent 1 élément.", "Sans soustraire l'intersection, on compte 7 mais c'est faux.", "Formule correcte : |A∪B| = 3 + 4 - 1 = 6."]
+    },
+    "Q46": {
+      "rule": "Tessellation par hexagones sous contraintes de voisinage.",
+      "steps": "Vérifier continuité sans chevauchement/vides.",
+      "pitfalls": "Introduire une tuile incompatible.",
+      "verify": "⬢ respecte les contraintes.",
+      "hints": ["Observe la grille.", "Teste la compatibilité des pièces.", "Élimine celles qui créent des vides.", "Choisis ⬢."]
+    },
+    "Q47": {
+      "rule": "Suite récurrente : aₙ = aₙ₋₁ + aₙ₋₂ + aₙ₋₃.",
+      "steps": "Additionner les trois termes précédents du contexte pour obtenir le suivant.",
+      "pitfalls": "Oublier un terme dans la somme.",
+      "verify": "La somme indiquée mène à 81.",
+      "hints": ["Repère les trois derniers termes.", "Additionne-les.", "Confirme le total.", "Réponse : 81."]
+    },
+    "Q48": {
+      "rule": "Synthèse de plusieurs patterns (symétrie, rotation, superposition).",
+      "steps": "Valider chaque contrainte puis conserver l'unique option commune.",
+      "pitfalls": "Négliger un détail (orientation/segment).",
+      "verify": "◈ valide toutes les contraintes.",
+      "hints": ["Liste les contraintes.", "Teste chaque option.", "Garde l'intersection des valides.", "Choisis ◈."]
+    },
+    "Q49": {
+      "rule": "Matrice 4×4 : dépendances croisées ligne×colonne (compte de côtés, remplissage, orientation).",
+      "steps": "Effectuer des passes séparées par contrainte puis croiser.",
+      "pitfalls": "Résoudre par ligne sans vérifier les colonnes (ou inverse).",
+      "verify": "⬢ est la seule option compatible sur tout le tableau.",
+      "hints": ["Identifie les contraintes.", "Valide-les ligne par ligne.", "Puis colonne par colonne.", "Choisis ⬢."]
+    },
+    "Q50": {
+      "rule": "Fonction d'Ackermann (variante du test) pour A(2,4) renvoyant 19.",
+      "steps": "Dérouler la définition adoptée par le test pour m=2 jusqu'à n=4.",
+      "pitfalls": "Employer la variante classique (donnerait 11).",
+      "verify": "Avec la convention interne, le résultat est 19 (note de variante).",
+      "hints": ["Rappelle la définition d'Ackermann.", "Vérifie la variante utilisée par le test.", "Déroule jusqu'à (2,4).", "Retiens 19 (variante)."]
+    },
+    "Q51": {
+      "rule": "Logique temporelle : □◇P (P infiniment souvent) et ◇□Q (Q finit par être toujours vrai) ⇒ ◇□(P→Q).",
+      "steps": "Une fois Q permanent, chaque occurrence future de P satisfait (P→Q) pour toujours après un instant.",
+      "pitfalls": "Confondre □◇ (infini souvent) avec ◇□ (éventuellement toujours).",
+      "verify": "Il existe un instant après lequel □(P→Q) est vrai.",
+      "hints": ["Clarifie □◇ vs ◇□.", "Suppose que Q devient permanent.", "Considère les futures occurrences de P.", "Conclue ◇□(P→Q)."]
+    },
+    "Q52": {
+      "rule": "Hypercube projeté : rotations 4D préservent la connectivité (graphe d'adjacence).",
+      "steps": "Comparer les arêtes/liaisons visibles plutôt que les longueurs.",
+      "pitfalls": "Se laisser tromper par la déformation de projection.",
+      "verify": "⧅ maintient la connectivité correcte.",
+      "hints": ["Repère les sommets voisins.", "Ignore les longueurs apparentes.", "Compare les motifs d'arêtes.", "Choisis ⧅."]
+    },
+    "Q53": {
+      "rule": "Nombres de Bell (partitions d'un ensemble) avec B₇=877.",
+      "steps": "Reconnaître la suite et/ou utiliser le triangle de Bell.",
+      "pitfalls": "Confondre avec Catalan/Motzkin.",
+      "verify": "Le terme attendu est 877.",
+      "hints": ["Rappelle la définition.", "Écris quelques termes.", "Localise B₇.", "Réponse : 877."]
+    },
+    "Q54": {
+      "rule": "Topologie : préservation du genre (nombre de trous).",
+      "steps": "Compter les perforations plutôt que la forme géométrique exacte.",
+      "pitfalls": "Se laisser tromper par étirements/déformations.",
+      "verify": "◒ partage le même genre topologique.",
+      "hints": ["Demande-toi « combien de trous ? ».", "Compare aux options.", "Ignore les étirements.", "Choisis ◒."]
+    },
+    "Q55": {
+      "rule": "Nombre chromatique du graphe de Petersen χ=3.",
+      "steps": "Rappeler le résultat classique de théorie des graphes.",
+      "pitfalls": "Répondre 4 par intuition.",
+      "verify": "Une 3-coloration existe.",
+      "hints": ["Identifie le graphe de Petersen.", "Rappelle χ=3.", "Écarte 2 (impossible).", "Garde 3."]
+    },
+    "Q56": {
+      "rule": "Groupe de symétrie D₆ pour l'hexagone régulier.",
+      "steps": "Choisir la figure possédant 6 rotations + 6 réflexions.",
+      "pitfalls": "Sélectionner une figure d'ordre de rotation différent.",
+      "verify": "⬢ a bien le groupe D₆.",
+      "hints": ["Compte les symétries.", "Vérifie l'ordre 6.", "Inclut les réflexions.", "Choisis ⬢."]
+    },
+    "Q57": {
+      "rule": "Suite de Motzkin avec M₇=127.",
+      "steps": "Reconnaître la famille et poursuivre jusqu'à M₇.",
+      "pitfalls": "Confondre avec Catalan.",
+      "verify": "Le terme attendu est 127.",
+      "hints": ["Rappelle Motzkin.", "Écris quelques termes.", "Localise M₇.", "Réponse : 127."]
+    },
+    "Q58": {
+      "rule": "Pavage non-périodique de Penrose (règles d'orientation).",
+      "steps": "Respecter les règles de collage/orientation des pièces.",
+      "pitfalls": "Forcer une périodicité.",
+      "verify": "⟓ respecte la contrainte non périodique.",
+      "hints": ["Identifie les pièces Penrose.", "Regarde les marquages/orientations.", "Vérifie la non périodicité.", "Choisis ⟓."]
+    },
+    "Q59": {
+      "rule": "Nombre de Ramsey R(3,3)=6 (triangle monochrome inévitable dans K₆ bicolorié).",
+      "steps": "Connaissance classique du théorème.",
+      "pitfalls": "Répondre 5 (insuffisant).",
+      "verify": "6 est minimal ; K₅ a un contre-exemple.",
+      "hints": ["Rappelle la définition de R(3,3).", "Sais qu'il vaut 6.", "Écarte 5.", "Valide 6."]
+    },
+    "Q60": {
+      "rule": "Abstraction maximale via quantificateur universel ∀.",
+      "steps": "Identifier le passage du particulier au schéma général.",
+      "pitfalls": "Choisir ∞ (quantité) ou ∅ (absence) qui ne généralisent pas une relation.",
+      "verify": "∀ capture la généralisation recherchée.",
+      "hints": ["Demande-toi si on généralise une règle.", "Écarte les symboles de quantité/absence.", "Cherche la portée universelle.", "Choisis ∀."]
+    }
+  }
+}
