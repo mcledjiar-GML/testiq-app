@@ -312,13 +312,13 @@ app.post('/api/tests/start', authenticateToken, async (req, res) => {
       const questionsPerSeries = Math.ceil(questionCount / 5);
       
       for (const s of series) {
-        const seriesQuestions = allQuestions.filter(q => q.series === s);
-        const shuffled = seriesQuestions.sort(() => 0.5 - Math.random());
-        selectedQuestions.push(...shuffled.slice(0, questionsPerSeries));
+        const seriesQuestions = allQuestions.filter(q => q.series === s)
+          .sort((a, b) => (a.questionIndex || 0) - (b.questionIndex || 0));
+        selectedQuestions.push(...seriesQuestions.slice(0, questionsPerSeries));
       }
       
-      // Mélanger le résultat final et limiter au nombre souhaité
-      selectedQuestions = selectedQuestions.sort(() => 0.5 - Math.random()).slice(0, questionCount);
+      // Garder l'ordre logique des séries pour un apprentissage progressif
+      selectedQuestions = selectedQuestions.slice(0, questionCount);
     }
     
     const questions = selectedQuestions;
