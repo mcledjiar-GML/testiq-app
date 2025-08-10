@@ -71,7 +71,8 @@ const QuestionSchema = new mongoose.Schema({
   options: [String],
   correctAnswer: Number,
   category: { type: String, enum: ['logique', 'verbal', 'spatial', 'mémoire'] },
-  timeLimit: { type: Number, default: 60 }
+  timeLimit: { type: Number, default: 60 },
+  questionIndex: { type: Number } // Index pour mapping avec les explications
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -99,12 +100,61 @@ const authenticateToken = (req, res, next) => {
 const ravenQuestions = require('./raven_questions');
 const IQCalculator = require('./iq_calculator');
 
+// Charger les explications avancées
+const fs = require('fs');
+const path = require('path');
+const explanationsFilePath = path.join(__dirname, 'explanations_audit_corrected.json');
+let advancedExplanations = {};
+
+try {
+  const explanationsData = JSON.parse(fs.readFileSync(explanationsFilePath, 'utf8'));
+  
+  if (explanationsData.explications) {
+    advancedExplanations = explanationsData.explications.reduce((acc, exp) => {
+      acc[exp.questionId] = exp;
+      return acc;
+    }, {});
+    console.log(`✅ ${Object.keys(advancedExplanations).length} explications pédagogiques avancées chargées`);
+  } else {
+    console.warn('⚠️ Propriété "explications" non trouvée dans le fichier JSON');
+  }
+} catch (error) {
+  console.warn('⚠️ Impossible de charger les explications avancées:', error.message);
+}
+
 // Création automatique de questions de test
 const seedQuestions = async () => {
   const count = await Question.countDocuments();
   if (count === 0) {
-    await Question.insertMany(ravenQuestions);
+    // Ajouter un index à chaque question
+    const questionsWithIndex = ravenQuestions.map((q, index) => ({
+      ...q,
+      questionIndex: index + 1
+    }));
+    await Question.insertMany(questionsWithIndex);
     console.log(`✅ ${ravenQuestions.length} questions Raven créées (5 séries complètes)`);
+  } else {
+    // Toujours vérifier et ajouter l'index aux questions existantes
+    console.log('🔄 Vérification des index des questions existantes...');
+    
+    // Trier par série et difficulté pour maintenir l'ordre cohérent
+    const sortedQuestions = await Question.find({}).sort({ series: 1, difficulty: 1, _id: 1 });
+    
+    let updated = 0;
+    for (let i = 0; i < sortedQuestions.length; i++) {
+      if (!sortedQuestions[i].questionIndex || sortedQuestions[i].questionIndex !== (i + 1)) {
+        await Question.findByIdAndUpdate(sortedQuestions[i]._id, { 
+          questionIndex: i + 1 
+        });
+        updated++;
+      }
+    }
+    
+    if (updated > 0) {
+      console.log(`✅ Index mis à jour pour ${updated} questions`);
+    } else {
+      console.log(`✅ Tous les index sont à jour (${sortedQuestions.length} questions)`);
+    }
   }
 };
 
@@ -583,6 +633,7 @@ app.get('/api/tests/:userId/:testIndex/review', authenticateToken, async (req, r
         series: question ? question.series : 'N/A',
         category: question ? question.category : 'N/A',
         timeUsed: answer.timeUsed || 0,
+        questionIndex: question ? question.questionIndex : (index + 1), // Fallback vers index+1 si pas de questionIndex
         explanation: getExplanation(question, { 
           ...answer, 
           selectedOption: answer.selectedOption,
@@ -627,7 +678,130 @@ app.get('/api/tests/:userId/:testIndex/review', authenticateToken, async (req, r
   }
 });
 
-// Fonction pour générer des explications des réponses
+// Système d'indexation unifié - Chargement du mapping complet (60 questions)
+let questionExplanationMapping = {};
+let mappingStats = {};
+try {
+  const mappingData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'complete_question_explanation_mapping.json'), 'utf8'));
+  
+  questionExplanationMapping = mappingData.mappings.reduce((acc, mapping) => {
+    acc[mapping.questionContent] = {
+      explanationId: mapping.explanationId,
+      positionIndex: mapping.positionIndex,
+      correctAnswer: mapping.correctAnswer,
+      competence: mapping.competence,
+      series: mapping.series,
+      difficulty: mapping.difficulty,
+      options: mapping.options,
+      isConsistent: mapping.isConsistent
+    };
+    return acc;
+  }, {});
+  
+  mappingStats = mappingData.statistics || {};
+  
+  console.log(`🗺️ SYSTÈME D'INDEXATION UNIFIÉ CHARGÉ`);
+  console.log(`   📚 Total questions: ${mappingData.totalQuestions}`);
+  console.log(`   ✅ Correspondances: ${mappingData.matchedExplanations}/${mappingData.totalQuestions}`);
+  console.log(`   📊 Répartition: A:${mappingStats.serieA || 0}, B:${mappingStats.serieB || 0}, C:${mappingStats.serieC || 0}, D:${mappingStats.serieD || 0}, E:${mappingStats.serieE || 0}`);
+  
+} catch (error) {
+  console.warn('⚠️ Impossible de charger le mapping complet question→explication:', error.message);
+  // Fallback vers l'ancien mapping partiel si disponible
+  try {
+    const fallbackData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'question_explanation_mapping.json'), 'utf8'));
+    questionExplanationMapping = fallbackData.mappings.reduce((acc, mapping) => {
+      acc[mapping.questionContent] = mapping;
+      return acc;
+    }, {});
+    console.log(`🔄 Fallback: ${Object.keys(questionExplanationMapping).length} mappings partiels chargés`);
+  } catch (fallbackError) {
+    console.error('❌ Aucun mapping disponible:', fallbackError.message);
+  }
+}
+
+// Fonction d'indexation unifiée - Trouve la bonne explication pour une question
+function getCorrectExplanationId(questionContent, fallbackIndex) {
+  console.log(`🔍 Recherche mapping pour: "${questionContent?.substring(0, 50)}..."`);
+  
+  // Utiliser le mapping définitif basé sur le contenu
+  const mapping = questionExplanationMapping[questionContent];
+  
+  if (mapping) {
+    console.log(`✅ Mapping trouvé: ${mapping.explanationId} (position ${mapping.positionIndex})`);
+    return mapping.explanationId;
+  }
+  
+  // Fallback intelligent : essayer de deviner par similarité partielle
+  for (const [content, data] of Object.entries(questionExplanationMapping)) {
+    if (questionContent && content.includes(questionContent.substring(0, 20))) {
+      console.log(`🔄 Mapping partiel trouvé: ${data.explanationId} via similarité`);
+      return data.explanationId;
+    }
+  }
+  
+  // Dernier fallback vers l'index fourni
+  const finalId = `Q${fallbackIndex}`;
+  console.log(`⚠️ Aucun mapping trouvé, fallback vers: ${finalId}`);
+  return finalId;
+}
+
+// Route pour récupérer une explication avancée spécifique
+app.post('/api/explanation', authenticateToken, (req, res) => {
+  try {
+    const { questionId, questionContent } = req.body;
+    console.log(`🔍 Demande d'explication pour questionId: ${questionId}, contenu: "${questionContent?.substring(0, 50)}..."`);
+    
+    // Utiliser le mapping intelligent pour obtenir le bon ID d'explication
+    const correctExplanationId = getCorrectExplanationId(questionContent, questionId?.replace('Q', ''));
+    console.log(`🎯 ID d'explication corrigé: ${questionId} → ${correctExplanationId}`);
+    
+    const explanation = advancedExplanations[correctExplanationId];
+    
+    if (!explanation) {
+      console.log(`❌ Aucune explication trouvée pour ${correctExplanationId}. Explications disponibles:`, Object.keys(advancedExplanations).slice(0, 5));
+      return res.status(404).json({ error: 'Explication non trouvée pour cette question' });
+    }
+    
+    console.log(`✅ Explication ${correctExplanationId} trouvée et envoyée`);
+    res.json({
+      success: true,
+      explanation: explanation
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de l\'explication:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// Route de diagnostic du système d'indexation
+app.get('/api/system/mapping-info', authenticateToken, (req, res) => {
+  try {
+    const totalMappings = Object.keys(questionExplanationMapping).length;
+    const consistentMappings = Object.values(questionExplanationMapping).filter(m => m.isConsistent).length;
+    
+    res.json({
+      success: true,
+      system: {
+        totalMappings,
+        consistentMappings,
+        statistics: mappingStats,
+        sampleMappings: Object.entries(questionExplanationMapping).slice(0, 3).map(([content, data]) => ({
+          content: content.substring(0, 50) + '...',
+          explanationId: data.explanationId,
+          series: data.series,
+          isConsistent: data.isConsistent
+        }))
+      }
+    });
+  } catch (error) {
+    console.error('❌ Erreur diagnostic mapping:', error);
+    res.status(500).json({ error: 'Erreur système' });
+  }
+});
+
+// Fonction pour générer des explications des réponses avec système avancé
 function getExplanation(question, answer) {
   if (!question) return "Question non disponible.";
   
@@ -635,6 +809,38 @@ function getExplanation(question, answer) {
   const correctOption = question.options[actualCorrectAnswer];
   const selectedOption = answer.selectedOption !== -1 ? question.options[answer.selectedOption] : "Aucune réponse";
   
+  // Chercher une explication avancée avec mapping intelligent
+  const questionId = `Q${question.questionIndex}`;
+  const correctExplanationId = getCorrectExplanationId(question.content, question.questionIndex);
+  console.log(`🔍 getExplanation - questionId: ${questionId} → ${correctExplanationId} pour: "${question.content?.substring(0, 40)}..."`);
+  const advancedExp = advancedExplanations[correctExplanationId];
+  
+  if (advancedExp) {
+    // Utiliser le système d'explications avancées
+    let explanation = '';
+    
+    if (answer.selectedOption === actualCorrectAnswer) {
+      explanation = `✅ Bonne réponse !`;
+    } else if (answer.selectedOption === -1) {
+      explanation = `⏰ Temps écoulé. La bonne réponse était "${correctOption}".`;
+    } else {
+      explanation = `❌ Vous avez répondu "${selectedOption}". La bonne réponse était "${correctOption}".`;
+      
+      // Ajouter le diagnostic d'erreur personnalisé
+      if (advancedExp.diagnosticErreur && advancedExp.diagnosticErreur.pourquoiPlausible) {
+        explanation += ` ${advancedExp.diagnosticErreur.pourquoiPlausible}`;
+      }
+    }
+    
+    // Ajouter la règle extraite pour tous
+    if (advancedExp.regleExtraite) {
+      explanation += ` ${advancedExp.regleExtraite}`;
+    }
+    
+    return explanation;
+  }
+  
+  // Fallback vers l'ancien système si pas d'explication avancée
   let explanation = `La bonne réponse était "${correctOption}".`;
   
   if (answer.selectedOption === actualCorrectAnswer) {
@@ -668,6 +874,7 @@ function getInterpretation(averageScore) {
   if (averageScore >= 50) return 'À améliorer - En dessous de la moyenne';
   return 'À améliorer - Performance faible';
 }
+
 
 // Initialiser les questions au démarrage
 seedQuestions();

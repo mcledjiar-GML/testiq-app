@@ -221,8 +221,9 @@ testiq-app/
 ├── backend/                # Serveur Node.js
 │   ├── server.js          # Serveur principal
 │   ├── iq_calculator.js   # Système de calcul de QI
-│   └── raven_questions.js # Base de questions Raven
-├── explanations_audit_corrected.json  # 🆕 Explications pédagogiques (60 questions)
+│   ├── raven_questions.js # Base de questions Raven
+│   └── explanations_audit_corrected.json  # 🆕 Explications pédagogiques (60 questions)
+├── complete_question_explanation_mapping.json  # 🆕 Système d'indexation unifié (60 questions)
 ├── docker-compose.yml     # Configuration Docker
 └── README.md
 ```
@@ -232,6 +233,40 @@ testiq-app/
 - **Questions** : Questions Raven avec métadonnées (série, difficulté, etc.)
 - **TestHistory** : Résultats détaillés avec réponses et calculs de QI
 - **Explanations** 🆕 : Base d'explications pédagogiques avec diagnostic d'erreurs
+- **QuestionMapping** 🆕 : Système d'indexation unifié garantissant les bonnes correspondances
+
+### 🗺️ Système d'Indexation Unifié 🆕
+
+Le système d'indexation unifié garantit que chaque question affiche la bonne explication correspondante. Plus de problèmes de correspondances incorrectes !
+
+#### Architecture du Mapping (`complete_question_explanation_mapping.json`)
+```json
+{
+  "description": "Mapping complet des 60 questions Raven avec leurs explications",
+  "version": "2.0",
+  "totalQuestions": 60,
+  "matchedExplanations": 60,
+  "mappings": [
+    {
+      "positionIndex": 6,                           // ← Index unique (1-60)
+      "questionContent": "Continuez: A, C, E, G, ?", // ← Question exacte
+      "explanationId": "Q6",                        // ← Explication correspondante
+      "correctAnswer": "I",                         // ← Bonne réponse
+      "series": "A",                                // ← Série Raven
+      "competence": "verbal",                       // ← Type de compétence
+      "isConsistent": true                          // ← Validation automatique
+    }
+  ]
+}
+```
+
+#### Fonctionnalités du Système
+- ✅ **Correspondance parfaite** : 60/60 questions mappées correctement
+- 🔍 **Recherche intelligente** : Mapping exact + fallback par similarité
+- 🛠️ **Maintenable** : Un seul fichier JSON centralisé
+- 📊 **Statistiques** : Répartition par série et compétence
+- 🔄 **Extensible** : Facile d'ajouter de nouvelles questions
+- 📈 **Robuste** : Tests automatisés pour validation
 
 ### 📊 Système d'Explications (Architecture JSON) 🆕
 
@@ -319,6 +354,15 @@ testiq-app/
 
 ## 🔄 Mises à Jour Récentes
 
+### ⭐ Version 2.1 - Système d'Indexation Unifié (Août 2025)
+- 🗺️ **Système d'indexation unifié** : Mapping complet des 60 questions vers leurs explications
+- 🔗 **Correspondance garantie** : Chaque question affiche SA bonne explication (résolution du bug principal)
+- 📊 **Architecture robuste** : Index unique identifiable pour chaque question, réponse et cours  
+- 🛠️ **Maintenabilité** : Un seul fichier JSON pour gérer toutes les correspondances
+- 🎯 **Tests de validation** : 100% de réussite sur toutes les séries (A-E)
+- 🔍 **Recherche intelligente** : Mapping exact + fallback par similarité partielle
+- 📈 **Extensibilité** : Prêt pour l'ajout de nouvelles questions et explications
+
 ### ⭐ Version 2.0 - Système d'Explications Avancé (Janvier 2025)
 - 🚀 **Explications pédagogiques complètes** pour les 60 questions
 - 🎯 **Diagnostic d'erreur personnalisé** avec analyse psychologique
@@ -365,4 +409,4 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ---
 
-**Développé avec ❤️ pour l'évaluation intelligente du QI et l'apprentissage par l'erreur**
+**Développé pa MC LEDJIAR avec ❤️ pour l'évaluation intelligente du QI et l'apprentissage par l'erreur**

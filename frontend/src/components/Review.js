@@ -7,13 +7,38 @@ function Review({ user }) {
   const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [showDetailedExplanation, setShowDetailedExplanation] = useState(false);
+  const [advancedExplanation, setAdvancedExplanation] = useState(null);
+  const [loadingExplanation, setLoadingExplanation] = useState(false);
   const navigate = useNavigate();
   const { testIndex } = useParams();
 
   // Réinitialiser l'état des explications détaillées quand on change de question
   useEffect(() => {
     setShowDetailedExplanation(false);
+    setAdvancedExplanation(null);
   }, [currentQuestion]);
+
+  // Fonction pour charger l'explication avancée
+  const loadAdvancedExplanation = async (questionIndex, questionContent) => {
+    try {
+      setLoadingExplanation(true);
+      console.log(`📡 Envoi requête explication:`, {
+        questionId: `Q${questionIndex}`,
+        questionContent: questionContent
+      });
+      
+      const response = await axios.post('/api/explanation', {
+        questionId: `Q${questionIndex}`,
+        questionContent: questionContent
+      });
+      setAdvancedExplanation(response.data.explanation);
+    } catch (error) {
+      console.error('❌ Erreur lors du chargement de l\'explication avancée:', error);
+      setAdvancedExplanation(null);
+    } finally {
+      setLoadingExplanation(false);
+    }
+  };
 
   useEffect(() => {
     const fetchReviewData = async () => {
@@ -494,22 +519,43 @@ function Review({ user }) {
           
           {/* Bouton Savoir plus */}
           <button
-            onClick={() => setShowDetailedExplanation(!showDetailedExplanation)}
+            onClick={async () => {
+              if (!showDetailedExplanation && !advancedExplanation) {
+                // Utiliser le questionIndex depuis les données de review (plus fiable)
+                const questionIndex = currentAnswer?.questionIndex;
+                
+                console.log(`🔍 Debug - currentAnswer:`, {
+                  questionIndex: currentAnswer?.questionIndex,
+                  question: currentAnswer?.question?.substring(0, 30),
+                  series: currentAnswer?.series
+                });
+                
+                if (questionIndex) {
+                  console.log(`✅ Utilisation questionIndex: ${questionIndex}`);
+                  await loadAdvancedExplanation(questionIndex, currentAnswer?.question);
+                } else {
+                  console.log(`⚠️ Pas de questionIndex, fallback sur currentQuestion + 1: ${currentQuestion + 1}`);
+                  await loadAdvancedExplanation(currentQuestion + 1, currentAnswer?.question);
+                }
+              }
+              setShowDetailedExplanation(!showDetailedExplanation);
+            }}
+            disabled={loadingExplanation}
             style={{
-              background: '#17a2b8',
+              background: loadingExplanation ? '#6c757d' : '#17a2b8',
               color: 'white',
               border: 'none',
               padding: '8px 15px',
               borderRadius: '15px',
               fontSize: '14px',
-              cursor: 'pointer',
+              cursor: loadingExplanation ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '5px',
               fontWeight: '500'
             }}
           >
-            📚 {showDetailedExplanation ? 'Masquer le cours' : 'Savoir plus'}
+            {loadingExplanation ? '⏳ Chargement...' : `📚 ${showDetailedExplanation ? 'Masquer le cours' : 'Savoir plus'}`}
           </button>
         </div>
 
@@ -522,77 +568,218 @@ function Review({ user }) {
             padding: '25px',
             marginBottom: '20px'
           }}>
-            {(() => {
-              const detailedContent = getDetailedExplanation(currentAnswer);
-              return (
-                <>
-                  <h3 style={{ 
-                    color: '#0c5460', 
-                    marginBottom: '20px',
-                    fontSize: '24px',
-                    fontWeight: 'bold'
-                  }}>
-                    {detailedContent.title}
-                  </h3>
-                  
+            {advancedExplanation ? (
+              // Explication avancée
+              <>
+                <h3 style={{ 
+                  color: '#0c5460', 
+                  marginBottom: '20px',
+                  fontSize: '24px',
+                  fontWeight: 'bold'
+                }}>
+                  🔄 Série {advancedExplanation.serie} - {advancedExplanation.competence.charAt(0).toUpperCase() + advancedExplanation.competence.slice(1)}
+                </h3>
+                
+                {/* Solution pas-à-pas */}
+                {advancedExplanation.solutionPasAPas && (
                   <div style={{ marginBottom: '20px' }}>
-                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>📖 Concept</h4>
-                    <p style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
-                      {detailedContent.concept}
-                    </p>
-                  </div>
-                  
-                  <div style={{ marginBottom: '20px' }}>
-                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>🛠️ Techniques de résolution</h4>
-                    <ul style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
-                      {detailedContent.techniques?.map((technique, index) => (
-                        <li key={index} style={{ marginBottom: '5px' }}>{technique}</li>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>🎯 Solution pas-à-pas</h4>
+                    <ol style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
+                      {advancedExplanation.solutionPasAPas.map((step, index) => (
+                        <li key={index} style={{ marginBottom: '8px', fontWeight: '500' }}>{step}</li>
                       ))}
-                    </ul>
+                    </ol>
                   </div>
-                  
+                )}
+                
+                {/* Règle extraite */}
+                {advancedExplanation.regleExtraite && (
                   <div style={{ marginBottom: '20px' }}>
-                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>💡 Application</h4>
-                    <p style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
-                      {detailedContent.examples}
-                    </p>
-                  </div>
-                  
-                  <div style={{
-                    background: '#b3d9ff',
-                    padding: '15px',
-                    borderRadius: '10px',
-                    border: '1px solid #17a2b8'
-                  }}>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>📏 Règle extraite</h4>
                     <p style={{ 
                       color: '#0c5460', 
-                      margin: 0, 
-                      fontWeight: '500',
-                      fontSize: '16px'
+                      lineHeight: '1.6', 
+                      fontSize: '16px',
+                      background: '#b3d9ff',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      fontWeight: '500'
                     }}>
-                      {detailedContent.tips}
+                      {advancedExplanation.regleExtraite}
                     </p>
                   </div>
-                  
-                  <button
-                    onClick={() => setShowDetailedExplanation(false)}
-                    style={{
-                      background: '#6c757d',
-                      color: 'white',
-                      border: 'none',
-                      padding: '8px 15px',
-                      borderRadius: '15px',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      marginTop: '20px',
-                      fontWeight: '500'
-                    }}
-                  >
-                    ✖️ Fermer le cours
-                  </button>
-                </>
-              );
-            })()}
+                )}
+                
+                {/* Généralisation */}
+                {advancedExplanation.generalisation && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>🚀 Généralisation</h4>
+                    <p style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
+                      {advancedExplanation.generalisation}
+                    </p>
+                  </div>
+                )}
+                
+                {/* Analyse des distracteurs */}
+                {advancedExplanation.analyseDistracteurs && advancedExplanation.analyseDistracteurs.length > 0 && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>🎯 Analyse des options</h4>
+                    <div style={{ display: 'grid', gap: '8px' }}>
+                      {advancedExplanation.analyseDistracteurs.map((item, index) => (
+                        <div key={index} style={{
+                          background: item.raisonChoixFrequent.startsWith('✅') ? '#d4f6d4' : '#ffe6e6',
+                          padding: '10px',
+                          borderRadius: '8px',
+                          border: `1px solid ${item.raisonChoixFrequent.startsWith('✅') ? '#28a745' : '#dc3545'}`
+                        }}>
+                          <strong>{item.option}</strong>: {item.raisonChoixFrequent}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Nouveau concept */}
+                {advancedExplanation.nouveauConcept && advancedExplanation.nouveauConcept.isNew && advancedExplanation.nouveauConcept.fiche && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>📚 Nouveau concept</h4>
+                    <div style={{
+                      background: '#fff3cd',
+                      border: '1px solid #ffc107',
+                      padding: '15px',
+                      borderRadius: '10px'
+                    }}>
+                      <h5 style={{ color: '#856404', margin: '0 0 10px 0' }}>{advancedExplanation.nouveauConcept.fiche.nom}</h5>
+                      <p style={{ color: '#856404', lineHeight: '1.6', fontSize: '14px', margin: '0 0 10px 0' }}>
+                        {advancedExplanation.nouveauConcept.fiche.definition}
+                      </p>
+                      <p style={{ color: '#856404', lineHeight: '1.6', fontSize: '14px', margin: 0 }}>
+                        <strong>Application:</strong> {advancedExplanation.nouveauConcept.fiche.application}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Métacognition */}
+                {advancedExplanation.metacognition && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>⏱️ Métacognition</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+                      {advancedExplanation.metacognition.tempsCibleSec && (
+                        <div style={{
+                          background: '#e8f5e8',
+                          padding: '10px',
+                          borderRadius: '8px',
+                          border: '1px solid #28a745'
+                        }}>
+                          <strong>Temps cible:</strong> {advancedExplanation.metacognition.tempsCibleSec}s
+                        </div>
+                      )}
+                      {advancedExplanation.metacognition.heuristiqueExpress && (
+                        <div style={{
+                          background: '#e8f5e8',
+                          padding: '10px',
+                          borderRadius: '8px',
+                          border: '1px solid #28a745'
+                        }}>
+                          <strong>Astuce:</strong> {advancedExplanation.metacognition.heuristiqueExpress}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                <button
+                  onClick={() => setShowDetailedExplanation(false)}
+                  style={{
+                    background: '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 15px',
+                    borderRadius: '15px',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    marginTop: '20px',
+                    fontWeight: '500'
+                  }}
+                >
+                  ✖️ Fermer le cours
+                </button>
+              </>
+            ) : (
+              // Fallback vers l'explication classique
+              (() => {
+                const detailedContent = getDetailedExplanation(currentAnswer);
+                return (
+                  <>
+                    <h3 style={{ 
+                      color: '#0c5460', 
+                      marginBottom: '20px',
+                      fontSize: '24px',
+                      fontWeight: 'bold'
+                    }}>
+                      {detailedContent.title}
+                    </h3>
+                    
+                    <div style={{ marginBottom: '20px' }}>
+                      <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>📖 Concept</h4>
+                      <p style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
+                        {detailedContent.concept}
+                      </p>
+                    </div>
+                    
+                    <div style={{ marginBottom: '20px' }}>
+                      <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>🛠️ Techniques de résolution</h4>
+                      <ul style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
+                        {detailedContent.techniques?.map((technique, index) => (
+                          <li key={index} style={{ marginBottom: '5px' }}>{technique}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div style={{ marginBottom: '20px' }}>
+                      <h4 style={{ color: '#0c5460', marginBottom: '10px' }}>💡 Application</h4>
+                      <p style={{ color: '#0c5460', lineHeight: '1.6', fontSize: '16px' }}>
+                        {detailedContent.examples}
+                      </p>
+                    </div>
+                    
+                    <div style={{
+                      background: '#b3d9ff',
+                      padding: '15px',
+                      borderRadius: '10px',
+                      border: '1px solid #17a2b8'
+                    }}>
+                      <p style={{ 
+                        color: '#0c5460', 
+                        margin: 0, 
+                        fontWeight: '500',
+                        fontSize: '16px'
+                      }}>
+                        {detailedContent.tips}
+                      </p>
+                    </div>
+                    
+                    <button
+                      onClick={() => setShowDetailedExplanation(false)}
+                      style={{
+                        background: '#6c757d',
+                        color: 'white',
+                        border: 'none',
+                        padding: '8px 15px',
+                        borderRadius: '15px',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        marginTop: '20px',
+                        fontWeight: '500'
+                      }}
+                    >
+                      ✖️ Fermer le cours
+                    </button>
+                  </>
+                );
+              })()
+            )}
           </div>
         )}
       </div>
