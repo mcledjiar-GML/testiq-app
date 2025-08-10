@@ -3865,7 +3865,7 @@
       }
     },
     {
-      "questionId": "Q39",
+      "questionId": "Q40",
       "serie": "D",
       "competence": "logique",
       "difficulte": 8,
@@ -3973,7 +3973,7 @@
       }
     },
     {
-      "questionId": "Q40",
+      "questionId": "Q39",
       "serie": "D",
       "competence": "spatial",
       "difficulte": 7,
