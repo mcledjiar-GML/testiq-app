@@ -196,7 +196,7 @@ function Test({ user }) {
         
         {/* 🎨 VISUEL PROFESSIONNEL GÉNÉRATION AUTOMATIQUE */}
         <QuestionVisual 
-          questionId={`Q${currentQuestion + 1}_${questions[currentQuestion]?.questionIndex || 'test'}`}
+          questionId={`Q${questions[currentQuestion]?.questionIndex || (currentQuestion + 1)}`}
           questionContent={questions[currentQuestion]?.content}
           category={questions[currentQuestion]?.category}
         />
