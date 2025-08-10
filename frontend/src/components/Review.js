@@ -401,7 +401,7 @@ function Review({ user }) {
 
         {/* 🎨 VISUEL PROFESSIONNEL GÉNÉRATION AUTOMATIQUE */}
         <QuestionVisual 
-          questionId={`Q${currentAnswer?.questionIndex || (currentQuestion + 1)}`}
+          questionId={`Review_Q${currentQuestion + 1}_${currentAnswer?.questionIndex || 'review'}`}
           questionContent={currentAnswer?.question}
           category={currentAnswer?.category}
         />
