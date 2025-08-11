@@ -5,11 +5,19 @@ const ravenQuestions = [
     type: 'raven',
     series: 'A',
     difficulty: 1,
-    content: 'Complétez le motif: Quel forme manque dans cette séquence?',
-    options: ['◐', '◑', '◒', '◓'],
+    content: 'Complétez la séquence de rotations ci-dessous.',
+    stimulus: 'Séquence: ◓ ◑ ◒ ◐ ?',
+    visualPattern: 'rotation_sequence_90deg',
+    options: [
+      { text: '◓', alt: 'demi-cercle noir orienté vers le bas' },
+      { text: '◑', alt: 'demi-cercle noir orienté vers la droite' },
+      { text: '◒', alt: 'demi-cercle noir orienté vers le haut' },
+      { text: '◐', alt: 'demi-cercle noir orienté vers la gauche' }
+    ],
     correctAnswer: 0,
     category: 'spatial',
-    timeLimit: 45
+    timeLimit: 60,
+    explanation: 'La moitié noire tourne de 90° dans le sens horaire à chaque étape.'
   },
   {
     type: 'raven',

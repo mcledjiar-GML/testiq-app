@@ -69,7 +69,7 @@ const QuestionSchema = new mongoose.Schema({
   series: { type: String, enum: ['A', 'B', 'C', 'D', 'E'] }, // Série pour les tests Raven
   difficulty: { type: Number, min: 1, max: 10, required: true },
   content: { type: String, required: true },
-  options: [String],
+  options: [mongoose.Schema.Types.Mixed], // Support String et Object
   correctAnswer: Number,
   category: { type: String, enum: ['logique', 'verbal', 'spatial', 'mémoire'] },
   timeLimit: { type: Number, default: 60 },
@@ -306,8 +306,13 @@ app.post('/api/tests/start', authenticateToken, async (req, res) => {
         const seriesOrder = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5 };
         return seriesOrder[a.series] - seriesOrder[b.series];
       });
+    } else if (level === 'short') {
+      // Test rapide: toutes les questions de la série A (Questions 1-12)
+      const seriesAQuestions = allQuestions.filter(q => q.series === 'A')
+        .sort((a, b) => (a.questionIndex || 0) - (b.questionIndex || 0));
+      selectedQuestions = seriesAQuestions.slice(0, 12);
     } else {
-      // Test partiel: échantillonner chaque série
+      // Test standard: échantillonner chaque série
       const series = ['A', 'B', 'C', 'D', 'E'];
       const questionsPerSeries = Math.ceil(questionCount / 5);
       
