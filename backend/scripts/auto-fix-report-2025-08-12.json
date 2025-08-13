@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "generatedAt": "2025-08-12T21:47:05.432Z",
+    "totalProcessed": 90,
+    "totalFixed": 3,
+    "totalErrors": 0
+  },
+  "fixes": {
+    "angle_markers": 0,
+    "monochrome": 0,
+    "option_homogeneity": 0,
+    "visible_hints": 0,
+    "alphabet_correction": 3
+  },
+  "errors": []
+}

@@ -22,7 +22,11 @@
       "Bash(./start_testiq.sh:*)",
       "Bash(grep:*)",
       "Bash(winpty docker exec -it testiq-app-backend-1 ls -la /app/)",
-      "Bash(winpty docker exec -it testiq-app-mongo-1 mongosh --eval \"db.users.find().pretty()\")"
+      "Bash(winpty docker exec -it testiq-app-mongo-1 mongosh --eval \"db.users.find().pretty()\")",
+      "Bash(winpty docker exec -it testiq-app-backend-1 printenv)",
+      "Bash(winpty docker exec -it testiq-app-mongo-1 mongosh --eval \"db.users.find().pretty()\")",
+      "Bash(npm test)",
+      "Bash(git reset:*)"
     ],
     "deny": []
   }

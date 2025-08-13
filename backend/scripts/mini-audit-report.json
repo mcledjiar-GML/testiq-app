@@ -1,0 +1,476 @@
+{
+  "total": 60,
+  "checks": {
+    "optionsCount": {
+      "passed": 60,
+      "failed": 0
+    },
+    "exactlyOneCorrect": {
+      "passed": 60,
+      "failed": 0
+    },
+    "alphabetConsistent": {
+      "passed": 37,
+      "failed": 23
+    },
+    "assetsConsistent": {
+      "passed": 60,
+      "failed": 0
+    },
+    "hashValid": {
+      "passed": 60,
+      "failed": 0
+    },
+    "solutionUnique": {
+      "passed": 9,
+      "failed": 51
+    }
+  },
+  "issues": [
+    {
+      "qid": "01K2G2QNY5J3MGFR8GK33HMW8G",
+      "version": 1,
+      "content": "Complétez la séquence de rotations ci-dessous....",
+      "issues": [
+        "Alphabet: déclaré 'semicircle', détecté 'unknown'",
+        "Solution non unique: Erreur d'analyse: Séquence de rotation non reconnue"
+      ]
+    },
+    {
+      "qid": "01K2G2QP3SWZBECZW1HGZKF4CC",
+      "version": 1,
+      "content": "Trouvez le motif manquant dans cette grille 2x2 (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: Erreur d'analyse: Motif de matrice 2x2 non reconnu"
+      ]
+    },
+    {
+      "qid": "01K2G2QP3ZR44EGF3FEAD1QQJY",
+      "version": 1,
+      "content": "Continuez: A, C, E, G, ? [alphabet]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP4BJDK4RH7T7S23B6W1",
+      "version": 1,
+      "content": "Quel symbole manque: ★☆★☆? [formes]...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP4H1Q0GMFS48TRH84YK",
+      "version": 1,
+      "content": "Complétez la série suivante. [formes]...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP4TNGE626JTRGGWN29T",
+      "version": 1,
+      "content": "Dernier élément de la série A: rotation simple...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Séquence de rotation non reconnue"
+      ]
+    },
+    {
+      "qid": "01K2G2QP4X9ZQ57SCDPGQHMS9F",
+      "version": 1,
+      "content": "Analogie: 2 est à 4 comme 3 est à ? [numérique]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP50NJ27GM7NEJ9T0ZEB",
+      "version": 1,
+      "content": "Matrice 2x2 avec rotation: trouvez l'élément manquant\n\n🔲 MATRICE 2?:\n[  ↗  ][  ...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Séquence de rotation non reconnue"
+      ]
+    },
+    {
+      "qid": "01K2G2QP53E0SV44X6D0DZ5MEB",
+      "version": 1,
+      "content": "Suite de Fibonacci: 1, 1, 2, 3, 5, ?...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Différences incohérentes: 1, 1, 2"
+      ]
+    },
+    {
+      "qid": "01K2G2QP55TSH0ZCBTQQQGMZGE",
+      "version": 1,
+      "content": "Si tous les A sont B et certains B sont C, alors: [alphabet]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP58R4J1GSRB5A5W78DZ",
+      "version": 1,
+      "content": "Motif complexe avec superposition de formes [rotations]...",
+      "issues": [
+        "Alphabet: déclaré 'semicircle', détecté 'unknown'",
+        "Solution non unique: Erreur d'analyse: Séquence de rotation non reconnue"
+      ]
+    },
+    {
+      "qid": "01K2G2QP5DPDY08Y6RMFA96ZF6",
+      "version": 1,
+      "content": "Analogie visuelle: △ est à ▽ comme □ est à ? [formes]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP5GT4EYSNCSM9EZ3S4Y",
+      "version": 1,
+      "content": "Suite géométrique: 2, 6, 18, 54, ?...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Différences incohérentes: 4, 12, 36"
+      ]
+    },
+    {
+      "qid": "01K2G2QP5N9ETRSEZY8PYY23XX",
+      "version": 1,
+      "content": "Matrice 3x3 avec progression de remplissage (suite numérique)...",
+      "issues": [
+        "Alphabet: déclaré 'number', détecté 'unknown'"
+      ]
+    },
+    {
+      "qid": "01K2G2QP5T8JBWH5AGSB5Y4CVM",
+      "version": 1,
+      "content": "Logique: Si A>B et B>C, alors A ? C [alphabet]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP5XBCHXR1FNGAFCET8S",
+      "version": 1,
+      "content": "Rotation et réflexion combinées [formes]...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: Erreur d'analyse: Séquence de rotation non reconnue"
+      ]
+    },
+    {
+      "qid": "01K2G2QP600MW8MY2PGB574EYJ",
+      "version": 1,
+      "content": "Série B finale: motif complexe en spirale...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP63XJEZG5ZQ9P5P6TBQ",
+      "version": 1,
+      "content": "Matrice complexe avec multiple transformations (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP67KRC533VTW7SWCR5A",
+      "version": 1,
+      "content": "Suite: 1, 4, 9, 16, 25, ?...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Différences incohérentes: 5, 7, 9"
+      ]
+    },
+    {
+      "qid": "01K2G2QP69AMFGK7WVKF62BGFE",
+      "version": 1,
+      "content": "Raisonnement complexe: Si P→Q et Q→R, alors P→R ? [directions]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP6CWP5R9CY8HDR57K94",
+      "version": 1,
+      "content": "Superposition de 3 motifs géométriques [numérique]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP6FBTTMNNVP2VS452KP",
+      "version": 1,
+      "content": "Suite prime: 2, 3, 5, 7, 11, ?...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Différences incohérentes: 2, 2, 4"
+      ]
+    },
+    {
+      "qid": "01K2G2QP6J5AXQ307Z5WAWGW9Q",
+      "version": 1,
+      "content": "Transformation spatiale en 3D mentale (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP6P4ADSKHETH2H6B43Q",
+      "version": 1,
+      "content": "Progression: x, x², x³, x⁴, ? (avec x?) (suite numérique)...",
+      "issues": [
+        "Alphabet: déclaré 'number', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP6S6NRWA3EJMPT3K1TB",
+      "version": 1,
+      "content": "Matrice avec règles multiples appliquées (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP6VHQC43VH90C9XVD81",
+      "version": 1,
+      "content": "Logique booléenne: (A ∧ B) ∨ (¬A ∧ ¬B) = ? [alphabet]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP6ZDZJ0G63VF3GHWX1P",
+      "version": 1,
+      "content": "Symétries multiples et rotations [formes]...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: Erreur d'analyse: Séquence de rotation non reconnue"
+      ]
+    },
+    {
+      "qid": "01K2G2QP749GC4PAQ2395RYXV9",
+      "version": 1,
+      "content": "Suite complexe: 1, 1, 2, 3, 5, 8, 13, ?...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Différences incohérentes: 2, 3, 5"
+      ]
+    },
+    {
+      "qid": "01K2G2QP78FCF49QQZZDB2WV3T",
+      "version": 1,
+      "content": "Série C finale: intégration de tous les concepts...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP7BT4B62GM28KPACFBP",
+      "version": 1,
+      "content": "Matrice 3x3 avec transformations multiples complexes (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'"
+      ]
+    },
+    {
+      "qid": "01K2G2QP7EW0Z49VSNXCW6C6X0",
+      "version": 1,
+      "content": "Trouvez le terme suivant dans cette suite numérique....",
+      "issues": [
+        "Alphabet: déclaré 'number', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP7HSP8ANG4GF0BD1DR8",
+      "version": 1,
+      "content": "Raisonnement modal: ◇P → □◇P, si ◇P alors ? [formes]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP7PCCQXS55TNMWWBSCB",
+      "version": 1,
+      "content": "Transformation géométrique en 4 dimensions [numérique]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP7V7ZC07DHNY2FEC20F",
+      "version": 1,
+      "content": "Suite de Catalan: 1,1,2,5,14,42,?...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Différences incohérentes: 3, 9, 28"
+      ]
+    },
+    {
+      "qid": "01K2G2QP7Z2VY5VCTNN2SBF5N1",
+      "version": 1,
+      "content": "Motif fractal auto-similaire niveau 3 [numérique]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP82EAHTMSA7J165P84V",
+      "version": 1,
+      "content": "Progression: 2^1, 3^2, 4^3, 5^4, donc 6^? [numérique]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP85766SFMF17DXWQDYQ",
+      "version": 1,
+      "content": "Composition de transformations non-commutatives (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP89JY304PQ3N6D7A157",
+      "version": 1,
+      "content": "Théorie des ensembles: P(A∪B) si |A|?, |B|?, |A∩B|? [alphabet]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP8BTTSN1DEBYPHW40FP",
+      "version": 1,
+      "content": "Tessellation complexe avec contraintes (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP8DRGDCS4JZN7J3RF86",
+      "version": 1,
+      "content": "Suite récurrente: a(n) = a(n?) + a(n?) + a(n?)...",
+      "issues": [
+        "Alphabet: déclaré 'number', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP8FGJ06QQ42MJF3S02B",
+      "version": 1,
+      "content": "Série D finale: synthèse de tous les patterns...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP8K2Y29SHETJ8HKNJM3",
+      "version": 1,
+      "content": "Matrice 4x4 avec règles interdépendantes (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP8NCTCW33Q4QT2D9RBX",
+      "version": 1,
+      "content": "Suite de Ackermann: A(2,1), A(2,2), A(2,3), A(2,4)?...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP8QY0W7TQR4WZWB89DW",
+      "version": 1,
+      "content": "Logique temporelle: □◇P ∧ ◇□Q → ? [formes]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP8T6DT67NSCERTNXGV2",
+      "version": 1,
+      "content": "Hypercube en projection 2D avec rotations [formes]...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: Erreur d'analyse: Séquence de rotation non reconnue"
+      ]
+    },
+    {
+      "qid": "01K2G2QP8XER30DAAMJB588EYC",
+      "version": 1,
+      "content": "Suite de Bell: 1,1,2,5,15,52,203,?...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Différences incohérentes: 10, 37, 151"
+      ]
+    },
+    {
+      "qid": "01K2G2QP8Z5P2BJAJ5F9Q3WFQB",
+      "version": 1,
+      "content": "Transformation topologique préservant l'homéomorphisme (rotation de formes)...",
+      "issues": [
+        "Alphabet: déclaré 'semicircle', détecté 'unknown'",
+        "Solution non unique: Erreur d'analyse: Séquence de rotation non reconnue"
+      ]
+    },
+    {
+      "qid": "01K2G2QP91WZDW95YH5TBEZQRN",
+      "version": 1,
+      "content": "Théorie des graphes: chromatic number du graphe de Petersen (suite numérique)...",
+      "issues": [
+        "Alphabet: déclaré 'number', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP93F8PCVGHTK9BNSP4R",
+      "version": 1,
+      "content": "Groupe de symétrie D6 appliqué à un hexagone (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP947X0JNX6N8KCGPB5T",
+      "version": 1,
+      "content": "Suite de Motzkin: 1,1,2,4,9,21,51,?...",
+      "issues": [
+        "Solution non unique: Erreur d'analyse: Différences incohérentes: 5, 12, 30"
+      ]
+    },
+    {
+      "qid": "01K2G2QP96S1164NE023CTXC0G",
+      "version": 1,
+      "content": "Pavage non-périodique de Penrose (formes géométriques)...",
+      "issues": [
+        "Alphabet: déclaré 'shape', détecté 'unknown'",
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP98H7ADZ24J90WTN6E3",
+      "version": 1,
+      "content": "Fonction de Ramsey: R(3,3) dans un graphe complet [numérique]...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    },
+    {
+      "qid": "01K2G2QP993R9QCQBJ4QSJCA06",
+      "version": 1,
+      "content": "Série E finale: métacognition et abstraction maximale...",
+      "issues": [
+        "Solution non unique: "
+      ]
+    }
+  ]
+}

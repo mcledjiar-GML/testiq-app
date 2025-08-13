@@ -1,0 +1,1001 @@
+{
+  "timestamp": "2025-08-12T22:21:37.725Z",
+  "summary": {
+    "total": 15,
+    "passed": 13,
+    "failed": 2,
+    "successRate": "86.7%"
+  },
+  "tests": [
+    {
+      "name": "QID Uniqueness",
+      "passed": true,
+      "details": "Tous les QIDs sont uniques",
+      "duplicates": []
+    },
+    {
+      "name": "Bundle Hash Uniqueness",
+      "passed": true,
+      "details": "Tous les bundle hash sont uniques",
+      "collisions": []
+    },
+    {
+      "name": "Options Consistency",
+      "passed": true,
+      "details": "60 questions avec options valides",
+      "issues": []
+    },
+    {
+      "name": "Alphabet Consistency",
+      "passed": false,
+      "details": "23 incohérences d'alphabet détectées",
+      "issues": [
+        {
+          "qid": "01K2G2QNY5J3MGFR8GK33HMW8G",
+          "version": 1,
+          "declared": "semicircle",
+          "detected": "unknown",
+          "content": "Complétez la séquence de rotations ci-dessous...."
+        },
+        {
+          "qid": "01K2G2QP3SWZBECZW1HGZKF4CC",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Trouvez le motif manquant dans cette grille 2x2 (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP4BJDK4RH7T7S23B6W1",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Quel symbole manque: ★☆★☆? [formes]..."
+        },
+        {
+          "qid": "01K2G2QP4H1Q0GMFS48TRH84YK",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Complétez la série suivante. [formes]..."
+        },
+        {
+          "qid": "01K2G2QP58R4J1GSRB5A5W78DZ",
+          "version": 1,
+          "declared": "semicircle",
+          "detected": "unknown",
+          "content": "Motif complexe avec superposition de formes [rotations]..."
+        },
+        {
+          "qid": "01K2G2QP5N9ETRSEZY8PYY23XX",
+          "version": 1,
+          "declared": "number",
+          "detected": "unknown",
+          "content": "Matrice 3x3 avec progression de remplissage (suite numérique)..."
+        },
+        {
+          "qid": "01K2G2QP5XBCHXR1FNGAFCET8S",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Rotation et réflexion combinées [formes]..."
+        },
+        {
+          "qid": "01K2G2QP63XJEZG5ZQ9P5P6TBQ",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Matrice complexe avec multiple transformations (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP6J5AXQ307Z5WAWGW9Q",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Transformation spatiale en 3D mentale (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP6P4ADSKHETH2H6B43Q",
+          "version": 1,
+          "declared": "number",
+          "detected": "unknown",
+          "content": "Progression: x, x², x³, x⁴, ? (avec x?) (suite numérique)..."
+        },
+        {
+          "qid": "01K2G2QP6S6NRWA3EJMPT3K1TB",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Matrice avec règles multiples appliquées (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP6ZDZJ0G63VF3GHWX1P",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Symétries multiples et rotations [formes]..."
+        },
+        {
+          "qid": "01K2G2QP7BT4B62GM28KPACFBP",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Matrice 3x3 avec transformations multiples complexes (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP7EW0Z49VSNXCW6C6X0",
+          "version": 1,
+          "declared": "number",
+          "detected": "unknown",
+          "content": "Trouvez le terme suivant dans cette suite numérique...."
+        },
+        {
+          "qid": "01K2G2QP85766SFMF17DXWQDYQ",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Composition de transformations non-commutatives (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP8BTTSN1DEBYPHW40FP",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Tessellation complexe avec contraintes (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP8DRGDCS4JZN7J3RF86",
+          "version": 1,
+          "declared": "number",
+          "detected": "unknown",
+          "content": "Suite récurrente: a(n) = a(n?) + a(n?) + a(n?)..."
+        },
+        {
+          "qid": "01K2G2QP8K2Y29SHETJ8HKNJM3",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Matrice 4x4 avec règles interdépendantes (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP8T6DT67NSCERTNXGV2",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Hypercube en projection 2D avec rotations [formes]..."
+        },
+        {
+          "qid": "01K2G2QP8Z5P2BJAJ5F9Q3WFQB",
+          "version": 1,
+          "declared": "semicircle",
+          "detected": "unknown",
+          "content": "Transformation topologique préservant l'homéomorphisme (rotation de formes)..."
+        },
+        {
+          "qid": "01K2G2QP91WZDW95YH5TBEZQRN",
+          "version": 1,
+          "declared": "number",
+          "detected": "unknown",
+          "content": "Théorie des graphes: chromatic number du graphe de Petersen (suite numérique)..."
+        },
+        {
+          "qid": "01K2G2QP93F8PCVGHTK9BNSP4R",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Groupe de symétrie D6 appliqué à un hexagone (formes géométriques)..."
+        },
+        {
+          "qid": "01K2G2QP96S1164NE023CTXC0G",
+          "version": 1,
+          "declared": "shape",
+          "detected": "unknown",
+          "content": "Pavage non-périodique de Penrose (formes géométriques)..."
+        }
+      ]
+    },
+    {
+      "name": "Solution Uniqueness",
+      "passed": false,
+      "details": "51 questions avec problèmes d'unicité",
+      "stats": {
+        "total": 60,
+        "valid": 9,
+        "invalid": 51,
+        "ruleTypes": 6
+      },
+      "issues": [
+        {
+          "qid": "01K2G2QNY5J3MGFR8GK33HMW8G",
+          "version": 1,
+          "ruleType": "rotation_90",
+          "errors": [
+            "Erreur d'analyse: Séquence de rotation non reconnue"
+          ],
+          "warnings": [],
+          "content": "Complétez la séquence de rotations ci-dessous....",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP3SWZBECZW1HGZKF4CC",
+          "version": 1,
+          "ruleType": "matrix_2x2",
+          "errors": [
+            "Erreur d'analyse: Motif de matrice 2x2 non reconnu"
+          ],
+          "warnings": [],
+          "content": "Trouvez le motif manquant dans cette grille 2x2 (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP3ZR44EGF3FEAD1QQJY",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Continuez: A, C, E, G, ? [alphabet]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP4BJDK4RH7T7S23B6W1",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Quel symbole manque: ★☆★☆? [formes]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP4H1Q0GMFS48TRH84YK",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Complétez la série suivante. [formes]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP4TNGE626JTRGGWN29T",
+          "version": 1,
+          "ruleType": "rotation_90",
+          "errors": [
+            "Erreur d'analyse: Séquence de rotation non reconnue"
+          ],
+          "warnings": [],
+          "content": "Dernier élément de la série A: rotation simple...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP4X9ZQ57SCDPGQHMS9F",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Analogie: 2 est à 4 comme 3 est à ? [numérique]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP50NJ27GM7NEJ9T0ZEB",
+          "version": 1,
+          "ruleType": "rotation_90",
+          "errors": [
+            "Erreur d'analyse: Séquence de rotation non reconnue"
+          ],
+          "warnings": [],
+          "content": "Matrice 2x2 avec rotation: trouvez l'élément manquant\n\n🔲 MATRICE 2?:\n[  ↗  ][  ↓  ]\n[  ↑  ][  ?  ]\n...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP53E0SV44X6D0DZ5MEB",
+          "version": 1,
+          "ruleType": "arithmetic_sequence",
+          "errors": [
+            "Erreur d'analyse: Différences incohérentes: 1, 1, 2"
+          ],
+          "warnings": [],
+          "content": "Suite de Fibonacci: 1, 1, 2, 3, 5, ?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP55TSH0ZCBTQQQGMZGE",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Si tous les A sont B et certains B sont C, alors: [alphabet]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP58R4J1GSRB5A5W78DZ",
+          "version": 1,
+          "ruleType": "rotation_90",
+          "errors": [
+            "Erreur d'analyse: Séquence de rotation non reconnue"
+          ],
+          "warnings": [],
+          "content": "Motif complexe avec superposition de formes [rotations]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP5DPDY08Y6RMFA96ZF6",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Analogie visuelle: △ est à ▽ comme □ est à ? [formes]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP5GT4EYSNCSM9EZ3S4Y",
+          "version": 1,
+          "ruleType": "arithmetic_sequence",
+          "errors": [
+            "Erreur d'analyse: Différences incohérentes: 4, 12, 36"
+          ],
+          "warnings": [],
+          "content": "Suite géométrique: 2, 6, 18, 54, ?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP5T8JBWH5AGSB5Y4CVM",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Logique: Si A>B et B>C, alors A ? C [alphabet]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP5XBCHXR1FNGAFCET8S",
+          "version": 1,
+          "ruleType": "rotation_90",
+          "errors": [
+            "Erreur d'analyse: Séquence de rotation non reconnue"
+          ],
+          "warnings": [],
+          "content": "Rotation et réflexion combinées [formes]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP600MW8MY2PGB574EYJ",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Série B finale: motif complexe en spirale...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP63XJEZG5ZQ9P5P6TBQ",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Matrice complexe avec multiple transformations (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP67KRC533VTW7SWCR5A",
+          "version": 1,
+          "ruleType": "arithmetic_sequence",
+          "errors": [
+            "Erreur d'analyse: Différences incohérentes: 5, 7, 9"
+          ],
+          "warnings": [],
+          "content": "Suite: 1, 4, 9, 16, 25, ?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP69AMFGK7WVKF62BGFE",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Raisonnement complexe: Si P→Q et Q→R, alors P→R ? [directions]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP6CWP5R9CY8HDR57K94",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Superposition de 3 motifs géométriques [numérique]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP6FBTTMNNVP2VS452KP",
+          "version": 1,
+          "ruleType": "arithmetic_sequence",
+          "errors": [
+            "Erreur d'analyse: Différences incohérentes: 2, 2, 4"
+          ],
+          "warnings": [],
+          "content": "Suite prime: 2, 3, 5, 7, 11, ?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP6J5AXQ307Z5WAWGW9Q",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Transformation spatiale en 3D mentale (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP6P4ADSKHETH2H6B43Q",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Progression: x, x², x³, x⁴, ? (avec x?) (suite numérique)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP6S6NRWA3EJMPT3K1TB",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Matrice avec règles multiples appliquées (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP6VHQC43VH90C9XVD81",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Logique booléenne: (A ∧ B) ∨ (¬A ∧ ¬B) = ? [alphabet]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP6ZDZJ0G63VF3GHWX1P",
+          "version": 1,
+          "ruleType": "rotation_90",
+          "errors": [
+            "Erreur d'analyse: Séquence de rotation non reconnue"
+          ],
+          "warnings": [],
+          "content": "Symétries multiples et rotations [formes]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP749GC4PAQ2395RYXV9",
+          "version": 1,
+          "ruleType": "arithmetic_sequence",
+          "errors": [
+            "Erreur d'analyse: Différences incohérentes: 2, 3, 5"
+          ],
+          "warnings": [],
+          "content": "Suite complexe: 1, 1, 2, 3, 5, 8, 13, ?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP78FCF49QQZZDB2WV3T",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Série C finale: intégration de tous les concepts...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP7EW0Z49VSNXCW6C6X0",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Trouvez le terme suivant dans cette suite numérique....",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP7HSP8ANG4GF0BD1DR8",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Raisonnement modal: ◇P → □◇P, si ◇P alors ? [formes]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP7PCCQXS55TNMWWBSCB",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Transformation géométrique en 4 dimensions [numérique]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP7V7ZC07DHNY2FEC20F",
+          "version": 1,
+          "ruleType": "arithmetic_sequence",
+          "errors": [
+            "Erreur d'analyse: Différences incohérentes: 3, 9, 28"
+          ],
+          "warnings": [],
+          "content": "Suite de Catalan: 1,1,2,5,14,42,?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP7Z2VY5VCTNN2SBF5N1",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Motif fractal auto-similaire niveau 3 [numérique]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP82EAHTMSA7J165P84V",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Progression: 2^1, 3^2, 4^3, 5^4, donc 6^? [numérique]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP85766SFMF17DXWQDYQ",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Composition de transformations non-commutatives (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP89JY304PQ3N6D7A157",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Théorie des ensembles: P(A∪B) si |A|?, |B|?, |A∩B|? [alphabet]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8BTTSN1DEBYPHW40FP",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Tessellation complexe avec contraintes (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8DRGDCS4JZN7J3RF86",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Suite récurrente: a(n) = a(n?) + a(n?) + a(n?)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8FGJ06QQ42MJF3S02B",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Série D finale: synthèse de tous les patterns...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8K2Y29SHETJ8HKNJM3",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Matrice 4x4 avec règles interdépendantes (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8NCTCW33Q4QT2D9RBX",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Suite de Ackermann: A(2,1), A(2,2), A(2,3), A(2,4)?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8QY0W7TQR4WZWB89DW",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Logique temporelle: □◇P ∧ ◇□Q → ? [formes]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8T6DT67NSCERTNXGV2",
+          "version": 1,
+          "ruleType": "rotation_90",
+          "errors": [
+            "Erreur d'analyse: Séquence de rotation non reconnue"
+          ],
+          "warnings": [],
+          "content": "Hypercube en projection 2D avec rotations [formes]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8XER30DAAMJB588EYC",
+          "version": 1,
+          "ruleType": "arithmetic_sequence",
+          "errors": [
+            "Erreur d'analyse: Différences incohérentes: 10, 37, 151"
+          ],
+          "warnings": [],
+          "content": "Suite de Bell: 1,1,2,5,15,52,203,?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP8Z5P2BJAJ5F9Q3WFQB",
+          "version": 1,
+          "ruleType": "rotation_90",
+          "errors": [
+            "Erreur d'analyse: Séquence de rotation non reconnue"
+          ],
+          "warnings": [],
+          "content": "Transformation topologique préservant l'homéomorphisme (rotation de formes)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 2,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP91WZDW95YH5TBEZQRN",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Théorie des graphes: chromatic number du graphe de Petersen (suite numérique)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP93F8PCVGHTK9BNSP4R",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Groupe de symétrie D6 appliqué à un hexagone (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 0,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP947X0JNX6N8KCGPB5T",
+          "version": 1,
+          "ruleType": "arithmetic_sequence",
+          "errors": [
+            "Erreur d'analyse: Différences incohérentes: 5, 12, 30"
+          ],
+          "warnings": [],
+          "content": "Suite de Motzkin: 1,1,2,4,9,21,51,?...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP96S1164NE023CTXC0G",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Pavage non-périodique de Penrose (formes géométriques)...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP98H7ADZ24J90WTN6E3",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Fonction de Ramsey: R(3,3) dans un graphe complet [numérique]...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 1,
+          "expectedAnswer": null
+        },
+        {
+          "qid": "01K2G2QP993R9QCQBJ4QSJCA06",
+          "version": 1,
+          "ruleType": "unknown",
+          "errors": [],
+          "warnings": [
+            "Type de règle non reconnu: unknown"
+          ],
+          "content": "Série E finale: métacognition et abstraction maximale...",
+          "validOptionsCount": 0,
+          "validOptions": [],
+          "declaredAnswer": 3,
+          "expectedAnswer": null
+        }
+      ],
+      "reportPath": "C:\\Users\\mc_le\\Documents\\testiq-app\\backend\\scripts\\solution-uniqueness-report.json"
+    },
+    {
+      "name": "Asset Integrity",
+      "passed": true,
+      "details": "0 questions avec assets valides",
+      "issues": []
+    },
+    {
+      "name": "Business Rules",
+      "passed": true,
+      "details": "60 questions respectent les règles métier",
+      "issues": []
+    },
+    {
+      "name": "Query Performance",
+      "passed": true,
+      "details": "Toutes les requêtes sont performantes",
+      "results": [
+        {
+          "name": "Find by QID",
+          "duration": 4,
+          "passed": true
+        },
+        {
+          "name": "Find by type and series",
+          "duration": 5,
+          "passed": true
+        },
+        {
+          "name": "Find by alphabet and difficulty",
+          "duration": 4,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Referential Integrity",
+      "passed": true,
+      "details": "Intégrité référentielle respectée",
+      "issues": []
+    },
+    {
+      "name": "Has Unique Solution",
+      "passed": true,
+      "details": "60 questions avec solutions uniques",
+      "issues": []
+    },
+    {
+      "name": "Alphabet Consistent",
+      "passed": true,
+      "details": "60 questions avec alphabets cohérents",
+      "issues": []
+    },
+    {
+      "name": "Options Homogeneous",
+      "passed": true,
+      "details": "60 questions avec options homogènes",
+      "issues": []
+    },
+    {
+      "name": "No Visible Hint",
+      "passed": true,
+      "details": "60 questions sans indices visibles",
+      "issues": []
+    },
+    {
+      "name": "Assets Coherent Path",
+      "passed": true,
+      "details": "Tous les assets ont des chemins cohérents",
+      "issues": []
+    },
+    {
+      "name": "A11y OK",
+      "passed": true,
+      "details": "60 questions accessibles",
+      "issues": []
+    }
+  ]
+}

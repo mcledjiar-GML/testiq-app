@@ -103,11 +103,19 @@ const ravenQuestions = [
     type: 'raven',
     series: 'A',
     difficulty: 1,
-    content: 'Motif simple: □■□■?',
-    options: ['□', '■', '□■', '■□'],
+    content: 'Complétez la série suivante.',
+    stimulus: '◼ ◻ ◼ ?',
+    visualPattern: 'alternating_squares_series',
+    options: [
+      { text: '◻', alt: 'carré plein blanc' },
+      { text: '◼', alt: 'carré plein noir' },
+      { text: '▦', alt: 'carré hachuré à 50%' },
+      { text: '▪', alt: 'carré plein noir avec contour épais' }
+    ],
     correctAnswer: 0,
     category: 'spatial',
-    timeLimit: 30
+    timeLimit: 40,
+    explanation: 'Alternance simple entre carrés noirs (◼) et blancs (◻). Le motif suit la règle ◼→◻→◼→◻'
   },
   {
     type: 'raven',

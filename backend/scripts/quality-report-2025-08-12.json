@@ -1,0 +1,497 @@
+{
+  "metadata": {
+    "generatedAt": "2025-08-12T21:47:05.464Z",
+    "totalQuestions": 60,
+    "questionsWithIssues": 31,
+    "cleanQuestions": 29,
+    "version": "1.0"
+  },
+  "tagStatistics": {
+    "alphabet_mismatch": 29,
+    "options_count_invalid": 0,
+    "multiple_solutions": 1,
+    "no_solution": 1,
+    "symmetry_ambiguous": 0,
+    "visible_hint": 0,
+    "decorative_colors": 1
+  },
+  "severityDistribution": {
+    "high": 2,
+    "medium": 28,
+    "low": 1
+  },
+  "issues": [
+    {
+      "qid": "01K2G2QNY5J3MGFR8GK33HMW8G",
+      "version": 1,
+      "questionIndex": 1,
+      "content": "Complétez la séquence de rotations ci-dessous....",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Option A: alphabet 'semicircle' ≠ 'shape'",
+        "Option B: alphabet 'semicircle' ≠ 'shape'",
+        "Option C: alphabet 'semicircle' ≠ 'shape'",
+        "Option D: alphabet 'semicircle' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP2W97KTF3AQBAVHFN5Q",
+      "version": 1,
+      "questionIndex": 3,
+      "content": "Quel motif complète la série: ●○●○?...",
+      "tags": [
+        "multiple_solutions"
+      ],
+      "reasons": [
+        "Réponse correcte incohérente (attendue: -1, déclarée: 0)"
+      ],
+      "hasIssues": true,
+      "severity": "high"
+    },
+    {
+      "qid": "01K2G2QP3SWZBECZW1HGZKF4CC",
+      "version": 1,
+      "questionIndex": 5,
+      "content": "Trouvez le motif manquant dans cette grille 2x2...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Option C: alphabet 'dot' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP4BJDK4RH7T7S23B6W1",
+      "version": 1,
+      "questionIndex": 8,
+      "content": "Quel symbole manque: ★☆★☆?...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP4H1Q0GMFS48TRH84YK",
+      "version": 1,
+      "questionIndex": 10,
+      "content": "Complétez la série suivante....",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP4TNGE626JTRGGWN29T",
+      "version": 1,
+      "questionIndex": 12,
+      "content": "Dernier élément de la série A: rotation simple...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Option A: alphabet 'arrow' ≠ 'letter'",
+        "Option B: alphabet 'arrow' ≠ 'letter'",
+        "Option C: alphabet 'arrow' ≠ 'letter'",
+        "Option D: alphabet 'arrow' ≠ 'letter'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP58R4J1GSRB5A5W78DZ",
+      "version": 1,
+      "questionIndex": 17,
+      "content": "Motif complexe avec superposition de formes...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Option A: alphabet 'semicircle' ≠ 'shape'",
+        "Option B: alphabet 'semicircle' ≠ 'shape'",
+        "Option C: alphabet 'semicircle' ≠ 'shape'",
+        "Option D: alphabet 'semicircle' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP5DPDY08Y6RMFA96ZF6",
+      "version": 1,
+      "questionIndex": 19,
+      "content": "Analogie visuelle: △ est à ▽ comme □ est à ?...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Option C: alphabet 'dot' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP5N9ETRSEZY8PYY23XX",
+      "version": 1,
+      "questionIndex": 21,
+      "content": "Matrice 3x3 avec progression de remplissage...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Option A: alphabet 'number' ≠ 'shape'",
+        "Option B: alphabet 'number' ≠ 'shape'",
+        "Option C: alphabet 'number' ≠ 'shape'",
+        "Option D: alphabet 'number' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP5XBCHXR1FNGAFCET8S",
+      "version": 1,
+      "questionIndex": 23,
+      "content": "Rotation et réflexion combinées...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP63XJEZG5ZQ9P5P6TBQ",
+      "version": 1,
+      "questionIndex": 25,
+      "content": "Matrice complexe avec multiple transformations...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP6CWP5R9CY8HDR57K94",
+      "version": 1,
+      "questionIndex": 28,
+      "content": "Superposition de 3 motifs géométriques...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Option B: alphabet 'shape' ≠ 'number'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP6J5AXQ307Z5WAWGW9Q",
+      "version": 1,
+      "questionIndex": 30,
+      "content": "Transformation spatiale en 3D mentale...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP6P4ADSKHETH2H6B43Q",
+      "version": 1,
+      "questionIndex": 31,
+      "content": "Progression: x, x², x³, x⁴, ? (avec x?)...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Option A: alphabet 'number' ≠ 'shape'",
+        "Option B: alphabet 'number' ≠ 'shape'",
+        "Option C: alphabet 'number' ≠ 'shape'",
+        "Option D: alphabet 'number' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP6S6NRWA3EJMPT3K1TB",
+      "version": 1,
+      "questionIndex": 32,
+      "content": "Matrice avec règles multiples appliquées...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP6ZDZJ0G63VF3GHWX1P",
+      "version": 1,
+      "questionIndex": 34,
+      "content": "Symétries multiples et rotations...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP78FCF49QQZZDB2WV3T",
+      "version": 1,
+      "questionIndex": 36,
+      "content": "Série C finale: intégration de tous les concepts...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Option D: alphabet 'dot' ≠ 'letter'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP7BT4B62GM28KPACFBP",
+      "version": 1,
+      "questionIndex": 37,
+      "content": "Matrice 3x3 avec transformations multiples complex...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP7EW0Z49VSNXCW6C6X0",
+      "version": 1,
+      "questionIndex": 38,
+      "content": "Suite: n! où n = 1,2,3,4,5, donc ?...",
+      "tags": [
+        "no_solution"
+      ],
+      "reasons": [
+        "Aucune option ne satisfait la règle"
+      ],
+      "hasIssues": true,
+      "severity": "high"
+    },
+    {
+      "qid": "01K2G2QP7HSP8ANG4GF0BD1DR8",
+      "version": 1,
+      "questionIndex": 39,
+      "content": "Raisonnement modal: ◇P → □◇P, si ◇P alors ?...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Option A: alphabet 'letter' ≠ 'shape'",
+        "Option C: alphabet 'letter' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP85766SFMF17DXWQDYQ",
+      "version": 1,
+      "questionIndex": 44,
+      "content": "Composition de transformations non-commutatives...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP89JY304PQ3N6D7A157",
+      "version": 1,
+      "questionIndex": 45,
+      "content": "Théorie des ensembles: P(A∪B) si |A|?, |B|?, |A∩B|...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Option A: alphabet 'number' ≠ 'letter'",
+        "Option B: alphabet 'number' ≠ 'letter'",
+        "Option C: alphabet 'number' ≠ 'letter'",
+        "Option D: alphabet 'number' ≠ 'letter'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP8BTTSN1DEBYPHW40FP",
+      "version": 1,
+      "questionIndex": 46,
+      "content": "Tessellation complexe avec contraintes...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP8DRGDCS4JZN7J3RF86",
+      "version": 1,
+      "questionIndex": 47,
+      "content": "Suite récurrente: a(n) = a(n?) + a(n?) + a(n?)...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Option A: alphabet 'number' ≠ 'shape'",
+        "Option B: alphabet 'number' ≠ 'shape'",
+        "Option C: alphabet 'number' ≠ 'shape'",
+        "Option D: alphabet 'number' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP8K2Y29SHETJ8HKNJM3",
+      "version": 1,
+      "questionIndex": 49,
+      "content": "Matrice 4x4 avec règles interdépendantes...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP8QY0W7TQR4WZWB89DW",
+      "version": 1,
+      "questionIndex": 51,
+      "content": "Logique temporelle: □◇P ∧ ◇□Q → ?...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Option A: alphabet 'letter' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP8T6DT67NSCERTNXGV2",
+      "version": 1,
+      "questionIndex": 52,
+      "content": "Hypercube en projection 2D avec rotations...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP8Z5P2BJAJ5F9Q3WFQB",
+      "version": 1,
+      "questionIndex": 54,
+      "content": "Transformation topologique préservant l'homéomorph...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Option A: alphabet 'semicircle' ≠ 'shape'",
+        "Option B: alphabet 'semicircle' ≠ 'shape'",
+        "Option C: alphabet 'semicircle' ≠ 'shape'",
+        "Option D: alphabet 'semicircle' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP91WZDW95YH5TBEZQRN",
+      "version": 1,
+      "questionIndex": 55,
+      "content": "Théorie des graphes: chromatic number du graphe de...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Option A: alphabet 'number' ≠ 'shape'",
+        "Option B: alphabet 'number' ≠ 'shape'",
+        "Option C: alphabet 'number' ≠ 'shape'",
+        "Option D: alphabet 'number' ≠ 'shape'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP93F8PCVGHTK9BNSP4R",
+      "version": 1,
+      "questionIndex": 56,
+      "content": "Groupe de symétrie D6 appliqué à un hexagone...",
+      "tags": [
+        "alphabet_mismatch"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'"
+      ],
+      "hasIssues": true,
+      "severity": "medium"
+    },
+    {
+      "qid": "01K2G2QP96S1164NE023CTXC0G",
+      "version": 1,
+      "questionIndex": 58,
+      "content": "Pavage non-périodique de Penrose...",
+      "tags": [
+        "alphabet_mismatch",
+        "decorative_colors"
+      ],
+      "reasons": [
+        "Alphabet déclaré 'shape' ≠ détecté 'unknown'",
+        "Couleur \"rose\" mentionnée (distraction)"
+      ],
+      "hasIssues": true,
+      "severity": "low"
+    }
+  ]
+}

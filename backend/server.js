@@ -972,9 +972,31 @@ function getInterpretation(averageScore) {
 }
 
 
+// Routes API Questions V2 avec validation qualité
+const questionsV2Routes = require('./routes/questions-v2');
+const questionsBulkRoutes = require('./routes/questions-bulk');
+const CorpusGate = require('./middleware/corpus-gate');
+
+app.use('/api/questions-v2', questionsV2Routes);
+app.use('/api/questions-v2/bulk', questionsBulkRoutes);
+
+// Endpoint corpus gate pour CI/CD
+app.get('/api/corpus-gate', async (req, res) => {
+    try {
+        const corpusReport = await CorpusGate.generateCorpusReport();
+        res.json(corpusReport);
+    } catch (error) {
+        res.status(500).json({
+            error: 'Corpus gate check failed',
+            message: error.message
+        });
+    }
+});
+
 // Initialiser les questions au démarrage
 seedQuestions();
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Serveur TestIQ démarré sur le port ${PORT}`);
+  console.log(`🛡️ API Questions V2 disponible sur /api/questions-v2`);
 });

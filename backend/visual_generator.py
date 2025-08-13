@@ -552,6 +552,71 @@ class VisualGenerator:
         
         return self._save_to_base64(fig)
     
+    def generate_alternating_squares_visual(self, question_data: Dict) -> str:
+        """Génère un visuel pour série 1D de carrés alternés (Question 5)"""
+        fig, ax = plt.subplots(figsize=(12, 6), dpi=self.config.dpi)
+        fig.suptitle('🔲 Série de Carrés Alternés', 
+                     fontsize=self.config.title_size, fontweight='bold')
+        
+        ax.set_title('Complétez la série suivante', fontsize=16, pad=20)
+        
+        # Stimulus: ◼ ◻ ◼ ?
+        squares = ['◼', '◻', '◼', '?']
+        square_colors = ['black', 'white', 'black', '#ffcccc']  # Dernière case en rouge clair
+        edge_colors = ['black', 'black', 'black', 'red']
+        
+        # Dessiner la série horizontale
+        for i, (symbol, fill_color, edge_color) in enumerate(zip(squares, square_colors, edge_colors)):
+            x = i * 2
+            y = 0
+            
+            if symbol == '?':
+                # Case manquante avec point d'interrogation
+                rect = Rectangle((x-0.4, y-0.4), 0.8, 0.8, 
+                               facecolor=fill_color, edgecolor=edge_color, 
+                               linewidth=3, linestyle='--')
+                ax.add_patch(rect)
+                ax.text(x, y, '?', ha='center', va='center', 
+                       fontsize=32, fontweight='bold', color='red')
+            else:
+                # Carré normal
+                rect = Rectangle((x-0.4, y-0.4), 0.8, 0.8, 
+                               facecolor=fill_color, edgecolor=edge_color, 
+                               linewidth=2)
+                ax.add_patch(rect)
+                if symbol == '◻':  # Carré blanc - ajouter un contour pour visibilité
+                    ax.text(x, y, symbol, ha='center', va='center', 
+                           fontsize=24, color='black')
+                else:  # Carré noir
+                    ax.text(x, y, symbol, ha='center', va='center', 
+                           fontsize=24, color='white')
+        
+        # Flèches entre les carrés pour montrer la progression
+        for i in range(3):
+            start_x = i * 2 + 0.5
+            end_x = (i + 1) * 2 - 0.5
+            ax.annotate('', xy=(end_x, 0), xytext=(start_x, 0),
+                       arrowprops=dict(arrowstyle='->', color='gray', 
+                                     alpha=0.7, lw=2))
+        
+        # Labels sous chaque position
+        positions = ['Position 1', 'Position 2', 'Position 3', 'Position 4']
+        for i, pos in enumerate(positions):
+            ax.text(i * 2, -1, pos, ha='center', va='center', 
+                   fontsize=12, color='gray')
+        
+        # Explication de la règle
+        ax.text(3, 1.5, 'Règle: Alternance ◼ → ◻ → ◼ → ?', 
+               ha='center', va='center', fontsize=14, 
+               bbox=dict(boxstyle="round,pad=0.5", facecolor='lightblue', alpha=0.8))
+        
+        ax.set_xlim(-1, 7)
+        ax.set_ylim(-1.5, 2)
+        ax.set_aspect('equal')
+        ax.axis('off')
+        
+        return self._save_to_base64(fig)
+    
     def generate_logic_diagram_visual(self, question_data: Dict) -> str:
         """Génère des diagrammes logiques pour raisonnement"""
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8), dpi=self.config.dpi)
@@ -781,9 +846,14 @@ def generate_visual_for_question(question_id: str, question_data: Dict) -> str:
     # Détection automatique du type de visuel nécessaire
     content = question_data.get('content', '').lower()
     category = question_data.get('category', '')
+    visual_pattern = question_data.get('visualPattern', '')
+    
+    # === SÉRIE DE CARRÉS ALTERNÉS (Question 5) ===
+    if visual_pattern == 'alternating_squares_series':
+        return generator.generate_alternating_squares_visual(question_data)
     
     # === MATRICES ET ROTATIONS ===
-    if 'matrice' in content and 'rotation' in content:
+    elif 'matrice' in content and 'rotation' in content:
         return generator.generate_matrix_rotation_visual(question_data)
     
     # === ENSEMBLES ET DIAGRAMMES DE VENN ===
