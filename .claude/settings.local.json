@@ -27,7 +27,8 @@
       "Bash(winpty docker exec -it testiq-app-mongo-1 mongosh --eval \"db.users.find().pretty()\")",
       "Bash(npm test)",
       "Bash(git reset:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

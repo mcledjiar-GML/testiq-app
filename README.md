@@ -210,18 +210,12 @@ npm run check:demo
 npm run demo:down
 ```
 
-#### État Actuel Démo (Après Redémarrage PC)
-✅ **Sections Complétées** :
-- Scripts package.json racine avec ports corrects (3000/5000)
-- CORS strict backend/server.js 
-- Client API centralisé frontend/src/lib/api.js
-- Script check-demo.js pour validation
-- Documentation demo README.md + SECURITY_CHECKLIST.md
-
-⏳ **Reste À Faire** (voir RESTE-A-FAIRE.md) :
-- Section A) Branche demo-mode + worktree + tag v5.0-prod
-- Section 0) Commandes AWS stop/start EC2
-- Sections 6-11) Configuration complète (.env.demo, seed, middleware, tests)
+#### ✅ **Démo 100% Prête !**
+**Configuration complète terminée** - Voir fichiers guides :
+- 🚀 **[GUIDE-DEMARRAGE-APRES-PC.md](GUIDE-DEMARRAGE-APRES-PC.md)** - Étapes exactes après redémarrage
+- ⚡ **[COMMANDES-URGENTES.md](COMMANDES-URGENTES.md)** - Commandes rapides d'urgence  
+- 📋 **[RESTE-A-FAIRE.md](RESTE-A-FAIRE.md)** - Suivi complet (100% terminé)
+- 📊 **[docs/GUIDE-LANCEMENT-COMPLET-DEMO.md](docs/GUIDE-LANCEMENT-COMPLET-DEMO.md)** - Guide maître détaillé
 
 ### Commandes Utiles Production
 ```bash
