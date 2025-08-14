@@ -1,0 +1,47 @@
+{
+  "name": "testiq-app",
+  "version": "5.0.0",
+  "description": "Application web complète pour l'évaluation du quotient intellectuel (QI) basée sur les matrices progressives de Raven, développée avec React, Node.js et MongoDB.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "seed:demo": "node scripts/seed-demo.js --env=.env.demo",
+    "api:demo": "dotenv -e .env.demo -- npm --prefix backend run dev",
+    "web:demo": "dotenv -e .env.demo -- npm --prefix frontend run start -- --port 5173",
+    "demo:up": "node -e \"console.log('\\n=== OUVRE 2 TERMINAUX SEPARES POUR LES TUNNELS CLOUDFLARED ===\\n> cloudflared tunnel --url http://localhost:5173\\n> cloudflared tunnel --url http://localhost:4000\\n')\" && concurrently -n API,WEB -c auto \"npm run api:demo\" \"npm run web:demo\"",
+    "demo:down": "kill-port 4000 5173 && node -e \"console.log('Tunnels cloudflared : fermer les 2 terminaux manuellement.')\"",
+    "check:demo": "node scripts/check-demo.js",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "start": "concurrently -n API,WEB -c auto \"npm --prefix backend run dev\" \"npm --prefix frontend run start\"",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "test": "npm --prefix backend run test && npm --prefix frontend run test -- --watchAll=false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcledjiar-GML/testiq-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mcledjiar-GML/testiq-app/issues"
+  },
+  "homepage": "https://github.com/mcledjiar-GML/testiq-app#readme",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "dotenv-cli": "^10.0.0",
+    "kill-port": "^2.0.1",
+    "wait-on": "^8.0.4"
+  }
+}

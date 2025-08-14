@@ -6,6 +6,7 @@
  */
 
 const express = require('express');
+const AdminAuth = require('../middleware/admin-auth');
 const router = express.Router();
 
 /**
@@ -50,9 +51,9 @@ router.get('/health', (req, res) => {
 
 /**
  * GET /api/monitoring/metrics
- * Métriques détaillées
+ * Métriques détaillées - Accès admin requis
  */
-router.get('/metrics', (req, res) => {
+router.get('/metrics', AdminAuth.requireAuth('monitoring:read'), (req, res) => {
     try {
         const monitoring = global.monitoringSystem;
         
@@ -75,9 +76,9 @@ router.get('/metrics', (req, res) => {
 
 /**
  * GET /api/monitoring/report
- * Rapport de monitoring complet
+ * Rapport de monitoring complet - Accès admin requis
  */
-router.get('/report', (req, res) => {
+router.get('/report', AdminAuth.requireAuth('monitoring:read'), (req, res) => {
     try {
         const monitoring = global.monitoringSystem;
         
@@ -168,9 +169,9 @@ router.get('/kill-switch/status', (req, res) => {
 
 /**
  * POST /api/monitoring/kill-switch/emergency
- * KILL SWITCH D'URGENCE
+ * KILL SWITCH D'URGENCE - Authentification stricte requise
  */
-router.post('/kill-switch/emergency', (req, res) => {
+router.post('/kill-switch/emergency', AdminAuth.requireAuth('killswitch:emergency'), AdminAuth.logStateChange, (req, res) => {
     try {
         const { reason, operator } = req.body;
         const killSwitch = global.killSwitchSystem;
@@ -201,9 +202,9 @@ router.post('/kill-switch/emergency', (req, res) => {
 
 /**
  * POST /api/monitoring/kill-switch/feature/:feature/disable
- * Désactiver une feature spécifique
+ * Désactiver une feature spécifique - Permission write requise
  */
-router.post('/kill-switch/feature/:feature/disable', (req, res) => {
+router.post('/kill-switch/feature/:feature/disable', AdminAuth.requireAuth('killswitch:write'), AdminAuth.logStateChange, (req, res) => {
     try {
         const { feature } = req.params;
         const { reason } = req.body;
@@ -235,9 +236,9 @@ router.post('/kill-switch/feature/:feature/disable', (req, res) => {
 
 /**
  * POST /api/monitoring/kill-switch/canary/configure
- * Configurer le canary release
+ * Configurer le canary release - Permission write requise
  */
-router.post('/kill-switch/canary/configure', (req, res) => {
+router.post('/kill-switch/canary/configure', AdminAuth.requireAuth('killswitch:write'), AdminAuth.logStateChange, (req, res) => {
     try {
         const config = req.body;
         const killSwitch = global.killSwitchSystem;
@@ -267,9 +268,9 @@ router.post('/kill-switch/canary/configure', (req, res) => {
 
 /**
  * POST /api/monitoring/kill-switch/rollback
- * Rollback vers version stable
+ * Rollback vers version stable - Permission write requise
  */
-router.post('/kill-switch/rollback', (req, res) => {
+router.post('/kill-switch/rollback', AdminAuth.requireAuth('killswitch:write'), AdminAuth.logStateChange, (req, res) => {
     try {
         const { reason } = req.body;
         const killSwitch = global.killSwitchSystem;
@@ -299,9 +300,9 @@ router.post('/kill-switch/rollback', (req, res) => {
 
 /**
  * POST /api/monitoring/kill-switch/readonly
- * Activer le mode lecture seule
+ * Activer le mode lecture seule - Permission write requise
  */
-router.post('/kill-switch/readonly', (req, res) => {
+router.post('/kill-switch/readonly', AdminAuth.requireAuth('killswitch:write'), AdminAuth.logStateChange, (req, res) => {
     try {
         const { reason } = req.body;
         const killSwitch = global.killSwitchSystem;
@@ -331,9 +332,9 @@ router.post('/kill-switch/readonly', (req, res) => {
 
 /**
  * GET /api/monitoring/dashboard
- * Dashboard de monitoring simple
+ * Dashboard de monitoring simple - Lecture seule
  */
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard', AdminAuth.requireAuth('monitoring:read'), (req, res) => {
     try {
         const monitoring = global.monitoringSystem;
         const killSwitch = global.killSwitchSystem;

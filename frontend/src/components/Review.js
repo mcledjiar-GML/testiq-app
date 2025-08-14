@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../lib/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuestionVisual from './QuestionVisual';
 
@@ -28,7 +28,7 @@ function Review({ user }) {
         questionContent: questionContent
       });
       
-      const response = await axios.post('/api/explanation', {
+      const response = await api.post('/api/explanation', {
         questionId: `Q${questionIndex}`,
         questionContent: questionContent
       });
@@ -61,7 +61,7 @@ function Review({ user }) {
           return;
         }
         
-        const response = await axios.get(`/api/tests/${user.id}/${testIndex}/review`);
+        const response = await api.get(`/api/tests/${user.id}/${testIndex}/review`);
         console.log('✅ Données de révision reçues:', response.data);
         console.log('🔍 Détails des answers:', response.data.answers);
         console.log('📊 Nombre de questions:', response.data.answers?.length);

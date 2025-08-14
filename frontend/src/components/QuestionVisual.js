@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../lib/api';
 
 /**
  * 🎨 COMPOSANT D'AFFICHAGE DES VISUELS PROFESSIONNELS
@@ -23,7 +23,7 @@ function QuestionVisual({ questionId, questionContent, category, className = "" 
         
         console.log(`🎨 Chargement du visuel pour ${questionId}...`);
         
-        const response = await axios.post('/api/visual', {
+        const response = await api.post('/api/visual', {
           questionId,
           questionContent,
           category

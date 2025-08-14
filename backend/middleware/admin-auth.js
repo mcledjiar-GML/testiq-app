@@ -182,6 +182,21 @@ class AdminAuth {
             this.auditLog = this.auditLog.slice(-1000);
         }
         
+        // GDPR: Vérifier rétention et anonymisation automatique
+        const gdpr = global.gdprCompliance;
+        if (gdpr) {
+            // Vérifier si l'événement doit être anonymisé ou supprimé
+            if (gdpr.shouldDelete(event.timestamp, 'auditLogs')) {
+                // Ne pas ajouter l'événement s'il devrait être supprimé
+                this.auditLog.pop(); // Retirer l'événement qu'on vient d'ajouter
+                return;
+            } else if (gdpr.shouldAnonymize(event.timestamp)) {
+                // Anonymiser l'événement avant stockage
+                const lastIndex = this.auditLog.length - 1;
+                this.auditLog[lastIndex] = gdpr.anonymizeData(event, { saltKey: 'admin-auth' });
+            }
+        }
+        
         console.log(`📋 AUDIT: ${user} ${action} ${method} ${path}`);
         
         // En production : envoyer vers système central (Elasticsearch, etc.)
@@ -250,6 +265,13 @@ class AdminAuth {
      * Anonymiser événement pour conformité GDPR
      */
     anonymizeEvent(event) {
+        // Utiliser le système GDPR global si disponible
+        const gdpr = global.gdprCompliance;
+        if (gdpr) {
+            return gdpr.anonymizeData(event, { saltKey: 'admin-auth' });
+        }
+        
+        // Fallback manuel si GDPR système non disponible
         const anonymized = { ...event };
         
         // Hasher IP pour anonymisation

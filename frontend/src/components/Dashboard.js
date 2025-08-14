@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../lib/api';
 
 function Dashboard({ user }) {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ function Dashboard({ user }) {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const response = await axios.get(`/api/results/${user.id}`);
+        const response = await api.get(`/api/results/${user.id}`);
         setUserStats(response.data);
         setLoading(false);
       } catch (error) {

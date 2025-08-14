@@ -112,7 +112,13 @@ class KillSwitchSystem {
             return false;
         }
         
+        // Vérifier sticky users persistants (multi-sessions)
+        if (userId && this.isStickyUser(userId)) {
+            return true;
+        }
+        
         if (userId && this.flags.canary.targetUsers?.includes(userId)) {
+            this.makeStickyUser(userId); // Rendre sticky automatiquement
             return true;
         }
         
@@ -123,8 +129,14 @@ class KillSwitchSystem {
         const identifier = userId || req?.ip || req?.sessionID || 'anonymous';
         const hash = this.hashString(identifier);
         const percentage = hash % 100;
+        const isCanary = percentage < (this.flags.canary.percentage || 10);
         
-        return percentage < (this.flags.canary.percentage || 10);
+        // Si utilisateur entre en canary, le rendre sticky
+        if (isCanary && userId) {
+            this.makeStickyUser(userId);
+        }
+        
+        return isCanary;
     }
     
     hashString(str) {
@@ -135,6 +147,43 @@ class KillSwitchSystem {
             hash = hash & hash;
         }
         return Math.abs(hash);
+    }
+    
+    /**
+     * Gestion sticky users multi-sessions
+     */
+    isStickyUser(userId) {
+        if (!this.stickyUsersPersist) {
+            this.stickyUsersPersist = new Map();
+        }
+        
+        const stickyInfo = this.stickyUsersPersist.get(userId);
+        if (!stickyInfo) return false;
+        
+        // Vérifier expiration (7 jours par défaut)
+        const stickinessDuration = 7 * 24 * 60 * 60 * 1000;
+        const isExpired = Date.now() - stickyInfo.timestamp > stickinessDuration;
+        
+        if (isExpired) {
+            this.stickyUsersPersist.delete(userId);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    makeStickyUser(userId) {
+        if (!this.stickyUsersPersist) {
+            this.stickyUsersPersist = new Map();
+        }
+        
+        this.stickyUsersPersist.set(userId, {
+            timestamp: Date.now(),
+            addedAt: new Date().toISOString(),
+            version: this.flags.canary.version || 'canary'
+        });
+        
+        console.log(`🏷️ User ${userId} rendu sticky canary (7j)`);
     }
     
     emergencyKillSwitch(reason = 'Emergency stop') {

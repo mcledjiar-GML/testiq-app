@@ -148,11 +148,13 @@ Application web complète pour l'évaluation du quotient intellectuel (QI) basé
 
 ## 🚀 Installation et Démarrage
 
-### Prérequis
+### Mode Production (Docker)
+
+#### Prérequis
 - Docker et Docker Compose installés
 - Git pour cloner le repository
 
-### Installation Rapide
+#### Installation Rapide
 ```bash
 # Cloner le repository
 git clone https://github.com/votre-username/testiq-app.git
@@ -162,76 +164,78 @@ cd testiq-app
 ./start_testiq.sh
 ```
 
-### 🔄 Démarrage après Redémarrage PC
+#### 🔄 Démarrage après Redémarrage PC
 
-Voici les étapes pour lancer l'application TestIQ après un redémarrage de votre PC :
-
-#### 1. Ouvrir un terminal
-- Ouvrez **PowerShell** ou **Git Bash** en tant qu'administrateur
-- Naviguez vers le dossier du projet :
+1. **Ouvrir un terminal**
 ```bash
 cd C:\Users\mc_le\Documents\testiq-app
 ```
 
-#### 2. Vérifier Docker
-```bash
-docker --version
-docker-compose --version
-```
-Si Docker n'est pas démarré, lancez **Docker Desktop**.
+2. **Vérifier Docker** et lancer Docker Desktop si nécessaire
 
-#### 3. Lancer l'application
+3. **Lancer l'application**
 ```bash
-# Avec les valeurs par défaut (localhost)
+./start_testiq.sh
+```
+
+4. **Accès** : http://localhost:3000 (Frontend) et http://localhost:5000 (API)
+
+### 🎯 Mode Démo (Local + Tunnels Cloudflare) ⭐ **NOUVEAU**
+
+#### Configuration Démo Zéro Coût
+- **SQLite** + **Filesystem** (pas de MongoDB)
+- **Tunnels Cloudflare gratuits** pour exposition publique temporaire
+- **CORS strict**, **RBAC viewer**, **Quality Gates 100%**
+
+#### Commandes Démo
+```bash
+# 1. Installation des dépendances démo
+npm i -D concurrently dotenv-cli kill-port cors
+
+# 2. Lancer la démo locale
+npm run demo:up
+
+# 3. Dans 2 terminaux séparés, créer les tunnels :
+cloudflared tunnel --url http://localhost:3000
+cloudflared tunnel --url http://localhost:5000
+
+# 4. Mettre à jour les URLs dans .env.demo et frontend/.env.local
+# CORS_ALLOWED_ORIGIN=<FRONT_TUNNEL_URL>
+# REACT_APP_API_BASE=<API_TUNNEL_URL>
+
+# 5. Vérification
+npm run check:demo
+
+# 6. Arrêt
+npm run demo:down
+```
+
+#### État Actuel Démo (Après Redémarrage PC)
+✅ **Sections Complétées** :
+- Scripts package.json racine avec ports corrects (3000/5000)
+- CORS strict backend/server.js 
+- Client API centralisé frontend/src/lib/api.js
+- Script check-demo.js pour validation
+- Documentation demo README.md + SECURITY_CHECKLIST.md
+
+⏳ **Reste À Faire** (voir RESTE-A-FAIRE.md) :
+- Section A) Branche demo-mode + worktree + tag v5.0-prod
+- Section 0) Commandes AWS stop/start EC2
+- Sections 6-11) Configuration complète (.env.demo, seed, middleware, tests)
+
+### Commandes Utiles Production
+```bash
+# Démarrer avec Docker
 ./start_testiq.sh
 
-# OU avec votre IP publique
-SERVER_IP=13.223.174.47 ./start_testiq.sh
-```
+# Arrêter
+docker-compose down
 
-#### 4. Accéder à l'application
-Après le démarrage, vous verrez les URLs :
-- **Local** : http://localhost:3000 (ou votre IP)
-- **Public** : http://testIQ.fitluxe.online:3000
-
-#### 5. En cas de problème
-```bash
 # Voir les logs
 docker-compose logs
 
-# Redémarrer les services
-docker-compose down
-./start_testiq.sh
-```
-
-### Accès à l'Application
-- **Frontend** : http://localhost:3000
-- **API Backend** : http://localhost:5000  
-- **Base de données** : localhost:27017
-
-### Variables d'Environnement Configurables
-Le script `start_testiq.sh` supporte les variables suivantes :
-- `SERVER_IP` (défaut: localhost)
-- `FRONTEND_PORT` (défaut: 3000)
-- `API_PORT` (défaut: 5000)
-- `PUBLIC_DOMAIN` (défaut: testIQ.fitluxe.online)
-
-### Commandes Utiles
-```bash
-# Démarrer l'application avec le script optimisé
-./start_testiq.sh
-
-# Démarrer manuellement
-docker-compose up -d
-
-# Arrêter l'application  
-docker-compose down
-
-# Voir les logs
-docker-compose logs
-
-# Redémarrer après modifications
-docker-compose restart
+# Tests production
+node scripts/test-v2-system.js full
 ```
 
 ## 📈 Architecture du Système

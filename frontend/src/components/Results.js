@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../lib/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function Results({ user }) {
@@ -12,7 +12,7 @@ function Results({ user }) {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await axios.get(`/api/results/${user.id}`);
+        const response = await api.get(`/api/results/${user.id}`);
         setResults(response.data);
         setLoading(false);
       } catch (error) {
@@ -40,7 +40,7 @@ function Results({ user }) {
     setDeleteLoading(true);
     try {
       console.log('🔄 Envoi de la requête de suppression...');
-      const deleteResponse = await axios.delete(`/api/tests/${user.id}/${dbIndex}`, {
+      const deleteResponse = await api.delete(`/api/tests/${user.id}/${dbIndex}`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
@@ -53,7 +53,7 @@ function Results({ user }) {
       
       // Recharger les résultats avec cache-busting
       console.log('🔄 Rechargement des résultats...');
-      const response = await axios.get(`/api/results/${user.id}?t=${Date.now()}`, {
+      const response = await api.get(`/api/results/${user.id}?t=${Date.now()}`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
@@ -78,7 +78,7 @@ function Results({ user }) {
     
     setDeleteLoading(true);
     try {
-      await axios.delete(`/api/tests/${user.id}/all`);
+      await api.delete(`/api/tests/${user.id}/all`);
       setResults({ tests: [], averageScore: 0, interpretation: 'Aucun test effectué' });
       alert('Historique entièrement supprimé !');
       window.location.reload();

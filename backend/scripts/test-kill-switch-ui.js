@@ -127,7 +127,75 @@ class KillSwitchUITester {
                 });
             }
             
-            // Test 1.4: Expiration des états
+            // Test 1.4: Cas critique - Kill-switch pendant soumission réponse
+            const submissionUserId = 'user-submission-test';
+            const submissionContext = {
+                currentQuestion: 'Q25',
+                answers: ['A', 'B'],
+                testProgress: 50,
+                timeRemaining: 900000,
+                sessionId: 'session-456',
+                isSubmittingAnswer: true,
+                submissionStartedAt: new Date().toISOString(),
+                formData: { selectedOption: 'C', confidence: 'high' }
+            };
+            
+            // Sauvegarder état en cours de soumission
+            const submissionState = this.ui.saveUserState(submissionUserId, submissionContext);
+            
+            // Simuler kill-switch activé pendant soumission
+            this.ui.handleSubmissionInterruption(submissionUserId, 'emergency_maintenance');
+            
+            // Vérifier que l'état est préservé et les clics désactivés
+            const preservedState = this.ui.restoreUserState(submissionUserId);
+            const isInputDisabled = this.ui.isUserInputDisabled(submissionUserId);
+            
+            if (preservedState &&
+                preservedState.context.isSubmittingAnswer === true &&
+                preservedState.context.submissionStartedAt &&
+                isInputDisabled) {
+                this.results.stateManagement.passed++;
+                this.results.stateManagement.details.push({
+                    test: 'Kill-switch during answer submission',
+                    status: 'PASS',
+                    userId: submissionUserId,
+                    isSubmitting: preservedState.context.isSubmittingAnswer,
+                    inputDisabled: isInputDisabled,
+                    message: 'État soumission préservé, clics désactivés'
+                });
+            } else {
+                this.results.stateManagement.failed++;
+                this.results.stateManagement.details.push({
+                    test: 'Kill-switch during answer submission',
+                    status: 'FAIL',
+                    error: 'État soumission non préservé ou clics non désactivés'
+                });
+            }
+            
+            // Test 1.5: Reprise idempotente après restoration
+            const resumedCorrectly = this.ui.resumeAfterRestoration(submissionUserId);
+            const canSubmitAgain = !this.ui.isUserInputDisabled(submissionUserId);
+            
+            if (resumedCorrectly && canSubmitAgain) {
+                this.results.stateManagement.passed++;
+                this.results.stateManagement.details.push({
+                    test: 'Idempotent resume after restoration',
+                    status: 'PASS',
+                    userId: submissionUserId,
+                    resumed: resumedCorrectly,
+                    canSubmit: canSubmitAgain,
+                    message: 'Reprise idempotente réussie'
+                });
+            } else {
+                this.results.stateManagement.failed++;
+                this.results.stateManagement.details.push({
+                    test: 'Idempotent resume after restoration',
+                    status: 'FAIL',
+                    error: 'Reprise idempotente échouée'
+                });
+            }
+            
+            // Test 1.6: Expiration des états
             const expiredUserId = 'user-expired';
             const expiredContext = { ...testContext };
             

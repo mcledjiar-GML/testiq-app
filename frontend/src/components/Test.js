@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { api } from '../lib/api';
 import QuestionVisual from './QuestionVisual';
 import RotationSequence from './RotationSequence';
 import SemicircleSVG from './SemicircleSVG';
@@ -23,7 +23,7 @@ function Test({ user }) {
   useEffect(() => {
     const startTest = async () => {
       try {
-        const response = await axios.post('/api/tests/start', { 
+        const response = await api.post('/api/tests/start', { 
           testType: 'raven',
           level: testLevel
         });
@@ -110,7 +110,7 @@ function Test({ user }) {
 
   const submitTest = async (finalAnswers) => {
     try {
-      const response = await axios.post('/api/tests/submit', {
+      const response = await api.post('/api/tests/submit', {
         userId: user.id,
         answers: finalAnswers,
         testType: 'raven',

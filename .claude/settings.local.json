@@ -29,6 +29,7 @@
       "Bash(git reset:*)",
       "Bash(mkdir:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }

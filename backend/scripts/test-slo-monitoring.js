@@ -498,7 +498,62 @@ class SLOMonitoringTester {
                 });
             }
             
-            // Test 4.4: Récupération SLI récents
+            // Test 4.4: Test E2E - CDN invalidation + canary sticky
+            const cdnCacheManager = global.cdnCacheManager;
+            if (cdnCacheManager) {
+                // Simuler déploiement canary 5% → 25% → 100%
+                const testVersions = ['v5.0-canary-5', 'v5.0-canary-25', 'v5.0-stable'];
+                let cdnTestsPassed = 0;
+                
+                for (const version of testVersions) {
+                    const percentage = version.includes('5') ? 5 : version.includes('25') ? 25 : 100;
+                    
+                    // Configurer cache canary
+                    const cacheConfig = cdnCacheManager.setupCanaryCache({
+                        percentage: percentage,
+                        version: version,
+                        features: ['new-question-engine']
+                    });
+                    
+                    // Invalider cache précédent
+                    const invalidated = cdnCacheManager.invalidateCanaryCache();
+                    
+                    // Vérifier pas de contenu stale
+                    const hasStaleContent = cdnCacheManager.hasStaleContent();
+                    
+                    if (cacheConfig && invalidated && !hasStaleContent) {
+                        cdnTestsPassed++;
+                    }
+                }
+                
+                if (cdnTestsPassed === testVersions.length) {
+                    this.results.metricsCollection.passed++;
+                    this.results.metricsCollection.details.push({
+                        test: 'CDN invalidation + canary sticky',
+                        status: 'PASS',
+                        versionsTestsed: testVersions.length,
+                        message: 'CDN invalidation sans contenu stale'
+                    });
+                } else {
+                    this.results.metricsCollection.failed++;
+                    this.results.metricsCollection.details.push({
+                        test: 'CDN invalidation + canary sticky',
+                        status: 'FAIL',
+                        passedTests: cdnTestsPassed,
+                        totalTests: testVersions.length,
+                        error: 'CDN invalidation avec contenu stale détecté'
+                    });
+                }
+            } else {
+                this.results.metricsCollection.failed++;
+                this.results.metricsCollection.details.push({
+                    test: 'CDN invalidation + canary sticky',
+                    status: 'FAIL',
+                    error: 'CDN Cache Manager non disponible'
+                });
+            }
+            
+            // Test 4.5: Récupération SLI récents
             const recentSLIs = this.slo.getRecentSLIs('1h');
             
             if (Array.isArray(recentSLIs)) {

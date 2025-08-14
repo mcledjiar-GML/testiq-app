@@ -116,14 +116,16 @@ class DeploymentPlaybook extends EventEmitter {
                 }
             ],
             
-            // Critères de rollback automatique
+            // Critères de rollback automatique (seuils resserrés pour prod)
             rollbackCriteria: {
                 errorRateThreshold: 1.0,      // >1% erreurs
-                latencyThreshold: 1000,       // >1000ms P95
-                availabilityThreshold: 99.0,  // <99% disponibilité
+                latencyThreshold: 250,        // >250ms P95 (prod interactive)
+                latencyHardCeiling: 1000,     // >1000ms P95 (hard ceiling)
+                availabilityThreshold: 99.5,  // <99.5% disponibilité
                 alertThreshold: 3,            // >3 alertes critiques
                 userComplaintThreshold: 5,    // >5 plaintes utilisateur
-                timeoutThreshold: 2           // >2 timeouts d'étape
+                timeoutThreshold: 2,          // >2 timeouts d'étape
+                canaryWindow: 600000          // 10min pour validation canary
             },
             
             // Configuration rollback
@@ -571,10 +573,15 @@ class DeploymentPlaybook extends EventEmitter {
                     issues.push(`Taux d'erreur élevé: ${(100 - errorSLO.current).toFixed(2)}%`);
                 }
                 
-                // Latence
+                // Latence - vérification P95 avec seuils graduels
                 const latencySLO = evaluation.slos.latency;
-                if (latencySLO && latencySLO.current < criteria.latencyThreshold) {
-                    issues.push(`Latence dégradée: ${latencySLO.current.toFixed(0)}ms`);
+                if (latencySLO) {
+                    const p95 = latencySLO.p95 || 0;
+                    if (p95 > criteria.latencyHardCeiling) {
+                        issues.push(`Latence critique P95: ${p95.toFixed(0)}ms > ${criteria.latencyHardCeiling}ms`);
+                    } else if (p95 > criteria.latencyThreshold) {
+                        issues.push(`Latence élevée P95: ${p95.toFixed(0)}ms > ${criteria.latencyThreshold}ms`);
+                    }
                 }
                 
                 // Disponibilité
