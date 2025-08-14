@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-08-13T22:00:00.000Z",
+  "globalKillSwitch": false,
+  "features": {
+    "qualityGates": true,
+    "corpusGate": true,
+    "randomization": true,
+    "visualGeneration": true,
+    "enhancedRuleEngine": true,
+    "bulkOperations": true,
+    "multiLocale": true,
+    "pedagogy": true,
+    "testFeature": false
+  },
+  "canary": {
+    "enabled": true,
+    "percentage": 20,
+    "targetUsers": [],
+    "excludeUsers": [],
+    "features": {
+      "betaFeature": true
+    }
+  },
+  "emergency": {
+    "disableUploads": false,
+    "disablePublishing": false,
+    "readOnlyMode": false,
+    "maintenanceMode": false
+  }
+}

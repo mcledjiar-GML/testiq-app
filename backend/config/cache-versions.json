@@ -1,0 +1,5 @@
+{
+  "test-version": "test-123",
+  "canary": "v2.1.0-beta-canary-25",
+  "production": "v2.1.0-stable"
+}

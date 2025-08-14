@@ -977,8 +977,54 @@ const questionsV2Routes = require('./routes/questions-v2');
 const questionsBulkRoutes = require('./routes/questions-bulk');
 const CorpusGate = require('./middleware/corpus-gate');
 
+// Initialiser les systèmes de conformité et monitoring
+const GDPRCompliance = require('./middleware/gdpr-compliance');
+const MonitoringSystem = require('./middleware/monitoring');
+const KillSwitchSystem = require('./middleware/kill-switch');
+const AdminAuth = require('./middleware/admin-auth');
+
+// Middleware GDPR
+app.use(GDPRCompliance.gdprMiddleware());
+
+// Middleware de monitoring
+app.use(MonitoringSystem.measureLatency);
+
+// Middleware de cache CDN
+const CDNCacheManager = require('./middleware/cdn-cache');
+app.use(CDNCacheManager.cacheHeaders());
+
+// Middleware Kill-Switch UI
+const KillSwitchUI = require('./middleware/kill-switch-ui');
+app.use(KillSwitchUI.uiMiddleware());
+
+// Initialiser SLO Monitoring
+const SLOMonitoring = require('./middleware/slo-monitoring');
+
+// Initialiser Deployment Playbook
+const DeploymentPlaybook = require('./middleware/deployment-playbook');
+
 app.use('/api/questions-v2', questionsV2Routes);
 app.use('/api/questions-v2/bulk', questionsBulkRoutes);
+
+// Routes GDPR
+const gdprRoutes = require('./routes/gdpr');
+app.use('/api/gdpr', gdprRoutes);
+
+// Routes CDN Cache
+const cdnRoutes = require('./routes/cdn');
+app.use('/api/cdn', cdnRoutes);
+
+// Routes Kill-Switch UI
+const killSwitchUIRoutes = require('./routes/kill-switch-ui');
+app.use('/api/kill-switch-ui', killSwitchUIRoutes);
+
+// Routes SLO
+const sloRoutes = require('./routes/slo');
+app.use('/api/slo', sloRoutes);
+
+// Routes Deployment
+const deploymentRoutes = require('./routes/deployment');
+app.use('/api/deployment', deploymentRoutes);
 
 // Endpoint corpus gate pour CI/CD
 app.get('/api/corpus-gate', async (req, res) => {

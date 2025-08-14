@@ -1,0 +1,86 @@
+{
+  "user-001": {
+    "userId": "user-001",
+    "timestamp": "2025-08-14T07:05:46.629Z",
+    "expiresAt": "2025-08-15T07:05:46.629Z",
+    "context": {
+      "currentQuestion": "Q42",
+      "answers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "testProgress": 75,
+      "timeRemaining": 180000,
+      "sessionId": "session-123",
+      "testType": "raven",
+      "startedAt": "2025-08-14T06:55:46.626Z",
+      "lastActivity": "2025-08-14T07:05:46.629Z"
+    },
+    "ui": {
+      "route": "/test/question/42",
+      "scrollPosition": 1200,
+      "formData": {
+        "difficulty": "hard"
+      },
+      "notifications": []
+    },
+    "preferences": {
+      "theme": "dark",
+      "language": "fr",
+      "accessibility": {}
+    }
+  },
+  "user-recovery-test": {
+    "userId": "user-recovery-test",
+    "timestamp": "2025-08-14T07:05:46.647Z",
+    "expiresAt": "2025-08-15T07:05:46.647Z",
+    "context": {
+      "currentQuestion": "Q10",
+      "answers": [],
+      "testProgress": 0,
+      "timeRemaining": 300000,
+      "sessionId": null,
+      "testType": null,
+      "startedAt": null,
+      "lastActivity": "2025-08-14T07:05:46.647Z"
+    },
+    "ui": {
+      "route": "/",
+      "scrollPosition": 0,
+      "formData": {},
+      "notifications": []
+    },
+    "preferences": {
+      "theme": "default",
+      "language": "fr",
+      "accessibility": {}
+    }
+  },
+  "user-003": {
+    "userId": "user-003",
+    "timestamp": "2025-08-14T07:05:46.642Z",
+    "expiresAt": "2025-08-15T07:05:46.642Z",
+    "context": {
+      "currentQuestion": null,
+      "answers": [],
+      "testProgress": 0,
+      "timeRemaining": null,
+      "sessionId": null,
+      "testType": null,
+      "startedAt": null,
+      "lastActivity": "2025-08-14T07:05:46.642Z"
+    },
+    "ui": {
+      "route": "/",
+      "scrollPosition": 0,
+      "formData": {},
+      "notifications": []
+    },
+    "preferences": {
+      "theme": "default",
+      "language": "fr",
+      "accessibility": {}
+    }
+  }
+}
