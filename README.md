@@ -211,11 +211,11 @@ npm run demo:down
 ```
 
 #### ✅ **Démo 100% Prête !**
-**Configuration complète terminée** - Voir fichiers guides :
-- 🚀 **[GUIDE-DEMARRAGE-APRES-PC.md](GUIDE-DEMARRAGE-APRES-PC.md)** - Étapes exactes après redémarrage
-- ⚡ **[COMMANDES-URGENTES.md](COMMANDES-URGENTES.md)** - Commandes rapides d'urgence  
-- 📋 **[RESTE-A-FAIRE.md](RESTE-A-FAIRE.md)** - Suivi complet (100% terminé)
-- 📊 **[docs/GUIDE-LANCEMENT-COMPLET-DEMO.md](docs/GUIDE-LANCEMENT-COMPLET-DEMO.md)** - Guide maître détaillé
+**Configuration complète terminée** - Voir documentation démo :
+- 📁 **[docs/demo/](docs/demo/)** - **Documentation démo complète**
+- 🚀 **[docs/demo/GUIDE-DEMARRAGE-APRES-PC.md](docs/demo/GUIDE-DEMARRAGE-APRES-PC.md)** - Étapes exactes après redémarrage
+- ⚡ **[docs/demo/COMMANDES-URGENTES.md](docs/demo/COMMANDES-URGENTES.md)** - Commandes rapides d'urgence  
+- 📋 **[docs/RESTE-A-FAIRE.md](docs/RESTE-A-FAIRE.md)** - Suivi complet (100% terminé)
 
 ### Commandes Utiles Production
 ```bash
