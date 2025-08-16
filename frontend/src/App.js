@@ -7,14 +7,17 @@ import Test from './components/Test';
 import Results from './components/Results';
 import Dashboard from './components/Dashboard';
 import Review from './components/Review';
+import TestsPersonnalises from './components/TestsPersonnalises';
 import './App.css';
+import './styles/svg-tokens.css';
 
 // Configuration de l'URL de base pour axios
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+axios.defaults.baseURL = process.env.REACT_APP_API_BASE || 'http://localhost:5000';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const authRequired = process.env.REACT_APP_AUTH_REQUIRED !== 'false';
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -62,17 +65,48 @@ function App() {
               <button onClick={logout} className="logout-btn">Déconnexion</button>
             </div>
           )}
+          {!authRequired && (
+            <div className="demo-info">
+              <span>🎭 Mode Démo</span>
+              <button onClick={() => window.location.href = '/dashboard'} className="home-btn">🏠 Menu Principal</button>
+            </div>
+          )}
         </header>
         
         <main className="App-main">
           <Routes>
-            <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+            <Route path="/" element={
+              authRequired 
+                ? (user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />) 
+                : <Navigate to="/dashboard" />
+            } />
             <Route path="/login" element={!user ? <Login onLogin={login} /> : <Navigate to="/dashboard" />} />
             <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
-            <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
-            <Route path="/test" element={user ? <Test user={user} /> : <Navigate to="/login" />} />
-            <Route path="/results" element={user ? <Results user={user} /> : <Navigate to="/login" />} />
-            <Route path="/review/:testIndex" element={user ? <Review user={user} /> : <Navigate to="/login" />} />
+            <Route path="/dashboard" element={
+              authRequired 
+                ? (user ? <Dashboard user={user} /> : <Navigate to="/login" />)
+                : <Dashboard user={null} />
+            } />
+            <Route path="/tests-personnalises" element={
+              authRequired 
+                ? (user ? <TestsPersonnalises user={user} /> : <Navigate to="/login" />)
+                : <TestsPersonnalises user={null} />
+            } />
+            <Route path="/test" element={
+              authRequired 
+                ? (user ? <Test user={user} /> : <Navigate to="/login" />)
+                : <Test user={null} />
+            } />
+            <Route path="/results" element={
+              authRequired 
+                ? (user ? <Results user={user} /> : <Navigate to="/login" />)
+                : <Results user={null} />
+            } />
+            <Route path="/review/:testIndex" element={
+              authRequired 
+                ? (user ? <Review user={user} /> : <Navigate to="/login" />)
+                : <Review user={null} />
+            } />
           </Routes>
         </main>
       </div>

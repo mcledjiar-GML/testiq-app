@@ -8,9 +8,13 @@
 
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const QuestionV2 = require('../models/QuestionV2');
 const QuestionValidator = require('../middleware/question-validation');
 const QualityGate = require('../middleware/quality-gate');
+
+// Utiliser le modèle Question existant (défini dans server.js)
+const Question = mongoose.models.Question || mongoose.model('Question');
 
 // Middleware d'authentification (à adapter selon votre système)
 const authenticateToken = (req, res, next) => {
@@ -26,6 +30,71 @@ const authenticateToken = (req, res, next) => {
   req.user = { id: 'admin', role: 'admin' };
   next();
 };
+
+/**
+ * GET /questions-v2/series/:serie
+ * Récupérer toutes les questions d'une série spécifique (A, B, C, D, E)
+ */
+router.get('/series/:serie', async (req, res) => {
+  try {
+    const { serie } = req.params;
+    
+    // Valider la série
+    const validSeries = ['A', 'B', 'C', 'D', 'E'];
+    if (!validSeries.includes(serie.toUpperCase())) {
+      return res.status(400).json({ 
+        error: `Série invalide. Séries supportées: ${validSeries.join(', ')}` 
+      });
+    }
+
+    console.log(`📚 Récupération questions série ${serie.toUpperCase()}`);
+
+    // Récupérer questions de la série depuis la collection classique
+    const questions = await Question.find({ 
+      series: serie.toUpperCase(),
+      type: 'raven'
+    }).sort({ questionIndex: 1 });
+
+    console.log(`✅ ${questions.length} questions trouvées pour série ${serie.toUpperCase()}`);
+
+    // Formatage pour le frontend
+    const formattedQuestions = questions.map(q => ({
+      _id: q._id,
+      type: q.type,
+      series: q.series,
+      questionIndex: q.questionIndex,
+      difficulty: q.difficulty,
+      content: q.content,
+      stimulus: q.stimulus,
+      options: q.options,
+      correctAnswer: q.correctAnswer,
+      category: q.category,
+      timeLimit: q.timeLimit,
+      explanation: q.explanation,
+      visualPattern: q.visualPattern,
+      hasVisual: q.hasVisual,
+      visualType: q.visualType
+    }));
+
+    res.json({
+      serie: serie.toUpperCase(),
+      questions: formattedQuestions,
+      total: formattedQuestions.length,
+      metadata: {
+        difficulty_range: `${Math.min(...formattedQuestions.map(q => q.difficulty))}-${Math.max(...formattedQuestions.map(q => q.difficulty))}`,
+        categories: [...new Set(formattedQuestions.map(q => q.category))],
+        avg_time_limit: Math.round(formattedQuestions.reduce((sum, q) => sum + q.timeLimit, 0) / formattedQuestions.length)
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur récupération questions série:', error);
+    res.status(500).json({ 
+      error: 'Erreur serveur lors de la récupération des questions',
+      details: error.message 
+    });
+  }
+});
 
 /**
  * GET /questions-v2

@@ -6,10 +6,42 @@ function Dashboard({ user }) {
   const navigate = useNavigate();
   const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [clearingDemo, setClearingDemo] = useState(false);
+  
+  // Détection du mode démo
+  const isDemoMode = process.env.REACT_APP_AUTH_REQUIRED === 'false';
 
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
+        if (isDemoMode) {
+          // Mode démo : récupérer l'ID de l'utilisateur démo depuis le backend
+          console.log('🎭 Mode démo : récupération des stats de l\'utilisateur démo');
+          try {
+            // Faire une requête pour trouver l'utilisateur démo
+            const response = await api.get('/api/demo/user-info');
+            if (response.data.userId) {
+              const statsResponse = await api.get(`/api/results/${response.data.userId}`);
+              setUserStats(statsResponse.data);
+            } else {
+              setUserStats({ tests: [], totalTests: 0 });
+            }
+          } catch (error) {
+            // Si l'utilisateur démo n'existe pas encore, créer un état vide
+            console.log('🎭 Utilisateur démo pas encore créé, stats vides');
+            setUserStats({ tests: [], totalTests: 0 });
+          }
+          setLoading(false);
+          return;
+        }
+        
+        // Mode production : utilisateur connecté
+        if (!user || !user.id) {
+          setUserStats({ tests: [], totalTests: 0 });
+          setLoading(false);
+          return;
+        }
+        
         const response = await api.get(`/api/results/${user.id}`);
         setUserStats(response.data);
         setLoading(false);
@@ -20,7 +52,7 @@ function Dashboard({ user }) {
     };
 
     fetchUserStats();
-  }, [user.id]);
+  }, [user?.id, isDemoMode]);
 
   // Fonction pour calculer le QI actuel (moyenne des 3 derniers tests ou dernier test)
   const getCurrentIQ = () => {
@@ -69,9 +101,35 @@ function Dashboard({ user }) {
 
   const currentIQ = getCurrentIQ();
 
+  // Fonction pour vider l'historique démo
+  const clearDemoHistory = async () => {
+    if (!isDemoMode) return;
+    
+    if (!window.confirm('🧹 Êtes-vous sûr de vouloir vider tout l\'historique des tests démo ?')) {
+      return;
+    }
+    
+    setClearingDemo(true);
+    try {
+      const response = await api.delete('/api/demo/clear-history');
+      
+      if (response.data.demoMode) {
+        console.log('✅ Historique démo vidé avec succès');
+        // Rafraîchir les stats (vider localement)
+        setUserStats({ tests: [], totalTests: 0 });
+        alert('🎉 Historique démo vidé avec succès !');
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors du vidage démo:', error);
+      alert('❌ Erreur lors du vidage de l\'historique démo');
+    } finally {
+      setClearingDemo(false);
+    }
+  };
+
   return (
     <div className="dashboard-container">
-      <h2>🎯 Bienvenue, {user.name}!</h2>
+      <h2>🎯 Bienvenue{user?.name ? `, ${user.name}` : ' en mode démo'}!</h2>
       
       {/* Affichage du QI actuel */}
       {!loading && currentIQ && (
@@ -119,37 +177,211 @@ function Dashboard({ user }) {
       
       <p style={{ fontSize: '18px', color: '#666', marginBottom: '30px' }}>
         Testez votre intelligence avec nos évaluations scientifiques de QI.
-        Choisissez une option pour commencer :
+        Choisissez votre type de test :
       </p>
       
+      {/* Section Tests Guidés (par défaut) */}
+      <div style={{ marginBottom: '40px' }}>
+        <h3 style={{ 
+          color: '#2c3e50', 
+          marginBottom: '20px', 
+          fontSize: '22px',
+          borderBottom: '2px solid #3498db',
+          paddingBottom: '10px'
+        }}>
+          🏠 Tests Guidés (Recommandés)
+        </h3>
+        
+        <div className="dashboard-buttons" style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+          gap: '20px' 
+        }}>
+          <button 
+            onClick={() => navigate('/test?mode=guided&level=debutant')}
+            style={{
+              background: 'linear-gradient(135deg, #27ae60, #2ecc71)',
+              border: 'none',
+              borderRadius: '15px',
+              padding: '25px',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 5px 15px rgba(46, 204, 113, 0.3)'
+            }}
+          >
+            <div style={{ fontSize: '24px', marginBottom: '8px' }}>🟢 Débutant</div>
+            <div style={{ fontSize: '18px', marginBottom: '5px' }}>Série A (12 questions)</div>
+            <div style={{ fontSize: '14px', opacity: 0.9 }}>
+              15 min • Difficulté 1-2 • Bases du raisonnement
+            </div>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/test?mode=guided&level=intermediaire')}
+            style={{
+              background: 'linear-gradient(135deg, #f39c12, #e67e22)',
+              border: 'none',
+              borderRadius: '15px',
+              padding: '25px',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 5px 15px rgba(243, 156, 18, 0.3)'
+            }}
+          >
+            <div style={{ fontSize: '24px', marginBottom: '8px' }}>🟡 Intermédiaire</div>
+            <div style={{ fontSize: '18px', marginBottom: '5px' }}>Séries A+B (24 questions)</div>
+            <div style={{ fontSize: '14px', opacity: 0.9 }}>
+              25 min • Difficulté 1-4 • Test équilibré
+            </div>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/test?mode=guided&level=avance')}
+            style={{
+              background: 'linear-gradient(135deg, #e74c3c, #c0392b)',
+              border: 'none',
+              borderRadius: '15px',
+              padding: '25px',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 5px 15px rgba(231, 76, 60, 0.3)'
+            }}
+          >
+            <div style={{ fontSize: '24px', marginBottom: '8px' }}>🟠 Avancé</div>
+            <div style={{ fontSize: '18px', marginBottom: '5px' }}>Séries A+B+C (36 questions)</div>
+            <div style={{ fontSize: '14px', opacity: 0.9 }}>
+              45 min • Difficulté 1-6 • Challenge spatial
+            </div>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/test?mode=guided&level=expert')}
+            style={{
+              background: 'linear-gradient(135deg, #8e44ad, #9b59b6)',
+              border: 'none',
+              borderRadius: '15px',
+              padding: '25px',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 5px 15px rgba(142, 68, 173, 0.3)'
+            }}
+          >
+            <div style={{ fontSize: '24px', marginBottom: '8px' }}>🔴 Expert</div>
+            <div style={{ fontSize: '18px', marginBottom: '5px' }}>Toutes séries (60 questions)</div>
+            <div style={{ fontSize: '14px', opacity: 0.9 }}>
+              90 min • Difficulté 1-10 • Test complet Raven
+            </div>
+          </button>
+        </div>
+      </div>
+      
+      {/* Bouton Tests Personnalisés */}
+      <div style={{ 
+        textAlign: 'center', 
+        marginBottom: '30px',
+        padding: '30px',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: '20px',
+        color: 'white'
+      }}>
+        <h3 style={{ 
+          color: 'white', 
+          marginBottom: '15px',
+          fontSize: '24px' 
+        }}>
+          ⚙️ Besoin de plus d'options ?
+        </h3>
+        <p style={{ 
+          fontSize: '16px', 
+          marginBottom: '20px',
+          opacity: 0.9 
+        }}>
+          Accédez aux tests par série, tests ciblés par QI, et plus d'options avancées
+        </p>
+        <button 
+          onClick={() => navigate('/tests-personnalises')}
+          style={{
+            background: 'rgba(255, 255, 255, 0.2)',
+            border: '2px solid rgba(255, 255, 255, 0.3)',
+            borderRadius: '12px',
+            padding: '15px 30px',
+            color: 'white',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            backdropFilter: 'blur(10px)'
+          }}
+          onMouseOver={(e) => {
+            e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+            e.target.style.transform = 'translateY(-2px)';
+          }}
+          onMouseOut={(e) => {
+            e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+            e.target.style.transform = 'translateY(0)';
+          }}
+        >
+          🎯 Tests Personnalisés
+        </button>
+      </div>
+      
+      {/* Boutons navigation classiques */}
       <div className="dashboard-buttons">
-        <button onClick={() => navigate('/test?level=short')}>
-          ⚡ Test rapide (12 questions)
-          <div style={{ fontSize: '14px', marginTop: '5px', opacity: 0.8 }}>
-            15 minutes - Échantillon de chaque série
-          </div>
-        </button>
-        
-        <button onClick={() => navigate('/test?level=standard')}>
-          🧠 Test standard (20 questions)
-          <div style={{ fontSize: '14px', marginTop: '5px', opacity: 0.8 }}>
-            25 minutes - Test équilibré recommandé
-          </div>
-        </button>
-        
-        <button onClick={() => navigate('/test?level=full')}>
-          🎯 Test complet Raven (60 questions)
-          <div style={{ fontSize: '14px', marginTop: '5px', opacity: 0.8 }}>
-            90 minutes - Test professionnel complet
-          </div>
-        </button>
-        
         <button onClick={() => navigate('/results')}>
           📊 Voir mes résultats
           <div style={{ fontSize: '14px', marginTop: '5px', opacity: 0.8 }}>
             Historique et analyses de performance
           </div>
         </button>
+        
+        {/* Bouton spécial mode démo */}
+        {isDemoMode && (
+          <button 
+            onClick={clearDemoHistory}
+            disabled={clearingDemo}
+            style={{
+              background: clearingDemo ? '#95a5a6' : 'linear-gradient(135deg, #e74c3c, #c0392b)',
+              border: 'none',
+              borderRadius: '15px',
+              padding: '20px',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: clearingDemo ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: clearingDemo ? 'none' : '0 5px 15px rgba(231, 76, 60, 0.3)',
+              opacity: clearingDemo ? 0.7 : 1
+            }}
+          >
+            {clearingDemo ? (
+              <>
+                <div style={{ fontSize: '20px', marginBottom: '8px' }}>⏳ Nettoyage...</div>
+                <div style={{ fontSize: '14px', opacity: 0.9 }}>
+                  Vidage en cours
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: '20px', marginBottom: '8px' }}>🧹 Vider Historique Démo</div>
+                <div style={{ fontSize: '14px', opacity: 0.9 }}>
+                  Effacer tous les tests démo enregistrés
+                </div>
+              </>
+            )}
+          </button>
+        )}
       </div>
       
       <div style={{ 

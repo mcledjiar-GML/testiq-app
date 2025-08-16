@@ -8,12 +8,45 @@ function Results({ user }) {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Détection du mode démo
+  const isDemoMode = process.env.REACT_APP_AUTH_REQUIRED === 'false';
+  
+  // Fonction helper pour récupérer l'userId correct selon le mode
+  const getUserId = async () => {
+    if (isDemoMode && !user) {
+      try {
+        const demoInfoResponse = await api.get('/api/demo/user-info');
+        return demoInfoResponse.data.userId;
+      } catch (error) {
+        return null;
+      }
+    }
+    return user?.id;
+  };
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await api.get(`/api/results/${user.id}`);
-        setResults(response.data);
+        if (isDemoMode && !user) {
+          // Mode démo : récupérer l'ID de l'utilisateur démo
+          try {
+            const demoInfoResponse = await api.get('/api/demo/user-info');
+            if (demoInfoResponse.data.userId) {
+              const response = await api.get(`/api/results/${demoInfoResponse.data.userId}`);
+              setResults(response.data);
+            } else {
+              setResults({ tests: [], totalTests: 0 });
+            }
+          } catch (error) {
+            console.log('🎭 Pas de données démo encore, affichage vide');
+            setResults({ tests: [], totalTests: 0 });
+          }
+        } else {
+          // Mode production : utilisateur connecté
+          const response = await api.get(`/api/results/${user.id}`);
+          setResults(response.data);
+        }
         setLoading(false);
       } catch (error) {
         console.error('Erreur lors de la récupération des résultats:', error);
@@ -22,11 +55,17 @@ function Results({ user }) {
     };
 
     fetchResults();
-  }, [user.id]);
+  }, [user?.id, isDemoMode]);
 
   // Fonction pour supprimer un test spécifique
   const deleteTest = async (testIndex) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) return;
+    
+    const userId = await getUserId();
+    if (!userId) {
+      console.error('Impossible de récupérer l\'ID utilisateur');
+      return;
+    }
     
     // Calculer l'index réel dans la base de données
     // Les tests sont triés par date (plus récent en premier) pour l'affichage
@@ -35,12 +74,12 @@ function Results({ user }) {
     const dbIndex = totalTests - 1 - testIndex; // Inverser l'ordre
     
     console.log('🗑️ Suppression du test - testIndex:', testIndex, '→ dbIndex:', dbIndex, '(total:', totalTests, ')');
-    console.log('👤 User ID:', user.id);
+    console.log('👤 User ID:', userId);
     
     setDeleteLoading(true);
     try {
       console.log('🔄 Envoi de la requête de suppression...');
-      const deleteResponse = await api.delete(`/api/tests/${user.id}/${dbIndex}`, {
+      const deleteResponse = await api.delete(`/api/tests/${userId}/${dbIndex}`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
@@ -53,7 +92,7 @@ function Results({ user }) {
       
       // Recharger les résultats avec cache-busting
       console.log('🔄 Rechargement des résultats...');
-      const response = await api.get(`/api/results/${user.id}?t=${Date.now()}`, {
+      const response = await api.get(`/api/results/${userId}?t=${Date.now()}`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
@@ -76,9 +115,15 @@ function Results({ user }) {
   const deleteAllTests = async () => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer TOUT votre historique de tests ? Cette action est irréversible !')) return;
     
+    const userId = await getUserId();
+    if (!userId) {
+      console.error('Impossible de récupérer l\'ID utilisateur');
+      return;
+    }
+    
     setDeleteLoading(true);
     try {
-      await api.delete(`/api/tests/${user.id}/all`);
+      await api.delete(`/api/tests/${userId}/all`);
       setResults({ tests: [], averageScore: 0, interpretation: 'Aucun test effectué' });
       alert('Historique entièrement supprimé !');
       window.location.reload();
