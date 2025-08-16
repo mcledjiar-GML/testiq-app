@@ -4,15 +4,16 @@ const ravenQuestions = [
   {
     type: 'raven',
     series: 'A',
+    questionIndex: 1,
     difficulty: 1,
     content: 'Complétez la séquence de rotations ci-dessous.',
-    stimulus: 'Séquence: ◓ ◑ ◒ ◐ ?',
+    stimulus: 'Séquence: ◓ ◐ ◒ ◑ ?',
     visualPattern: 'rotation_sequence_90deg',
     options: [
-      { text: '◓', alt: 'demi-cercle noir orienté vers le bas' },
-      { text: '◑', alt: 'demi-cercle noir orienté vers la droite' },
-      { text: '◒', alt: 'demi-cercle noir orienté vers le haut' },
-      { text: '◐', alt: 'demi-cercle noir orienté vers la gauche' }
+      { text: '◓', rotation: 'up', alt: 'demi-cercle noir orienté vers le haut' },
+      { text: '◑', rotation: 'right', alt: 'demi-cercle noir orienté vers la droite' },
+      { text: '◒', rotation: 'down', alt: 'demi-cercle noir orienté vers le bas' },
+      { text: '◐', rotation: 'left', alt: 'demi-cercle noir orienté vers la gauche' }
     ],
     correctAnswer: 0,
     category: 'spatial',
@@ -22,120 +23,197 @@ const ravenQuestions = [
   {
     type: 'raven',
     series: 'A',
+    questionIndex: 2,
     difficulty: 1,
-    content: 'Continuez la séquence: 2, 4, 6, 8, ?',
+    content: 'Continuez la séquence : 2, 4, 6, 8, ?',
     options: ['9', '10', '11', '12'],
     correctAnswer: 1,
     category: 'logique',
-    timeLimit: 30
+    timeLimit: 30,
+    explanation: 'Suite arithmétique avec raison +2 : chaque nombre augmente de 2.'
   },
   {
     type: 'raven',
     series: 'A',
+    questionIndex: 3,
     difficulty: 1,
-    content: 'Quel motif complète la série: ●○●○?',
-    options: ['●', '○', '●○', '○●'],
+    content: 'Quel motif complète la séquence : ●○●○?',
+    stimulus: 'Séquence : ● ○ ● ○ ?',
+    options: [
+      { text: '●', alt: 'cercle noir plein' },
+      { text: '○', alt: 'cercle blanc contour' },
+      { text: '●○', alt: 'cercle noir suivi de cercle blanc' },
+      { text: '○●', alt: 'cercle blanc suivi de cercle noir' }
+    ],
     correctAnswer: 0,
     category: 'spatial',
-    timeLimit: 35
+    timeLimit: 35,
+    explanation: 'Alternance simple entre cercles noirs (●) et blancs (○). Le motif suit la règle ●→○→●→○→●'
   },
   {
     type: 'raven',
     series: 'A',
+    questionIndex: 4,
     difficulty: 2,
-    content: 'Complétez: 1, 3, 5, 7, ?',
+    content: 'Complétez : 1, 3, 5, 7, ?',
     options: ['8', '9', '10', '11'],
     correctAnswer: 1,
     category: 'logique',
-    timeLimit: 40
+    timeLimit: 40,
+    explanation: 'Suite des nombres impairs : chaque nombre augmente de 2.'
   },
   {
     type: 'raven',
     series: 'A',
+    questionIndex: 5,
     difficulty: 2,
-    content: 'Trouvez le motif manquant dans cette grille 2x2',
-    options: ['△', '□', '○', '◇'],
-    correctAnswer: 2,
-    category: 'spatial',
-    timeLimit: 50
-  },
-  {
-    type: 'raven',
-    series: 'A',
-    difficulty: 2,
-    content: 'Continuez: A, C, E, G, ?',
-    options: ['H', 'I', 'J', 'K'],
-    correctAnswer: 1,
-    category: 'verbal',
-    timeLimit: 35
-  },
-  {
-    type: 'raven',
-    series: 'A',
-    difficulty: 1,
-    content: 'Complétez la suite: 10, 20, 30, 40, ?',
-    options: ['45', '50', '55', '60'],
-    correctAnswer: 1,
-    category: 'logique',
-    timeLimit: 30
-  },
-  {
-    type: 'raven',
-    series: 'A',
-    difficulty: 2,
-    content: 'Quel symbole manque: ★☆★☆?',
-    options: ['★', '☆', '✦', '✧'],
-    correctAnswer: 0,
-    category: 'spatial',
-    timeLimit: 40
-  },
-  {
-    type: 'raven',
-    series: 'A',
-    difficulty: 2,
-    content: 'Suite numérique: 5, 10, 15, 20, ?',
-    options: ['22', '24', '25', '30'],
-    correctAnswer: 2,
-    category: 'logique',
-    timeLimit: 35
-  },
-  {
-    type: 'raven',
-    series: 'A',
-    difficulty: 1,
-    content: 'Complétez la série suivante.',
-    stimulus: '◼ ◻ ◼ ?',
+    content: 'Complétez la séquence alternée : ◼ ◻ ◼ ?',
+    stimulus: 'Séquence : ◼ ◻ ◼ ?',
     visualPattern: 'alternating_squares_series',
     options: [
-      { text: '◻', alt: 'carré plein blanc' },
-      { text: '◼', alt: 'carré plein noir' },
-      { text: '▦', alt: 'carré hachuré à 50%' },
-      { text: '▪', alt: 'carré plein noir avec contour épais' }
+      { text: '◻', alt: 'carré blanc contour' },
+      { text: '◼', alt: 'carré noir plein' },
+      { text: '▦', alt: 'carré hachuré' },
+      { text: '▪', alt: 'carré noir petit' }
     ],
     correctAnswer: 0,
     category: 'spatial',
     timeLimit: 40,
-    explanation: 'Alternance simple entre carrés noirs (◼) et blancs (◻). Le motif suit la règle ◼→◻→◼→◻'
+    explanation: 'Alternance simple entre carrés noirs (◼) et blancs (◻). Le motif suit la règle ◼→◻→◼→◻',
+    advancedExplanation: {
+      serie: 'A',
+      competence: 'spatial',
+      solutionPasAPas: [
+        'Observer la séquence : ◼ ◻ ◼ ?',
+        'Identifier le pattern : alternance entre carré noir et carré blanc',
+        'Appliquer la règle : après ◼ ◻ ◼, le suivant est ◻',
+        'Vérifier : ◼→◻→◼→◻ forme un cycle parfait'
+      ],
+      regleExtraite: 'Séquence alternée : les éléments alternent entre deux états (noir/blanc) de façon régulière',
+      generalisation: 'Dans les séquences spatiales alternées, cherchez des cycles répétitifs entre deux ou plusieurs états visuels distincts',
+      analyseDistracteurs: [
+        { option: 'A - ◻', raisonChoixFrequent: '✅ Correct : suit l\'alternance ◼→◻→◼→◻' },
+        { option: 'B - ◼', raisonChoixFrequent: '❌ Répéterait ◼ deux fois consécutivement, brisant l\'alternance' },
+        { option: 'C - ▦', raisonChoixFrequent: '❌ Introduit un nouvel élément non présent dans la séquence' },
+        { option: 'D - ▪', raisonChoixFrequent: '❌ Forme différente, ne respecte pas l\'alternance établie' }
+      ],
+      nouveauConcept: {
+        isNew: true,
+        fiche: {
+          nom: 'Séquences alternées',
+          definition: 'Suite d\'éléments qui alternent régulièrement entre deux ou plusieurs états distincts',
+          application: 'Identifier le cycle puis prédire l\'élément suivant en continuant le pattern'
+        }
+      },
+      metacognition: {
+        tempsCibleSec: 25,
+        heuristiqueExpress: 'Repérer les deux états qui alternent, puis continuer le cycle'
+      }
+    }
   },
   {
     type: 'raven',
     series: 'A',
+    questionIndex: 6,
     difficulty: 2,
-    content: 'Complétez: 100, 90, 80, 70, ?',
+    content: 'Continuez : A, C, E, G, ?',
+    options: ['H', 'I', 'J', 'K'],
+    correctAnswer: 1,
+    category: 'verbal',
+    timeLimit: 35,
+    explanation: 'Suite alphabétique sautant une lettre : A (+2) C (+2) E (+2) G (+2) I'
+  },
+  {
+    type: 'raven',
+    series: 'A',
+    questionIndex: 7,
+    difficulty: 2,
+    content: 'Trouvez le motif manquant dans cette grille 3×3',
+    stimulus: 'Grille 3×3 avec disques bicolores - case centrale manquante',
+    visualPattern: 'matrix_3x3_bicolor_discs',
+    options: [
+      { text: '◐', type: 'semicircle', rotation: 'left', alt: 'disque bicolore orienté gauche' },
+      { text: '◑', type: 'semicircle', rotation: 'right', alt: 'disque bicolore orienté droite' },
+      { text: '◒', type: 'semicircle', rotation: 'up', alt: 'disque bicolore orienté haut' },
+      { text: '◓', type: 'semicircle', rotation: 'down', alt: 'disque bicolore orienté bas' }
+    ],
+    correctAnswer: 1,
+    category: 'spatial',
+    timeLimit: 60,
+    explanation: 'Grille 3×3 avec progression des orientations des disques bicolores. Le motif central suit la règle de rotation horaire.'
+  },
+  {
+    type: 'raven',
+    series: 'A',
+    questionIndex: 8,
+    difficulty: 1,
+    content: 'Complétez la suite : 10, 20, 30, 40, ?',
+    options: ['45', '50', '55', '60'],
+    correctAnswer: 1,
+    category: 'logique',
+    timeLimit: 30,
+    explanation: 'Suite arithmétique avec raison +10 : chaque nombre augmente de 10.'
+  },
+  {
+    type: 'raven',
+    series: 'A',
+    questionIndex: 9,
+    difficulty: 2,
+    content: 'Quel symbole manque : ★☆★☆?',
+    stimulus: 'Séquence : ★ ☆ ★ ☆ ?',
+    options: [
+      { text: '★', alt: 'étoile pleine noire' },
+      { text: '☆', alt: 'étoile contour blanc' },
+      { text: '✦', alt: 'étoile à 6 branches' },
+      { text: '✧', alt: 'étoile à 4 branches' }
+    ],
+    correctAnswer: 0,
+    category: 'spatial',
+    timeLimit: 40,
+    explanation: 'Alternance simple entre étoiles pleines (★) et étoiles contour (☆). Le motif suit la règle ★→☆→★→☆→★'
+  },
+  {
+    type: 'raven',
+    series: 'A',
+    questionIndex: 10,
+    difficulty: 2,
+    content: 'Suite numérique : 5, 10, 15, 20, ?',
+    options: ['22', '24', '25', '30'],
+    correctAnswer: 2,
+    category: 'logique',
+    timeLimit: 35,
+    explanation: 'Suite arithmétique avec raison +5 : chaque nombre augmente de 5.'
+  },
+  {
+    type: 'raven',
+    series: 'A',
+    questionIndex: 11,
+    difficulty: 2,
+    content: 'Complétez : 100, 90, 80, 70, ?',
     options: ['65', '60', '55', '50'],
     correctAnswer: 1,
     category: 'logique',
-    timeLimit: 40
+    timeLimit: 40,
+    explanation: 'Suite arithmétique décroissante avec raison -10 : chaque nombre diminue de 10.'
   },
   {
     type: 'raven',
     series: 'A',
+    questionIndex: 12,
     difficulty: 2,
-    content: 'Dernier élément de la série A: rotation simple',
-    options: ['↑', '→', '↓', '←'],
-    correctAnswer: 2,
+    content: 'Complétez la séquence de rotation',
+    stimulus: 'Séquence de segments : 0°, 45°, 90°, ?',
+    visualPattern: 'rotation_sequence_45deg',
+    options: [
+      { text: '135°', rotation: 135, type: 'segment', alt: 'segment orienté à 135 degrés' },
+      { text: '180°', rotation: 180, type: 'segment', alt: 'segment orienté à 180 degrés' },
+      { text: '225°', rotation: 225, type: 'segment', alt: 'segment orienté à 225 degrés' },
+      { text: '270°', rotation: 270, type: 'segment', alt: 'segment orienté à 270 degrés' }
+    ],
+    correctAnswer: 0,
     category: 'spatial',
-    timeLimit: 45
+    timeLimit: 45,
+    explanation: 'Séquence de rotation avec increment de 45° : 0° (+45°) 45° (+45°) 90° (+45°) 135°'
   },
 
   // SÉRIE B - Complexité moyenne (12 questions, difficulté 3-4)

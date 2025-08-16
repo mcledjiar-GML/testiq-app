@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import QuestionVisual from './QuestionVisual';
@@ -6,6 +6,8 @@ import RotationSequence from './RotationSequence';
 import SemicircleSVG from './SemicircleSVG';
 import Matrix3x3 from './Matrix3x3';
 import SemicircleOptionSVG from './SemicircleOptionSVG';
+import Grid2x2 from './Grid2x2';
+import AlternatingSequence from './AlternatingSequence';
 
 function Test({ user }) {
   const [questions, setQuestions] = useState([]);
@@ -19,13 +21,17 @@ function Test({ user }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const testLevel = searchParams.get('level') || 'standard';
+  const testMode = searchParams.get('mode') || 'standard';
+  const testSerie = searchParams.get('serie') || null;
 
   useEffect(() => {
     const startTest = async () => {
       try {
         const response = await api.post('/api/tests/start', { 
           testType: 'raven',
-          level: testLevel
+          level: testLevel,
+          mode: testMode,
+          serie: testSerie
         });
         setQuestions(response.data.questions);
         if (response.data.questions.length > 0) {
@@ -54,64 +60,15 @@ function Test({ user }) {
     return currentQ?.options ?? currentQ?.choices ?? [];
   }, [questions, currentQuestion]);
 
-  // Ready = quand on a exactement 4 options
-  useEffect(() => {
-    if (currentOptions.length === 4 && !loading) {
-      setReady(true);
-    } else {
-      setReady(false);
-    }
-  }, [currentOptions, loading]);
-
-  // Timer ne démarre QUE quand ready=true (évite timer figé)
-  useEffect(() => {
-    if (!ready) return; // Garde-fou principal
-    
-    if (timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0) {
-      // Temps écoulé, passer à la question suivante
-      handleAnswer(-1); // -1 indique une réponse non donnée
-    }
-  }, [timeLeft, ready]);
-
-  // Reset ready à chaque changement de question
-  useEffect(() => {
-    setReady(false);
-    setShowHint(false);
-    setHintUsed(false);
-  }, [currentQuestion]);
-
-  const handleAnswer = (selectedOption) => {
-    if (questions.length === 0 || currentQuestion >= questions.length) {
-      return;
-    }
-    
-    const newAnswers = [...answers, {
-      questionId: questions[currentQuestion]._id,
-      selectedOption,
-      correctAnswer: questions[currentQuestion].correctAnswer,
-      timeUsed: (questions[currentQuestion].timeLimit || 60) - timeLeft,
-      hintUsed: hintUsed // -10% du score si vrai
-    }];
-    setAnswers(newAnswers);
-
-    if (currentQuestion < questions.length - 1) {
-      // Question suivante
-      const nextIndex = currentQuestion + 1;
-      setCurrentQuestion(nextIndex);
-      setTimeLeft(questions[nextIndex]?.timeLimit || 60);
-    } else {
-      // Fin du test
-      submitTest(newAnswers);
-    }
-  };
-
-  const submitTest = async (finalAnswers) => {
+  // Define functions first
+  const submitTest = useCallback(async (finalAnswers) => {
     try {
+      // Mode démo : utiliser un userId factice si pas d'utilisateur connecté
+      const isDemoMode = process.env.REACT_APP_AUTH_REQUIRED === 'false';
+      const userId = isDemoMode && !user ? 'demo-placeholder' : user.id;
+      
       const response = await api.post('/api/tests/submit', {
-        userId: user.id,
+        userId: userId,
         answers: finalAnswers,
         testType: 'raven',
         testLevel: testLevel
@@ -142,12 +99,133 @@ function Test({ user }) {
         alert('Erreur lors de la sauvegarde du test. Veuillez réessayer.');
       }
     }
-  };
+  }, [user, testLevel, navigate]);
+
+  const handleAnswer = useCallback((selectedOption) => {
+    if (questions.length === 0 || currentQuestion >= questions.length) {
+      return;
+    }
+    
+    const newAnswers = [...answers, {
+      questionId: questions[currentQuestion]._id,
+      questionIndex: questions[currentQuestion].questionIndex,
+      selectedOption,
+      correctAnswer: questions[currentQuestion].correctAnswer,
+      timeUsed: (questions[currentQuestion].timeLimit || 60) - timeLeft,
+      hintUsed: hintUsed, // -10% du score si vrai
+      testPosition: currentQuestion + 1, // Position dans ce test spécifique
+      // 🎯 NOUVEAU : Sauvegarder l'ordre exact des options et les valeurs réelles
+      optionsOrder: questions[currentQuestion].options,
+      selectedOptionValue: questions[currentQuestion].options[selectedOption],
+      correctOptionValue: questions[currentQuestion].options[questions[currentQuestion].correctAnswer]
+    }];
+    setAnswers(newAnswers);
+
+    if (currentQuestion < questions.length - 1) {
+      // Question suivante
+      const nextIndex = currentQuestion + 1;
+      setCurrentQuestion(nextIndex);
+      setTimeLeft(questions[nextIndex]?.timeLimit || 60);
+    } else {
+      // Fin du test
+      submitTest(newAnswers);
+    }
+  }, [questions, currentQuestion, answers, timeLeft, hintUsed, submitTest]);
+
+  // Ready = quand on a exactement 4 options
+  useEffect(() => {
+    if (currentOptions.length === 4 && !loading) {
+      setReady(true);
+    } else {
+      setReady(false);
+    }
+  }, [currentOptions, loading]);
+
+  // Timer ne démarre QUE quand ready=true (évite timer figé)
+  useEffect(() => {
+    if (!ready) return; // Garde-fou principal
+    
+    if (timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0) {
+      // Temps écoulé, passer à la question suivante
+      handleAnswer(-1); // -1 indique une réponse non donnée
+    }
+  }, [timeLeft, ready, handleAnswer]);
+
+  // Reset ready à chaque changement de question
+  useEffect(() => {
+    setReady(false);
+    setShowHint(false);
+    setHintUsed(false);
+  }, [currentQuestion]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Fonction pour rendre les formes de Q5
+  const renderQ5Shape = (shapeType, size = 48) => {
+    const commonStyles = {
+      width: size,
+      height: size,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    };
+
+    switch (shapeType) {
+      case 'triangle':
+        return (
+          <svg width={size} height={size} viewBox="0 0 100 100" style={commonStyles}>
+            <polygon 
+              points="50,15 85,75 15,75" 
+              fill="#000000" 
+              stroke="#000000" 
+              strokeWidth="2"
+            />
+          </svg>
+        );
+      case 'square':
+        return (
+          <svg width={size} height={size} viewBox="0 0 100 100" style={commonStyles}>
+            <rect 
+              x="20" y="20" 
+              width="60" height="60" 
+              fill="#000000" 
+              stroke="#000000" 
+              strokeWidth="2"
+            />
+          </svg>
+        );
+      case 'circle':
+        return (
+          <svg width={size} height={size} viewBox="0 0 100 100" style={commonStyles}>
+            <circle 
+              cx="50" cy="50" r="30" 
+              fill="#000000" 
+              stroke="#000000" 
+              strokeWidth="2"
+            />
+          </svg>
+        );
+      case 'diamond':
+        return (
+          <svg width={size} height={size} viewBox="0 0 100 100" style={commonStyles}>
+            <polygon 
+              points="50,15 85,50 50,85 15,50" 
+              fill="none" 
+              stroke="#000000" 
+              strokeWidth="3"
+            />
+          </svg>
+        );
+      default:
+        return null;
+    }
   };
 
   const testLevelNames = {
@@ -218,8 +296,21 @@ function Test({ user }) {
   return (
     <div className="test-container">
       <div style={{ marginBottom: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>Question {currentQuestion + 1}/{questions.length}</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <button 
+            onClick={() => navigate('/dashboard')}
+            style={{
+              background: '#6c757d',
+              color: 'white',
+              border: 'none',
+              padding: '8px 15px',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            ← Retour au menu
+          </button>
           <div style={{ 
             background: timeLeft <= 10 ? '#ff6b6b' : '#667eea', 
             color: 'white', 
@@ -229,6 +320,9 @@ function Test({ user }) {
           }}>
             ⏱️ {formatTime(timeLeft)}
           </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2>Question {currentQuestion + 1}/{questions.length}</h2>
         </div>
         
         {/* Barre de progression */}
@@ -261,9 +355,44 @@ function Test({ user }) {
            `Question ${currentQuestion + 1} - Contenu non disponible`}
         </h3>
         
-        {/* Affichage spécial pour la Question 1 de rotation */}
+        {/* Affichage spécialisé pour les questions Q1-Q12 */}
         {questions[currentQuestion]?.series === 'A' && questions[currentQuestion]?.questionIndex === 1 ? (
           <RotationSequence 
+            showHint={showHint}
+            onHintClick={() => {
+              setShowHint(true);
+              setHintUsed(true);
+            }}
+          />
+        ) : questions[currentQuestion]?.series === 'A' && questions[currentQuestion]?.questionIndex === 3 ? (
+          <AlternatingSequence 
+            sequenceType="circles"
+            showHint={showHint}
+            onHintClick={() => {
+              setShowHint(true);
+              setHintUsed(true);
+            }}
+          />
+        ) : questions[currentQuestion]?.series === 'A' && questions[currentQuestion]?.questionIndex === 5 ? (
+          <Grid2x2 
+            mode="alternating"
+            showHint={showHint}
+            onHintClick={() => {
+              setShowHint(true);
+              setHintUsed(true);
+            }}
+          />
+        ) : questions[currentQuestion]?.series === 'A' && questions[currentQuestion]?.questionIndex === 7 ? (
+          <Matrix3x3 
+            showHint={showHint}
+            onHintClick={() => {
+              setShowHint(true);
+              setHintUsed(true);
+            }}
+          />
+        ) : questions[currentQuestion]?.series === 'A' && questions[currentQuestion]?.questionIndex === 9 ? (
+          <AlternatingSequence 
+            sequenceType="stars"
             showHint={showHint}
             onHintClick={() => {
               setShowHint(true);
@@ -289,9 +418,8 @@ function Test({ user }) {
             )}
             
             {/* 🎨 VISUEL PROFESSIONNEL pour autres questions */}
-            {/* Désactivé pour Q3 (fusion de 2 items différents) et Q7 (matrice 3x3 custom) */}
-            {questions[currentQuestion]?.questionIndex !== 3 && 
-             questions[currentQuestion]?.questionIndex !== 7 && (
+            {/* Désactivé pour questions avec composants spécialisés */}
+            {![1, 3, 5, 7, 9, 12].includes(questions[currentQuestion]?.questionIndex) && (
               <QuestionVisual 
                 questionId={`Q${questions[currentQuestion]?.questionIndex || (currentQuestion + 1)}`}
                 questionContent={questions[currentQuestion]?.content}
@@ -311,17 +439,41 @@ function Test({ user }) {
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
               }}>
                 <div style={{ 
-                  fontSize: '48px', 
-                  letterSpacing: '8px',
-                  fontFamily: 'monospace',
-                  margin: '20px 0'
+                  margin: '20px 0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px'
                 }}>
-                  ● ○ ● ○ <span style={{ 
+                  {/* Cercle noir plein */}
+                  <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="#000" stroke="#000" strokeWidth="2"/>
+                  </svg>
+                  {/* Cercle blanc contour */}
+                  <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="white" stroke="#000" strokeWidth="3"/>
+                  </svg>
+                  {/* Cercle noir plein */}
+                  <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="#000" stroke="#000" strokeWidth="2"/>
+                  </svg>
+                  {/* Cercle blanc contour */}
+                  <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="white" stroke="#000" strokeWidth="3"/>
+                  </svg>
+                  {/* Point d'interrogation */}
+                  <span style={{ 
                     color: '#667eea', 
-                    border: '2px dashed #667eea', 
-                    padding: '4px 12px',
+                    border: '3px dashed #667eea', 
+                    padding: '8px 16px',
                     borderRadius: '50%',
-                    fontSize: '40px'
+                    fontSize: '32px',
+                    fontWeight: 'bold',
+                    minWidth: '50px',
+                    minHeight: '50px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}>?</span>
                 </div>
                 <p style={{ 
@@ -344,6 +496,73 @@ function Test({ user }) {
                 }}
               />
             )}
+            
+            {/* Affichage spécial pour Question 12 - Séquence de rotation */}
+            {questions[currentQuestion]?.questionIndex === 12 && (
+              <div style={{ 
+                background: '#ffffff', 
+                padding: '24px', 
+                borderRadius: '12px',
+                border: '1px solid #e0e0e0',
+                marginBottom: '25px',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+              }}>
+                {/* Stimulus SVG: Séquence 0°, 45°, 90°, ? */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  gap: '20px',
+                  marginBottom: '16px'
+                }}>
+                  {[0, 45, 90].map((angle, index) => (
+                    <div key={index} style={{ textAlign: 'center' }}>
+                      <svg width="60" height="60" viewBox="0 0 100 100">
+                        <line 
+                          x1="50" y1="50" 
+                          x2="50" y2="20"
+                          stroke="#000" 
+                          strokeWidth="3"
+                          transform={`rotate(${angle} 50 50)`}
+                        />
+                      </svg>
+                      <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                        {angle}°
+                      </div>
+                    </div>
+                  ))}
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ 
+                      width: '60px', 
+                      height: '60px', 
+                      border: '2px dashed #667eea', 
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '24px',
+                      color: '#667eea',
+                      fontWeight: 'bold'
+                    }}>
+                      ?
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                      ?
+                    </div>
+                  </div>
+                </div>
+                
+                <p style={{ 
+                  color: '#666', 
+                  fontSize: '14px', 
+                  margin: '0',
+                  fontWeight: '500'
+                }}>
+                  Quelle vignette complète la séquence ? (rotation +45° à chaque étape)
+                </p>
+              </div>
+            )}
           </>
         )}
         
@@ -354,9 +573,14 @@ function Test({ user }) {
               const optionAlt = typeof option === 'object' && option.alt ? option.alt : `Option ${index + 1}`;
               const optionRotation = typeof option === 'object' && option.rotation ? option.rotation : null;
               
-              // Cas spéciaux : Questions avec SVG custom
+              // Cas spéciaux : Questions avec composants custom
               const isRotationQuestion = questions[currentQuestion]?.series === 'A' && questions[currentQuestion]?.questionIndex === 1;
-              const isMatrixQuestion = questions[currentQuestion]?.questionIndex === 7;
+              const isAlternatingQuestion = [3, 5, 9].includes(questions[currentQuestion]?.questionIndex);
+              const isMatrixGridQuestion = questions[currentQuestion]?.series === 'A' && questions[currentQuestion]?.questionIndex === 7;
+              
+              const isMatrixQuestion = questions[currentQuestion]?.questionIndex === 7 && typeof option === 'object' && option.type === 'semicircle';
+              const isQ12RotationSequence = questions[currentQuestion]?.questionIndex === 12;
+              const isQ7MatrixVisual = questions[currentQuestion]?.questionIndex === 7 && typeof option === 'object' && option.visual;
               
               return (
                 <button
@@ -364,38 +588,86 @@ function Test({ user }) {
                   onClick={() => handleAnswer(index)}
                   title={optionAlt}
                   aria-label={optionAlt}
+                  className={isRotationQuestion ? 'svg-container-clickable' : ''}
                   style={{
-                    padding: (isRotationQuestion || isMatrixQuestion) ? '16px' : '15px',
-                    border: '2px solid #e0e0e0',
+                    padding: (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '12px' : (isRotationQuestion || isMatrixQuestion) ? '16px' : '15px',
+                    border: (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '2px solid #dee2e6' : '2px solid #e0e0e0',
                     borderRadius: '8px',
                     background: '#ffffff',
                     cursor: 'pointer',
-                    fontSize: (isRotationQuestion || isMatrixQuestion) ? '14px' : '26px',
-                    transition: 'all 0.2s ease',
+                    fontSize: (isRotationQuestion || isMatrixQuestion || isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '14px' : '26px',
+                    transition: 'border-color 0.2s ease, background-color 0.2s ease',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: (isRotationQuestion || isMatrixQuestion) ? '96px' : '80px',
-                    minWidth: (isRotationQuestion || isMatrixQuestion) ? '96px' : 'auto',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    // Zone cliquable garantie ≥44px 
+                    minHeight: isRotationQuestion ? 'var(--touch-target-optimal, 48px)' : (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '80px' : (isMatrixQuestion) ? '96px' : '80px',
+                    minWidth: isRotationQuestion ? 'var(--touch-target-optimal, 48px)' : (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '80px' : (isMatrixQuestion) ? '96px' : 'auto',
+                    boxShadow: (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '0 1px 3px rgba(0,0,0,0.08)' : '0 2px 4px rgba(0,0,0,0.1)'
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.borderColor = '#667eea';
-                    e.target.style.background = '#f0f2ff';
+                    if (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) {
+                      e.target.style.borderColor = '#6c757d';
+                      e.target.style.boxShadow = '0 2px 6px rgba(0,0,0,0.12)';
+                    } else {
+                      e.target.style.borderColor = '#667eea';
+                      e.target.style.background = '#f0f2ff';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.borderColor = '#e0e0e0';
-                    e.target.style.background = 'white';
+                    if (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) {
+                      e.target.style.borderColor = '#dee2e6';
+                      e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+                    } else {
+                      e.target.style.borderColor = '#e0e0e0';
+                      e.target.style.background = 'white';
+                    }
                   }}
                 >
                   {isRotationQuestion && optionRotation ? (
                     <>
                       <SemicircleSVG 
                         rotation={optionRotation} 
-                        size={56} 
+                        size={64}
                         alt={optionAlt}
                       />
+                      <div style={{ 
+                        marginTop: '8px', 
+                        fontSize: '14px', 
+                        color: '#000000',
+                        fontWeight: 'bold'
+                      }}>
+                        {String.fromCharCode(65 + index)}
+                      </div>
+                    </>
+                  ) : isAlternatingQuestion ? (
+                    // Q3, Q5, Q9 - Options alternées simples avec format texte (●, ○, ◼, ◻, ★, ☆)
+                    <>
+                      <div style={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '50px'
+                      }}>
+                        {optionText === '●' ? (
+                          <svg width="40" height="40" viewBox="0 0 50 50">
+                            <circle cx="25" cy="25" r="20" fill="#000" stroke="#000" strokeWidth="2"/>
+                          </svg>
+                        ) : optionText === '○' ? (
+                          <svg width="40" height="40" viewBox="0 0 50 50">
+                            <circle cx="25" cy="25" r="20" fill="white" stroke="#000" strokeWidth="3"/>
+                          </svg>
+                        ) : (
+                          <span style={{ 
+                            fontSize: '32px',
+                            fontFamily: 'Arial, sans-serif',
+                            lineHeight: '1'
+                          }}>
+                            {optionText}
+                          </span>
+                        )}
+                      </div>
                       <div style={{ 
                         marginTop: '8px', 
                         fontSize: '14px', 
@@ -408,7 +680,13 @@ function Test({ user }) {
                   ) : isMatrixQuestion && typeof option === 'object' && option.type === 'semicircle' ? (
                     <>
                       <SemicircleOptionSVG 
-                        type={optionText}
+                        type={
+                          option.rotation === 'left' ? 'half_left' :
+                          option.rotation === 'right' ? 'half_right' :
+                          option.rotation === 'up' ? 'half_up' :
+                          option.rotation === 'down' ? 'half_down' :
+                          'empty'
+                        }
                         size={56} 
                         alt={optionAlt}
                       />
@@ -421,6 +699,44 @@ function Test({ user }) {
                         {String.fromCharCode(65 + index)}
                       </div>
                     </>
+                  ) : isQ12RotationSequence && typeof option === 'object' && option.rotation ? (
+                    // Q12 - Segments de rotation SVG inline (80x80px cibles tactiles)
+                    <>
+                      <svg width="60" height="60" viewBox="0 0 100 100" style={{ display: 'block' }}>
+                        <line 
+                          x1="50" y1="50" 
+                          x2="50" y2="20"
+                          stroke="#000" 
+                          strokeWidth="3"
+                          transform={`rotate(${option.rotation} 50 50)`}
+                        />
+                      </svg>
+                      <div style={{ 
+                        marginTop: '8px', 
+                        fontSize: '12px', 
+                        color: '#000000',
+                        fontWeight: 'bold'
+                      }}>
+                        {String.fromCharCode(65 + index)} - {option.text}
+                      </div>
+                    </>
+                  ) : isQ7MatrixVisual ? (
+                    // Q7 - Vignettes pures (style grille exact, pas de lettres)
+                    <img 
+                      src={option.visual} 
+                      alt={option.alt || 'Motif grille'}
+                      aria-label={option.aria || option.alt || 'Option visuelle grille'}
+                      style={{ 
+                        width: '60px', 
+                        height: '60px',
+                        minWidth: '60px',
+                        minHeight: '60px',
+                        border: 'none',
+                        borderRadius: '4px',
+                        backgroundColor: 'transparent',
+                        pointerEvents: 'none'
+                      }}
+                    />
                   ) : (
                     optionText
                   )}

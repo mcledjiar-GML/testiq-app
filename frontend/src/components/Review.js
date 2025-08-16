@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuestionVisual from './QuestionVisual';
+import RotationSequence from './RotationSequence';
+import SemicircleSVG from './SemicircleSVG';
+import Matrix3x3 from './Matrix3x3';
+import SemicircleOptionSVG from './SemicircleOptionSVG';
+import Grid2x2 from './Grid2x2';
+import AlternatingSequence from './AlternatingSequence';
 
 function Review({ user }) {
   const [reviewData, setReviewData] = useState(null);
@@ -47,7 +53,10 @@ function Review({ user }) {
         console.log('🔄 Chargement des données de révision pour le test:', testIndex);
         console.log('👤 User ID:', user?.id);
         
-        if (!user || !user.id) {
+        // Détection du mode démo
+        const isDemoMode = process.env.REACT_APP_AUTH_REQUIRED === 'false';
+        
+        if (!isDemoMode && (!user || !user.id)) {
           console.error('❌ Utilisateur non défini');
           alert('Erreur: Utilisateur non connecté');
           navigate('/login');
@@ -61,7 +70,28 @@ function Review({ user }) {
           return;
         }
         
-        const response = await api.get(`/api/tests/${user.id}/${testIndex}/review`);
+        // Mode démo : utiliser l'ID de l'utilisateur démo
+        let userId;
+        if (isDemoMode && !user) {
+          try {
+            const demoInfoResponse = await api.get('/api/demo/user-info');
+            userId = demoInfoResponse.data.userId;
+            if (!userId) {
+              alert('Aucun test démo trouvé');
+              navigate('/results');
+              return;
+            }
+          } catch (error) {
+            console.error('❌ Erreur récupération user démo:', error);
+            alert('Erreur: Impossible de récupérer les données démo');
+            navigate('/results');
+            return;
+          }
+        } else {
+          userId = user.id;
+        }
+        
+        const response = await api.get(`/api/tests/${userId}/${testIndex}/review`);
         console.log('✅ Données de révision reçues:', response.data);
         console.log('🔍 Détails des answers:', response.data.answers);
         console.log('📊 Nombre de questions:', response.data.answers?.length);
@@ -274,7 +304,7 @@ function Review({ user }) {
         <h2 style={{ margin: '0 0 15px 0' }}>📖 Révision du Test</h2>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', fontSize: '14px' }}>
           <div>
-            <strong>Type:</strong> {reviewData.testInfo?.testType || 'N/A'} ({reviewData.testInfo?.testLevel || 'N/A'})
+            <strong>Type:</strong> Raven ({reviewData.testInfo?.testLevel === 'short' ? 'rapide' : reviewData.testInfo?.testLevel === 'full' ? 'complet' : 'standard'})
           </div>
           <div>
             <strong>QI:</strong> {reviewData.testInfo?.iq || 'N/A'}
@@ -305,7 +335,7 @@ function Review({ user }) {
                 cursor: currentQuestion === 0 ? 'not-allowed' : 'pointer'
               }}
             >
-              ← Précédente
+              ← Précédent
             </button>
             <button
               onClick={() => setCurrentQuestion(Math.min(reviewData.answers.length - 1, currentQuestion + 1))}
@@ -319,7 +349,7 @@ function Review({ user }) {
                 cursor: currentQuestion === reviewData.answers.length - 1 ? 'not-allowed' : 'pointer'
               }}
             >
-              Suivante →
+              Suivant →
             </button>
           </div>
         </div>
@@ -362,21 +392,24 @@ function Review({ user }) {
             padding: '4px 8px',
             borderRadius: '8px'
           }}>
-            📊 Série {currentAnswer?.series || 'N/A'}
+            📊 Raven Série {currentAnswer?.series || 'A'}
           </span>
+          {/* **CORRECTION** : Afficher les vrais tags de la BD au lieu de "3×3" codé en dur */}
+          {currentAnswer?.explanation && currentAnswer.explanation.includes('(Type:') && (
+            <span style={{
+              background: '#e9ecef',
+              padding: '4px 8px',
+              borderRadius: '8px'
+            }}>
+              🎯 {currentAnswer.explanation.match(/\(Type: ([^)]+)\)/)?.[1] || 'Question'}
+            </span>
+          )}
           <span style={{
             background: '#e9ecef',
             padding: '4px 8px',
             borderRadius: '8px'
           }}>
-            🎯 Difficulté {currentAnswer?.difficulty || 0}/10
-          </span>
-          <span style={{
-            background: '#e9ecef',
-            padding: '4px 8px',
-            borderRadius: '8px'
-          }}>
-            📂 {currentAnswer?.category || 'N/A'}
+            📂 {currentAnswer?.category === 'spatial' ? 'Spatial' : currentAnswer?.category === 'logique' ? 'Logique' : 'Raisonnement'}
           </span>
           {currentAnswer?.timeUsed > 0 && (
             <span style={{
@@ -384,7 +417,7 @@ function Review({ user }) {
               padding: '4px 8px',
               borderRadius: '8px'
             }}>
-              ⏱️ {currentAnswer.timeUsed}s utilisées
+              ⏱️ {Math.round(currentAnswer.timeUsed / 1000)}s utilisées
             </span>
           )}
         </div>
@@ -399,14 +432,169 @@ function Review({ user }) {
           {currentAnswer?.question || 'Question non disponible'}
         </h4>
 
-        {/* 🎨 VISUEL PROFESSIONNEL GÉNÉRATION AUTOMATIQUE */}
-        <QuestionVisual 
-          questionId={`Q${currentAnswer?.questionIndex || (currentQuestion + 1)}`}
-          questionContent={currentAnswer?.question}
-          category={currentAnswer?.category}
-        />
+        {/* 🎨 VISUEL IDENTIQUE AU TEST - Même logique que Test.js */}
+        {currentAnswer?.series === 'A' && currentAnswer?.questionIndex === 1 ? (
+          <RotationSequence 
+            showHint={false}
+            onHintClick={() => {}} // Désactivé en révision
+          />
+        ) : currentAnswer?.series === 'A' && currentAnswer?.questionIndex === 3 ? (
+          <AlternatingSequence 
+            sequenceType="circles"
+            showHint={false}
+            onHintClick={() => {}}
+          />
+        ) : currentAnswer?.series === 'A' && currentAnswer?.questionIndex === 5 ? (
+          <Grid2x2 
+            mode="alternating"
+            showHint={false}
+            onHintClick={() => {}}
+          />
+        ) : currentAnswer?.series === 'A' && currentAnswer?.questionIndex === 7 ? (
+          <Matrix3x3 
+            showHint={false}
+            onHintClick={() => {}}
+          />
+        ) : currentAnswer?.series === 'A' && currentAnswer?.questionIndex === 9 ? (
+          <AlternatingSequence 
+            sequenceType="stars"
+            showHint={false}
+            onHintClick={() => {}}
+          />
+        ) : (
+          <>
+            {/* Affichage du stimulus si disponible pour autres questions */}
+            {currentAnswer?.stimulus && (
+              <div style={{ 
+                fontSize: '28px', 
+                fontWeight: 'bold', 
+                textAlign: 'center',
+                padding: '15px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                borderRadius: '8px',
+                marginBottom: '20px'
+              }}>
+                {currentAnswer.stimulus}
+              </div>
+            )}
+            
+            {/* Visuel professionnel pour autres questions */}
+            {![1, 3, 5, 7, 9, 12].includes(currentAnswer?.questionIndex) && (
+              <QuestionVisual 
+                questionId={`Q${currentAnswer?.questionIndex || (currentQuestion + 1)}`}
+                questionContent={currentAnswer?.question}
+                category={currentAnswer?.category}
+              />
+            )}
+            
+            {/* Affichage spécial pour Question 3 - séquence simple */}
+            {currentAnswer?.questionIndex === 3 && (
+              <div style={{ 
+                background: '#ffffff', 
+                padding: '24px', 
+                borderRadius: '12px',
+                border: '1px solid #e0e0e0',
+                marginBottom: '20px',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+              }}>
+                <div style={{ 
+                  margin: '20px 0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px'
+                }}>
+                  {/* Cercle noir plein */}
+                  <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="#000" stroke="#000" strokeWidth="2"/>
+                  </svg>
+                  {/* Cercle blanc contour */}
+                  <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="white" stroke="#000" strokeWidth="3"/>
+                  </svg>
+                  {/* Cercle noir plein */}
+                  <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="#000" stroke="#000" strokeWidth="2"/>
+                  </svg>
+                  {/* Cercle blanc contour */}
+                  <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="white" stroke="#000" strokeWidth="3"/>
+                  </svg>
+                  {/* Point d'interrogation */}
+                  <span style={{ 
+                    color: '#667eea', 
+                    border: '3px dashed #667eea', 
+                    padding: '8px 16px',
+                    borderRadius: '50%',
+                    fontSize: '32px',
+                    fontWeight: 'bold',
+                    minWidth: '50px',
+                    minHeight: '50px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>?</span>
+                </div>
+                <p style={{ 
+                  color: '#666', 
+                  fontSize: '14px', 
+                  margin: '10px 0 0 0' 
+                }}>
+                  Complétez la séquence
+                </p>
+              </div>
+            )}
+            
+            {/* Affichage spécial pour Question 7 - Matrice 3×3 cohérente */}
+            {currentAnswer?.questionIndex === 7 && (
+              <Matrix3x3 
+                showHint={false}
+                onHintClick={() => {}}
+              />
+            )}
+            
+            {/* Affichage spécial pour Question 12 - Séquence de rotation */}
+            {currentAnswer?.questionIndex === 12 && (
+              <div style={{ 
+                background: '#ffffff', 
+                padding: '24px', 
+                borderRadius: '12px',
+                border: '1px solid #e0e0e0',
+                marginBottom: '25px',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+              }}>
+                {/* Affichage du stimulus directement depuis visualData */}
+                {currentAnswer?.visualData && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <img 
+                      src={currentAnswer.visualData}
+                      alt="Séquence de rotation: 0°, 45°, 90°, ?"
+                      style={{ 
+                        maxWidth: '100%', 
+                        height: 'auto',
+                        borderRadius: '8px'
+                      }}
+                    />
+                  </div>
+                )}
+                
+                <p style={{ 
+                  color: '#666', 
+                  fontSize: '14px', 
+                  margin: '0',
+                  fontWeight: '500'
+                }}>
+                  Quelle vignette complète la séquence ?
+                </p>
+              </div>
+            )}
+          </>
+        )}
 
-        {/* Options de réponse */}
+        {/* Options de réponse - MÊME STYLE QUE TEST.js */}
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(2, 1fr)', 
@@ -414,86 +602,197 @@ function Review({ user }) {
           marginBottom: '25px'
         }}>
           {(currentAnswer?.options || []).map((option, index) => {
+            // Support both old format (string) and new format (object with text/alt)
+            const optionText = typeof option === 'string' ? option : option.text;
+            const optionAlt = typeof option === 'object' && option.alt ? option.alt : `Option ${index + 1}`;
+            const optionRotation = typeof option === 'object' && option.rotation ? option.rotation : null;
+            
+            // Cas spéciaux : Questions avec composants custom
+            const isRotationQuestion = currentAnswer?.series === 'A' && currentAnswer?.questionIndex === 1;
+            const isAlternatingQuestion = [3, 5, 9].includes(currentAnswer?.questionIndex);
+            const isMatrixGridQuestion = currentAnswer?.series === 'A' && currentAnswer?.questionIndex === 7;
+            const isMatrixQuestion = currentAnswer?.questionIndex === 7 && typeof option === 'object' && option.type === 'semicircle';
+            const isQ12RotationSequence = currentAnswer?.questionIndex === 12;
+            const isQ7MatrixVisual = currentAnswer?.questionIndex === 7 && typeof option === 'object' && option.visual;
+
+            // Style de base identique à Test.js
             let buttonStyle = {
-              padding: '15px',
-              borderRadius: '10px',
-              fontSize: '26px',
-              fontWeight: '500',
+              padding: (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '12px' : (isRotationQuestion || isMatrixQuestion) ? '16px' : '15px',
+              border: (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '2px solid #dee2e6' : '2px solid #e0e0e0',
+              borderRadius: '8px',
+              background: '#ffffff',
               cursor: 'default',
-              textAlign: 'left',
+              fontSize: (isRotationQuestion || isMatrixQuestion || isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '14px' : '26px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: isRotationQuestion ? 'var(--touch-target-optimal, 48px)' : (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '80px' : (isMatrixQuestion) ? '96px' : '80px',
+              minWidth: isRotationQuestion ? 'var(--touch-target-optimal, 48px)' : (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '80px' : (isMatrixQuestion) ? '96px' : 'auto',
+              boxShadow: (isQ12RotationSequence || isQ7MatrixVisual || isAlternatingQuestion) ? '0 1px 3px rgba(0,0,0,0.08)' : '0 2px 4px rgba(0,0,0,0.1)',
               position: 'relative'
             };
 
             // Couleur selon le type de réponse
             if (index === currentAnswer?.correctAnswer) {
-              // Bonne réponse
-              buttonStyle = {
-                ...buttonStyle,
-                background: '#d4edda',
-                border: '2px solid #28a745',
-                color: '#155724'
-              };
+              buttonStyle.border = '3px solid #28a745';
+              buttonStyle.background = '#d4edda';
             } else if (index === currentAnswer?.yourAnswer && !currentAnswer?.isCorrect) {
-              // Votre mauvaise réponse
-              buttonStyle = {
-                ...buttonStyle,
-                background: '#f8d7da',
-                border: '2px solid #dc3545',
-                color: '#721c24'
-              };
-            } else {
-              // Autres options
-              buttonStyle = {
-                ...buttonStyle,
-                background: '#f8f9fa',
-                border: '2px solid #dee2e6',
-                color: '#495057'
-              };
+              buttonStyle.border = '3px solid #dc3545';
+              buttonStyle.background = '#f8d7da';
             }
 
             return (
-              <div key={index} style={buttonStyle}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  {/* Icône de statut */}
-                  {index === currentAnswer?.correctAnswer && (
-                    <span style={{ fontSize: '20px' }}>✅</span>
-                  )}
-                  {index === currentAnswer?.yourAnswer && !currentAnswer?.isCorrect && (
-                    <span style={{ fontSize: '20px' }}>
-                      {currentAnswer?.yourAnswer === -1 ? '⏰' : '❌'}
-                    </span>
-                  )}
-                  
-                  <span>{option}</span>
-                  
-                  {/* Étiquettes */}
-                  <div style={{ marginLeft: 'auto', display: 'flex', gap: '5px' }}>
-                    {index === currentAnswer?.correctAnswer && (
-                      <span style={{
-                        background: '#28a745',
-                        color: 'white',
-                        padding: '2px 6px',
-                        borderRadius: '8px',
-                        fontSize: '10px',
-                        fontWeight: 'bold'
-                      }}>
-                        CORRECTE
-                      </span>
-                    )}
-                    {index === currentAnswer?.yourAnswer && (
-                      <span style={{
-                        background: currentAnswer?.isCorrect ? '#28a745' : '#dc3545',
-                        color: 'white',
-                        padding: '2px 6px',
-                        borderRadius: '8px',
-                        fontSize: '10px',
-                        fontWeight: 'bold'
-                      }}>
-                        VOTRE CHOIX
-                      </span>
-                    )}
+              <div 
+                key={index} 
+                style={buttonStyle}
+                title={optionAlt}
+                aria-label={optionAlt}
+              >
+                {/* Icônes de statut dans le coin */}
+                {index === currentAnswer?.correctAnswer && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '5px',
+                    right: '5px',
+                    fontSize: '16px'
+                  }}>
+                    ✅
                   </div>
-                </div>
+                )}
+                {index === currentAnswer?.yourAnswer && !currentAnswer?.isCorrect && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '5px',
+                    right: '5px',
+                    fontSize: '16px'
+                  }}>
+                    {currentAnswer?.yourAnswer === -1 ? '⏰' : '❌'}
+                  </div>
+                )}
+
+                {/* Contenu identique à Test.js */}
+                {isRotationQuestion && optionRotation ? (
+                  <>
+                    <SemicircleSVG 
+                      rotation={optionRotation} 
+                      size={64}
+                      alt={optionAlt}
+                    />
+                    <div style={{ 
+                      marginTop: '8px', 
+                      fontSize: '14px', 
+                      color: '#000000',
+                      fontWeight: 'bold'
+                    }}>
+                      {String.fromCharCode(65 + index)}
+                    </div>
+                  </>
+                ) : isAlternatingQuestion ? (
+                  <>
+                    <div style={{ 
+                      fontSize: '32px',
+                      fontFamily: 'monospace',
+                      lineHeight: '1'
+                    }}>
+                      {optionText}
+                    </div>
+                    <div style={{ 
+                      marginTop: '8px', 
+                      fontSize: '14px', 
+                      color: '#000000',
+                      fontWeight: 'bold'
+                    }}>
+                      {String.fromCharCode(65 + index)}
+                    </div>
+                  </>
+                ) : isMatrixQuestion && typeof option === 'object' && option.type === 'semicircle' ? (
+                  <>
+                    <SemicircleOptionSVG 
+                      type={
+                        option.rotation === 'left' ? 'half_left' :
+                        option.rotation === 'right' ? 'half_right' :
+                        option.rotation === 'up' ? 'half_up' :
+                        option.rotation === 'down' ? 'half_down' :
+                        'empty'
+                      }
+                      size={56} 
+                      alt={optionAlt}
+                    />
+                    <div style={{ 
+                      marginTop: '8px', 
+                      fontSize: '14px', 
+                      color: '#000000',
+                      fontWeight: 'bold'
+                    }}>
+                      {String.fromCharCode(65 + index)}
+                    </div>
+                  </>
+                ) : isQ12RotationSequence && typeof option === 'object' && option.visual ? (
+                  <>
+                    <img 
+                      src={option.visual} 
+                      alt={option.alt || 'Segment orienté'}
+                      aria-label={option.aria || option.alt || 'Option visuelle'}
+                      style={{ 
+                        width: '80px', 
+                        height: '80px',
+                        minWidth: '80px',
+                        minHeight: '80px',
+                        border: 'none',
+                        borderRadius: '4px',
+                        backgroundColor: 'transparent'
+                      }}
+                    />
+                    <div style={{ 
+                      marginTop: '4px', 
+                      fontSize: '12px', 
+                      color: '#000000',
+                      fontWeight: 'bold'
+                    }}>
+                      {String.fromCharCode(65 + index)}
+                    </div>
+                  </>
+                ) : isQ7MatrixVisual ? (
+                  <>
+                    <img 
+                      src={option.visual} 
+                      alt={option.alt || 'Motif grille'}
+                      aria-label={option.aria || option.alt || 'Option visuelle grille'}
+                      style={{ 
+                        width: '60px', 
+                        height: '60px',
+                        minWidth: '60px',
+                        minHeight: '60px',
+                        border: 'none',
+                        borderRadius: '4px',
+                        backgroundColor: 'transparent'
+                      }}
+                    />
+                    <div style={{ 
+                      marginTop: '4px', 
+                      fontSize: '12px', 
+                      color: '#000000',
+                      fontWeight: 'bold'
+                    }}>
+                      {String.fromCharCode(65 + index)}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: '26px' }}>
+                      {optionText}
+                    </div>
+                    <div style={{ 
+                      marginTop: '8px', 
+                      fontSize: '14px', 
+                      color: '#000000',
+                      fontWeight: 'bold'
+                    }}>
+                      {String.fromCharCode(65 + index)}
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}
@@ -525,26 +824,171 @@ function Review({ user }) {
             {currentAnswer?.explanation || 'Aucune explication disponible'}
           </p>
           
+          {/* Comparaison visuelle des réponses */}
+          {!currentAnswer?.isCorrect && currentAnswer?.yourAnswer !== -1 && (
+            <div style={{
+              background: '#fff3cd',
+              border: '1px solid #ffeaa7',
+              borderRadius: '8px',
+              padding: '12px',
+              margin: '10px 0',
+              fontSize: '14px'
+            }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '15px',
+                justifyContent: 'center'
+              }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '12px', color: '#721c24', fontWeight: 'bold', marginBottom: '4px' }}>
+                    Votre réponse:
+                  </div>
+                  <div style={{ 
+                    fontSize: '16px', 
+                    color: '#721c24',
+                    fontWeight: 'bold',
+                    padding: '4px 8px',
+                    background: '#f8d7da',
+                    borderRadius: '4px',
+                    border: '1px solid #dc3545'
+                  }}>
+                    {String.fromCharCode(65 + currentAnswer.yourAnswer)} - {
+                      currentAnswer.selectedOptionValue?.text || 
+                      (typeof currentAnswer.options[currentAnswer.yourAnswer] === 'string' 
+                        ? currentAnswer.options[currentAnswer.yourAnswer]
+                        : currentAnswer.options[currentAnswer.yourAnswer]?.text || currentAnswer.options[currentAnswer.yourAnswer]?.alt)
+                    }
+                  </div>
+                </div>
+                
+                <div style={{ fontSize: '16px', color: '#856404' }}>≠</div>
+                
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '12px', color: '#155724', fontWeight: 'bold', marginBottom: '4px' }}>
+                    Bonne réponse:
+                  </div>
+                  <div style={{ 
+                    fontSize: '16px', 
+                    color: '#155724',
+                    fontWeight: 'bold',
+                    padding: '4px 8px',
+                    background: '#d4edda',
+                    borderRadius: '4px',
+                    border: '1px solid #28a745'
+                  }}>
+                    {String.fromCharCode(65 + currentAnswer.correctAnswer)} - {
+                      currentAnswer.correctOptionValue?.text || 
+                      (typeof currentAnswer.options[currentAnswer.correctAnswer] === 'string' 
+                        ? currentAnswer.options[currentAnswer.correctAnswer]
+                        : currentAnswer.options[currentAnswer.correctAnswer]?.text || currentAnswer.options[currentAnswer.correctAnswer]?.alt)
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* **NOUVEAU** : Feedback visuel détaillé pour Q7 et Q12 */}
+          {(currentAnswer?.options?.some(opt => opt.visual) && !currentAnswer?.isCorrect) && (
+            <div style={{
+              background: '#fff3cd',
+              border: '1px solid #ffeaa7',
+              borderRadius: '8px',
+              padding: '16px',
+              margin: '15px 0',
+              fontSize: '14px'
+            }}>
+              <div style={{ marginBottom: '12px' }}>
+                <strong style={{ color: '#856404' }}>🔍 Comparaison de vos réponses :</strong>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {/* Votre réponse */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '12px', color: '#721c24', fontWeight: 'bold' }}>Votre choix :</span>
+                  {currentAnswer.options[currentAnswer.yourAnswer]?.visual && (
+                    <img 
+                      src={currentAnswer.options[currentAnswer.yourAnswer].visual}
+                      alt={currentAnswer.options[currentAnswer.yourAnswer].alt || 'Votre réponse'}
+                      style={{ 
+                        width: '32px', 
+                        height: '32px',
+                        border: '2px solid #dc3545',
+                        borderRadius: '6px',
+                        backgroundColor: '#ffffff'
+                      }}
+                    />
+                  )}
+                  <span style={{ fontSize: '12px', color: '#721c24' }}>
+                    {currentAnswer.options[currentAnswer.yourAnswer]?.description || currentAnswer.options[currentAnswer.yourAnswer]?.alt || 'Votre choix'}
+                  </span>
+                </div>
+                
+                <span style={{ color: '#856404', fontSize: '16px' }}>≠</span>
+                
+                {/* Bonne réponse */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '12px', color: '#155724', fontWeight: 'bold' }}>Bonne réponse :</span>
+                  {currentAnswer.options[currentAnswer.correctAnswer]?.visual && (
+                    <img 
+                      src={currentAnswer.options[currentAnswer.correctAnswer].visual}
+                      alt={currentAnswer.options[currentAnswer.correctAnswer].alt || 'Bonne réponse'}
+                      style={{ 
+                        width: '32px', 
+                        height: '32px',
+                        border: '2px solid #28a745',
+                        borderRadius: '6px',
+                        backgroundColor: '#ffffff'
+                      }}
+                    />
+                  )}
+                  <span style={{ fontSize: '12px', color: '#155724' }}>
+                    {currentAnswer.options[currentAnswer.correctAnswer]?.description || currentAnswer.options[currentAnswer.correctAnswer]?.alt || 'Solution correcte'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* **NOUVEAU** : Aide supplémentaire pour Q12 en mode révision */}
+          {currentAnswer?.question?.includes('rotation') && currentAnswer?.helpText && (
+            <div style={{
+              background: '#e3f2fd',
+              border: '1px solid #2196f3',
+              borderRadius: '8px',
+              padding: '12px',
+              margin: '10px 0',
+              fontSize: '14px'
+            }}>
+              <strong style={{ color: '#1976d2' }}>💡 Aide à la résolution :</strong>
+              <p style={{ margin: '5px 0 0 0', color: '#424242' }}>
+                {currentAnswer.helpText}
+              </p>
+            </div>
+          )}
+          
           {/* Bouton Savoir plus */}
           <button
             onClick={async () => {
               if (!showDetailedExplanation && !advancedExplanation) {
-                // Utiliser le questionIndex depuis les données de review (plus fiable)
-                const questionIndex = currentAnswer?.questionIndex;
+                // **CORRECTION** : Utiliser l'ID visuel cohérent ou la position originale
+                const explanationId = currentAnswer?.visualQuestionId?.replace('Q', '') 
+                                   || currentAnswer?.originalTestPosition 
+                                   || currentAnswer?.questionIndex 
+                                   || (currentQuestion + 1);
                 
                 console.log(`🔍 Debug - currentAnswer:`, {
+                  visualQuestionId: currentAnswer?.visualQuestionId,
+                  originalTestPosition: currentAnswer?.originalTestPosition,
                   questionIndex: currentAnswer?.questionIndex,
+                  finalId: explanationId,
                   question: currentAnswer?.question?.substring(0, 30),
                   series: currentAnswer?.series
                 });
                 
-                if (questionIndex) {
-                  console.log(`✅ Utilisation questionIndex: ${questionIndex}`);
-                  await loadAdvancedExplanation(questionIndex, currentAnswer?.question);
-                } else {
-                  console.log(`⚠️ Pas de questionIndex, fallback sur currentQuestion + 1: ${currentQuestion + 1}`);
-                  await loadAdvancedExplanation(currentQuestion + 1, currentAnswer?.question);
-                }
+                console.log(`✅ Utilisation ID cohérent: ${explanationId}`);
+                await loadAdvancedExplanation(explanationId, currentAnswer?.question);
               }
               setShowDetailedExplanation(!showDetailedExplanation);
             }}
@@ -844,46 +1288,48 @@ function Review({ user }) {
         </div>
       </div>
 
-      {/* Résumé */}
-      <div style={{
-        background: '#e3f2fd',
-        padding: '20px',
-        borderRadius: '15px',
-        marginBottom: '25px',
-        border: '2px solid #1976d2'
-      }}>
-        <h4 style={{ color: '#1565c0', marginBottom: '15px' }}>📊 Résumé de votre performance</h4>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-          gap: '15px'
+      {/* **CORRECTION** : Résumé seulement si on est à la dernière question */}
+      {currentQuestion === reviewData.answers.length - 1 && (
+        <div style={{
+          background: '#e3f2fd',
+          padding: '20px',
+          borderRadius: '15px',
+          marginBottom: '25px',
+          border: '2px solid #1976d2'
         }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#28a745' }}>
-              {reviewData.summary?.correctAnswers || 0}
+          <h4 style={{ color: '#1565c0', marginBottom: '15px' }}>🎉 Test terminé - Résumé de votre performance</h4>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+            gap: '15px'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#28a745' }}>
+                {reviewData.summary?.correctAnswers || 0}
+              </div>
+              <div style={{ color: '#1565c0', fontSize: '12px' }}>Bonnes réponses</div>
             </div>
-            <div style={{ color: '#1565c0', fontSize: '12px' }}>Bonnes réponses</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#dc3545' }}>
-              {(reviewData.summary?.totalQuestions || 0) - (reviewData.summary?.correctAnswers || 0)}
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#dc3545' }}>
+                {(reviewData.summary?.totalQuestions || 0) - (reviewData.summary?.correctAnswers || 0)}
+              </div>
+              <div style={{ color: '#1565c0', fontSize: '12px' }}>Erreurs</div>
             </div>
-            <div style={{ color: '#1565c0', fontSize: '12px' }}>Erreurs</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#1976d2' }}>
-              {(reviewData.summary?.averageDifficulty || 0).toFixed(1)}
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#1976d2' }}>
+                {(reviewData.summary?.averageDifficulty || 0).toFixed(1)}
+              </div>
+              <div style={{ color: '#1565c0', fontSize: '12px' }}>Difficulté moyenne</div>
             </div>
-            <div style={{ color: '#1565c0', fontSize: '12px' }}>Difficulté moyenne</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ff9800' }}>
-              {reviewData.testInfo?.iq || 'N/A'}
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ff9800' }}>
+                {reviewData.testInfo?.iq || 'N/A'}
+              </div>
+              <div style={{ color: '#1565c0', fontSize: '12px' }}>QI obtenu</div>
             </div>
-            <div style={{ color: '#1565c0', fontSize: '12px' }}>QI obtenu</div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Boutons de navigation */}
       <div style={{ 
