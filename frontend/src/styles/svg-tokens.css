@@ -1,0 +1,81 @@
+/* 🎯 Tokens SVG - Tailles Unifiées Q1 */
+
+:root {
+  /* Taille de référence pour tous les SVG Q1 */
+  --svg-icon-size: 64px;
+  
+  /* Zone cliquable minimale (WCAG 2.1 AA) */
+  --touch-target-min: 44px;
+  
+  /* Zones cliquables optimales */
+  --touch-target-optimal: 48px;
+  
+  /* Épaisseur de trait uniforme */
+  --svg-stroke-width: 3px;
+  
+  /* Couleurs SVG */
+  --svg-fill-primary: #000000;
+  --svg-stroke-primary: #000000;
+  
+  /* Responsive breakpoints */
+  --mobile-svg-size: 56px; /* Mobile 320px+ */
+  --tablet-svg-size: 64px; /* Tablet 768px+ */
+  --desktop-svg-size: 64px; /* Desktop 1024px+ */
+}
+
+/* 📱 Responsive SVG Sizing */
+@media (max-width: 767px) {
+  :root {
+    --svg-icon-size: var(--mobile-svg-size);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --svg-icon-size: var(--tablet-svg-size);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --svg-icon-size: var(--desktop-svg-size);
+  }
+}
+
+/* 🎯 Classes utilitaires SVG */
+.svg-icon-unified {
+  width: var(--svg-icon-size);
+  height: var(--svg-icon-size);
+  display: block;
+}
+
+.svg-container-clickable {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.svg-container-clickable:hover {
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+.svg-container-clickable:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* 🔧 Non-scaling stroke (préserve épaisseur) */
+.svg-non-scaling-stroke {
+  vector-effect: non-scaling-stroke;
+}
+
+/* 📐 Préservation du ratio */
+.svg-preserve-ratio {
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
